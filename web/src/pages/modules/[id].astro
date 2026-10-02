@@ -1,0 +1,231 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
+  return modules.map((entry, i) => ({
+    params: { id: entry.data.id },
+    props: { entry, prev: modules[i - 1]?.data ?? null, next: modules[i + 1]?.data ?? null },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const m = entry.data;
+const { Content } = await render(entry);
+// Accès libre aux modules 0 et 1 (découverte) ; les suivants demandent un compte.
+const libre = m.ordre <= 1;
+const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\//.test(src);
+---
+<Base title={`M${m.ordre} · ${m.titre}`} description={m.resume}>
+  <div class="container module-layout" data-module={m.id} data-quiz={m.quiz ? '1' : ''} data-exercice={m.exercice ? '1' : ''} data-libre={libre ? '1' : ''}>
+    <article>
+      <span class="eyebrow">Module {m.ordre} · {m.duree} min</span>
+      <h1 class="t-h1" style="margin-top: var(--space-3)">{m.titre}</h1>
+      <p class="t-lead">{m.resume}</p>
+      {m.statut === 'trame' && <p class="alert alert--info">Module en cours de production : la version finale arrive prochainement.</p>}
+
+      <div id="gate" class="gate" hidden>
+        <h2 class="t-h3">Ce module est réservé aux inscrits</h2>
+        <p>Créez votre compte gratuitement pour suivre le parcours, enregistrer votre progression et obtenir le badge.</p>
+        <a class="btn btn--primary" href="/inscription/">Créer mon compte</a> <a class="btn btn--ghost" href={`/connexion/?suite=/modules/${m.id}/`}>J'ai déjà un compte</a>
+      </div>
+
+      <div id="content" hidden={!libre}>
+        {m.videos.length > 0 && (
+          <div class="videos">
+            {m.videos.map((v) => (
+              <figure style="margin:0">
+                {v.src
+                  ? <div class="video">{embed(v.src) ? <iframe src={v.src} title={v.titre} allowfullscreen loading="lazy"></iframe> : <video src={v.src} controls preload="metadata"></video>}</div>
+                  : <div class="video video--todo"><div><strong>{v.titre}</strong><br /><span class="t-small">Vidéo en cours de tournage</span></div></div>}
+                <figcaption class="video-caption">{v.titre} · {v.duree}</figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
+
+        <div class="prose"><Content /></div>
+
+        {m.exercice && (
+          <section class="card" id="depot-exercice" style="margin-top: var(--space-7)" hidden>
+            <h2 class="t-h3">Déposer mon exercice</h2>
+            <p class="t-small">Gardez une trace de votre travail : il alimentera votre projet final. Fichier, lien ou simple commentaire.</p>
+            <form class="form form--wide" id="exo-form">
+              <div class="field"><label for="exo-files">Fichiers</label><input id="exo-files" type="file" multiple /></div>
+              <div class="field"><label for="exo-lien">Lien (optionnel)</label><input id="exo-lien" type="url" placeholder="https://" /></div>
+              <div class="field"><label for="exo-comment">Commentaire</label><textarea id="exo-comment"></textarea></div>
+              <div id="exo-msg" role="status"></div>
+              <button class="btn btn--secondary" type="submit">Déposer</button>
+            </form>
+            <ul id="exo-list" class="t-small"></ul>
+          </section>
+        )}
+
+        {m.quiz && (
+          <section id="quiz-section" style="margin-top: var(--space-7)">
+            <h2 class="t-h3">Quiz du module</h2>
+            <div id="quiz-box"><p class="t-small">Connectez-vous pour répondre au quiz.</p></div>
+          </section>
+        )}
+      </div>
+
+      <nav style="display:flex;justify-content:space-between;gap:var(--space-4);margin-top:var(--space-8);flex-wrap:wrap" aria-label="Modules">
+        {prev ? <a class="btn btn--ghost" href={`/modules/${prev.id}/`}>← M{prev.ordre} {prev.titre}</a> : <span></span>}
+        {next ? <a class="btn btn--ghost" href={`/modules/${next.id}/`}>M{next.ordre} {next.titre} →</a> : <a class="btn btn--ghost" href="/projet-final/">Projet final →</a>}
+      </nav>
+    </article>
+
+    <aside class="module-aside">
+      <div class="grid">
+        <div class="card card--sand">
+          <span class="t-micro">Objectifs</span>
+          <ul class="objectifs" style="margin-top:var(--space-3)">{m.objectifs.map((o) => <li class="t-small">{o}</li>)}</ul>
+          {m.competences.length > 0 && <p class="t-small" style="margin-top:var(--space-4)">Compétences du badge : <strong>{m.competences.join(', ')}</strong></p>}
+        </div>
+        {m.ressources.length > 0 && (
+          <div class="card">
+            <span class="t-micro">Ressources</span>
+            <ul class="resources" style="margin-top:var(--space-3)">
+              {m.ressources.map((r) => (
+                <li><a href={r.type === 'fiche' ? `/fiches/${r.ref}/` : `/ressources/${r.ref}`} download={r.type === 'fichier' ? '' : undefined}><span class="pill">{r.type === 'fiche' ? 'Fiche' : 'Fichier'}</span> {r.titre}</a></li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div class="card" id="status-card" hidden>
+          <span class="t-micro">Ma progression</span>
+          <p id="status-text" class="t-small" style="margin:var(--space-3) 0"></p>
+          <button class="btn btn--primary btn--sm" id="btn-done" type="button">Marquer comme terminé</button>
+          <div id="status-msg" role="status" style="margin-top:var(--space-3)"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    import { pb, user, esc, errMsg } from '../../lib/pb.js';
+
+    const root = document.querySelector('[data-module]') as HTMLElement;
+    const moduleId = root.dataset.module!;
+    const hasQuiz = !!root.dataset.quiz;
+    const libre = !!root.dataset.libre;
+    const u = user();
+    const $ = (id: string) => document.getElementById(id)!;
+
+    if (!u) {
+      if (!libre) $('gate').hidden = false;
+    } else {
+      $('content').hidden = false;
+      $('status-card').hidden = false;
+      const exo = document.getElementById('depot-exercice'); if (exo) exo.hidden = false;
+      init();
+    }
+
+    let progress: any = null;
+    let quizPassed = false;
+
+    async function init() {
+      try {
+        progress = await pb.collection('progress').getFirstListItem(pb.filter('user = {:u} && module = {:m}', { u: u.id, m: moduleId }));
+      } catch (_) {
+        try { progress = await pb.collection('progress').create({ user: u.id, module: moduleId, statut: 'en_cours' }); } catch (_) {}
+      }
+      if (hasQuiz) {
+        const ok = await pb.collection('quiz_attempts').getList(1, 1, { filter: pb.filter('user = {:u} && module = {:m} && reussi = true', { u: u.id, m: moduleId }) });
+        quizPassed = ok.totalItems > 0;
+        loadQuiz();
+      }
+      refreshStatus();
+      loadExercices();
+    }
+
+    function refreshStatus() {
+      const done = progress?.statut === 'termine';
+      $('status-text').textContent = done ? 'Module terminé.' : hasQuiz && !quizPassed ? 'En cours : réussissez le quiz pour terminer le module.' : 'En cours.';
+      ($('btn-done') as HTMLButtonElement).disabled = done || (hasQuiz && !quizPassed);
+      $('btn-done').textContent = done ? 'Terminé ✓' : 'Marquer comme terminé';
+    }
+
+    $('btn-done').addEventListener('click', async () => {
+      try {
+        progress = progress
+          ? await pb.collection('progress').update(progress.id, { statut: 'termine' })
+          : await pb.collection('progress').create({ user: u.id, module: moduleId, statut: 'termine' });
+        $('status-msg').innerHTML = '<div class="alert alert--ok">Bravo, module terminé.</div>';
+        refreshStatus();
+      } catch (err) { $('status-msg').innerHTML = `<div class="alert alert--error">${esc(errMsg(err))}</div>`; }
+    });
+
+    // ---------- Quiz ----------
+    async function loadQuiz() {
+      const box = $('quiz-box');
+      const res = await fetch(`/api/academie/quiz/${moduleId}`);
+      if (!res.ok) { box.innerHTML = '<p class="t-small">Quiz indisponible.</p>'; return; }
+      const quiz = await res.json();
+      const seuil = Math.round((quiz.seuil ?? 0.6) * 100);
+      box.innerHTML = `
+        ${quizPassed ? '<div class="alert alert--ok">Quiz déjà réussi. Vous pouvez le refaire pour vous entraîner.</div>' : ''}
+        <p class="t-small">Seuil de réussite : ${seuil} %. Une question à plusieurs réponses est signalée.</p>
+        <form class="quiz" id="quiz-form">
+          ${quiz.questions.map((q: any, i: number) => `
+            <fieldset data-q="${esc(q.id)}">
+              <legend>${i + 1}. ${esc(q.enonce)}${q.multiple ? ' <span class="pill">plusieurs réponses</span>' : ''}</legend>
+              ${q.choix.map((c: string, j: number) => `<label><input type="${q.multiple ? 'checkbox' : 'radio'}" name="${esc(q.id)}" value="${j}" /> <span>${esc(c)}</span></label>`).join('')}
+              <div class="feedback"></div>
+            </fieldset>`).join('')}
+          <div id="quiz-result" role="status"></div>
+          <button class="btn btn--primary" type="submit">Valider mes réponses</button>
+        </form>`;
+      $('quiz-form').addEventListener('submit', submitQuiz);
+    }
+
+    async function submitQuiz(e: Event) {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const reponses: Record<string, number[]> = {};
+      form.querySelectorAll('fieldset[data-q]').forEach((fs: any) => {
+        reponses[fs.dataset.q] = [...fs.querySelectorAll('input:checked')].map((i: any) => Number(i.value));
+      });
+      const res = await fetch(`/api/academie/quiz/${moduleId}`, {
+        method: 'POST', headers: { 'content-type': 'application/json', Authorization: pb.authStore.token },
+        body: JSON.stringify({ reponses }),
+      });
+      const r = await res.json();
+      if (!res.ok) { $('quiz-result').innerHTML = `<div class="alert alert--error">${esc(r.message || 'Erreur')}</div>`; return; }
+      r.corrections.forEach((c: any) => {
+        const fs = form.querySelector(`fieldset[data-q="${CSS.escape(c.id)}"]`) as HTMLElement;
+        fs.querySelectorAll('label').forEach((l, j) => {
+          l.classList.toggle('is-good', c.bonnes.includes(j));
+        });
+        (fs.querySelector('.feedback') as HTMLElement).innerHTML = `<div class="explication"><strong class="${c.correct ? 'is-good' : 'is-bad'}">${c.correct ? 'Bonne réponse.' : 'À revoir.'}</strong> ${esc(c.explication)}</div>`;
+      });
+      $('quiz-result').innerHTML = r.reussi
+        ? `<div class="alert alert--ok">Réussi : ${r.score}/${r.total}. Vous pouvez marquer le module comme terminé.</div>`
+        : `<div class="alert alert--error">${r.score}/${r.total}. Relisez les explications et retentez le quiz.</div>`;
+      if (r.reussi) { quizPassed = true; refreshStatus(); }
+    }
+
+    // ---------- Exercices ----------
+    async function loadExercices() {
+      const list = document.getElementById('exo-list'); if (!list) return;
+      const items = await pb.collection('submissions').getFullList({ filter: pb.filter('user = {:u} && module = {:m} && type = "exercice"', { u: u.id, m: moduleId }), sort: '-created' });
+      list.innerHTML = items.map((s: any) => `<li>Déposé le ${new Date(s.created.replace(' ', 'T')).toLocaleDateString('fr-FR')} · ${s.fichiers.length} fichier(s)${s.lien ? ' · lien' : ''}</li>`).join('');
+    }
+    document.getElementById('exo-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData();
+      fd.append('user', u.id); fd.append('module', moduleId); fd.append('type', 'exercice');
+      const files = ($('exo-files') as HTMLInputElement).files;
+      if (files) [...files].forEach((f) => fd.append('fichiers', f));
+      const lien = ($('exo-lien') as HTMLInputElement).value.trim(); if (lien) fd.append('lien', lien);
+      fd.append('commentaire', ($('exo-comment') as HTMLTextAreaElement).value);
+      try {
+        await pb.collection('submissions').create(fd);
+        $('exo-msg').innerHTML = '<div class="alert alert--ok">Exercice déposé.</div>';
+        (e.target as HTMLFormElement).reset();
+        loadExercices();
+      } catch (err) { $('exo-msg').innerHTML = `<div class="alert alert--error">${esc(errMsg(err))}</div>`; }
+    });
+  </script>
+</Base>

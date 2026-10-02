@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Connexion">
+  <div class="container">
+    <div class="auth-card card">
+      <h1 class="t-h3">Se connecter</h1>
+      <div id="sso" hidden style="margin-bottom: var(--space-4)"></div>
+      <form class="form" id="form">
+        <div class="field"><label for="email">Email</label><input id="email" type="email" required autocomplete="email" /></div>
+        <div class="field"><label for="password">Mot de passe</label><input id="password" type="password" required autocomplete="current-password" /></div>
+        <div id="msg" role="alert"></div>
+        <button class="btn btn--primary" type="submit">Se connecter</button>
+        <p class="t-small"><a href="#" id="reset">Mot de passe oublié ?</a> · <a href="/inscription/">Créer un compte</a></p>
+      </form>
+    </div>
+  </div>
+  <script>
+    import { pb, errMsg, esc } from '../lib/pb.js';
+    import { renderSso } from '../lib/sso.js';
+    const suite = new URLSearchParams(location.search).get('suite') || '/parcours/';
+    const go = () => (window.location.href = suite.startsWith('/') ? suite : '/parcours/');
+    renderSso(document.getElementById('sso'), go);
+    const msg = document.getElementById('msg')!;
+    const email = document.getElementById('email') as HTMLInputElement;
+    document.getElementById('form')!.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await pb.collection('users').authWithPassword(email.value.trim(), (document.getElementById('password') as HTMLInputElement).value);
+        go();
+      } catch (err) {
+        msg.innerHTML = '<div class="alert alert--error">Email ou mot de passe incorrect.</div>';
+      }
+    });
+    document.getElementById('reset')!.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (!email.value.trim()) { msg.innerHTML = '<div class="alert alert--info">Indiquez votre email, puis cliquez à nouveau.</div>'; return; }
+      try {
+        await pb.collection('users').requestPasswordReset(email.value.trim());
+        msg.innerHTML = '<div class="alert alert--ok">Si un compte existe, un email de réinitialisation vient de partir.</div>';
+      } catch (err) { msg.innerHTML = `<div class="alert alert--error">${esc(errMsg(err))}</div>`; }
+    });
+  </script>
+</Base>

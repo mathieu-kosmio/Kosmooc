@@ -1,0 +1,62 @@
+{
+  "module": "m9",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Pourquoi faut-il mesurer la situation de départ avant d'introduire l'outil ?",
+      "choix": [
+        "Pour avoir un point de comparaison : sans lui, on ne peut pas démontrer un gain",
+        "Pour retarder le projet",
+        "Parce que le fournisseur l'exige"
+      ],
+      "bonnes": [0],
+      "explication": "Sans mesure de l'avant, la mesure d'après ne prouve rien. Ne pas savoir répondre est déjà un résultat : le processus n'est pas piloté."
+    },
+    {
+      "id": "q2",
+      "enonce": "Quelles sont les cinq données de la baseline ?",
+      "choix": [
+        "Volume annuel, temps unitaire, coût horaire chargé, taux d'erreur et coût d'une erreur, délai de bout en bout",
+        "Nom du fournisseur, prix, nombre d'utilisateurs, date d'achat, version du modèle",
+        "Nombre de mails, nombre de réunions, chiffre d'affaires, effectif, surface des locaux"
+      ],
+      "bonnes": [0],
+      "explication": "Ces cinq données décrivent la tâche avant l'outil. Une donnée estimée doit être marquée comme telle, puis vérifiée."
+    },
+    {
+      "id": "q3",
+      "enonce": "Qu'est-ce que la phase d'observation en parallèle ? (plusieurs réponses)",
+      "choix": [
+        "La personne travaille normalement pendant que l'outil propose sans rien décider",
+        "On compare les écarts entre l'outil et la personne",
+        "L'outil remplace immédiatement la personne"
+      ],
+      "bonnes": [0, 1],
+      "explication": "Pendant deux à quatre semaines, on compare sans rien brancher en production. Cela révèle les erreurs critiques et fournit des chiffres réels."
+    },
+    {
+      "id": "q4",
+      "enonce": "Une solution à 0,10 € par requête demande deux reprises. Une autre à 0,22 € aboutit du premier coup. Laquelle est la moins chère par tâche réussie ? (chiffres fictifs)",
+      "choix": [
+        "La première, car 0,10 € est plus petit que 0,22 €",
+        "La seconde : 0,22 € par tâche réussie contre 0,30 € pour la première",
+        "Elles coûtent pareil"
+      ],
+      "bonnes": [1],
+      "explication": "Le bon indicateur est le coût par tâche réussie : chaque reprise coûte du temps. La solution apparemment plus chère peut être la moins chère."
+    },
+    {
+      "id": "q5",
+      "enonce": "Quelles pièces composent le projet final déposé sur la plateforme ? (plusieurs réponses)",
+      "choix": [
+        "Fiche E-T-S-C",
+        "Prompt métier et tableau de test",
+        "Charte IA en cinq règles",
+        "Autodiagnostic de dépendance"
+      ],
+      "bonnes": [0, 1, 2, 3],
+      "explication": "Le projet final réunit ces cinq pièces, avec la baseline et la décision de suite. Il est évalué sur les compétences C1 à C6 pour délivrer le badge de niveau 1."
+    }
+  ]
+}

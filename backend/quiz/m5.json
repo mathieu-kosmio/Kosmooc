@@ -1,0 +1,62 @@
+{
+  "module": "m5",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Quel est l'intérêt principal d'un projet par rapport à une conversation seule ?",
+      "choix": [
+        "Il rend l'IA plus intelligente",
+        "Il range les documents de référence et les instructions, pour que chaque conversation reparte de la même base",
+        "Il supprime le besoin de contrôler les réponses",
+        "Il garantit que l'outil ne se trompe pas"
+      ],
+      "bonnes": [1],
+      "explication": "Le projet stabilise le point de départ. Il ne garantit pas la justesse des réponses : le contrôle reste nécessaire."
+    },
+    {
+      "id": "q2",
+      "enonce": "Quand écrit-on les critères d'acceptation ?",
+      "choix": [
+        "Après avoir vu les résultats, pour les ajuster",
+        "Avant d'ouvrir l'outil pour prototyper",
+        "Jamais, le jugement à l'oeil suffit"
+      ],
+      "bonnes": [1],
+      "explication": "Écrits avant, les critères rendent le test significatif. Écrits après, ils risquent d'être ajustés aux résultats obtenus."
+    },
+    {
+      "id": "q3",
+      "enonce": "Lesquels de ces critères d'acceptation sont vérifiables par oui ou non ? (plusieurs réponses)",
+      "choix": [
+        "Aucun prix ne figure sur la fiche",
+        "Les unités du devis sont conservées",
+        "La fiche est claire et agréable à lire"
+      ],
+      "bonnes": [0, 1],
+      "explication": "Un bon critère se vérifie en quelques secondes. « Claire et agréable » est une impression, pas un critère."
+    },
+    {
+      "id": "q4",
+      "enonce": "Quels documents déposer dans le projet ?",
+      "choix": [
+        "Tous les dossiers de l'entreprise, pour que l'outil ait tout",
+        "Uniquement les documents utiles au cas : exemple anonymisé, sortie attendue, gabarit",
+        "Aucun document, seulement des instructions"
+      ],
+      "bonnes": [1],
+      "explication": "Un outil qui explore tous les dossiers peut se perdre. On limite aux seuls fichiers utiles et on anonymise les documents clients."
+    },
+    {
+      "id": "q5",
+      "enonce": "Quels blocs contiennent les instructions d'un projet ?",
+      "choix": [
+        "Rôle, mission, sources, règles",
+        "Prix, délai, fournisseur, abonnement",
+        "Titre, date, auteur, version"
+      ],
+      "bonnes": [0],
+      "explication": "Les instructions du projet posent le rôle, la mission, les sources à utiliser et les règles. Elles se développeront en prompt métier au module 6."
+    }
+  ]
+}

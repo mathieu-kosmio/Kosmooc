@@ -1,0 +1,63 @@
+{
+  "module": "m6",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Dans les six boucles de prototypage, que fait-on à la boucle 5 ?",
+      "choix": [
+        "On transforme chaque erreur en règle ou en contrôle",
+        "On change de modèle",
+        "On supprime le prototype",
+        "On passe en production"
+      ],
+      "bonnes": [0],
+      "explication": "C'est la boucle où votre savoir-faire entre dans l'outil : vocabulaire, exceptions, critères de qualité deviennent des règles."
+    },
+    {
+      "id": "q2",
+      "enonce": "Quels sont les six blocs du prompt métier ?",
+      "choix": [
+        "Rôle, mission, sources, règles, sortie, contrôle",
+        "Titre, date, auteur, résumé, conclusion, annexes",
+        "Contexte, objectif, prix, délai, format, fournisseur"
+      ],
+      "bonnes": [0],
+      "explication": "Sources reprend l'Entrée, mission la Transformation, sortie la Sortie, contrôle le Contrôle. Rôle et règles reprennent contexte et contraintes du module 2."
+    },
+    {
+      "id": "q3",
+      "enonce": "Pourquoi tester sur un document jamais vu, sans modifier les règles ? (plusieurs réponses)",
+      "choix": [
+        "Parce qu'un prototype ajusté sur son exemple réussit presque toujours dessus",
+        "Pour savoir s'il fonctionne sur un cas qu'il n'a pas servi à construire",
+        "Pour gagner du temps en évitant de relire"
+      ],
+      "bonnes": [0, 1],
+      "explication": "Le prototype a été construit sur le premier document : il y réussit naturellement. Le second document révèle la robustesse réelle."
+    },
+    {
+      "id": "q4",
+      "enonce": "Un écart vient d'une information que le document ne contient pas du tout. Comment le classer ?",
+      "choix": [
+        "Règle manquante",
+        "Donnée absente",
+        "Cas particulier",
+        "Erreur de l'IA"
+      ],
+      "bonnes": [1],
+      "explication": "Quand l'information n'est pas dans le document, l'outil ne peut que la signaler (« information absente »). Ce n'est ni une règle à écrire ni une erreur de lecture."
+    },
+    {
+      "id": "q5",
+      "enonce": "Qu'est-ce qui reste d'une entreprise quand elle change de modèle ou de fournisseur d'IA ?",
+      "choix": [
+        "Rien, tout est à refaire",
+        "Le harnais : règles, savoir-faire, gabarits, contrôle qualité, journal des corrections",
+        "Uniquement l'historique des conversations"
+      ],
+      "bonnes": [1],
+      "explication": "Le harnais est écrit en texte et appartient à l'entreprise. Il se transporte d'un fournisseur à l'autre, à condition de le conserver hors de l'interface de l'outil."
+    }
+  ]
+}

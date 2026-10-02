@@ -1,0 +1,64 @@
+{
+  "module": "m3",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Dans quel ordre pose-t-on les quatre questions de la porte de sobriété ?",
+      "choix": [
+        "Quelle IA, quel niveau d'autonomie, faut-il de l'IA, faut-il automatiser",
+        "Faut-il automatiser, faut-il de l'IA, quelle IA, quel niveau d'autonomie",
+        "Faut-il de l'IA, quelle IA, faut-il automatiser, quel niveau d'autonomie",
+        "Quel niveau d'autonomie, faut-il automatiser, faut-il de l'IA, quelle IA"
+      ],
+      "bonnes": [1],
+      "explication": "On commence par la tâche : faut-il la supprimer, la simplifier ou la faire moins souvent ? L'IA et son niveau d'autonomie ne viennent qu'ensuite."
+    },
+    {
+      "id": "q2",
+      "enonce": "Envoyer une relance de devis quinze jours après son envoi. Quelle solution est la plus adaptée en premier ?",
+      "choix": [
+        "Un agent IA autonome",
+        "Une règle ou une fonction de rappel du logiciel de devis",
+        "Un modèle spécialisé entraîné sur vos mails",
+        "Rien ne peut être fait sans IA"
+      ],
+      "bonnes": [1],
+      "explication": "La décision est toujours la même pour les mêmes données : une règle suffit. L'IA n'apporte rien quand aucune interprétation n'est nécessaire."
+    },
+    {
+      "id": "q3",
+      "enonce": "Quels niveaux d'autonomie sont recommandés pour un premier cas d'usage ? (plusieurs réponses)",
+      "choix": [
+        "Suggestion",
+        "Copilote avec validation humaine",
+        "Automatisation complète sans relecture"
+      ],
+      "bonnes": [0, 1],
+      "explication": "On démarre prudemment, par la suggestion ou le copilote. L'automatisation encadrée se mérite ensuite, après des mesures concluantes. L'automatisation complète n'est jamais le point de départ."
+    },
+    {
+      "id": "q4",
+      "enonce": "Pourquoi noter l'alternative sans IA à chaque cas d'usage ?",
+      "choix": [
+        "Pour avoir un plan de secours si l'abonnement est résilié, et pour éviter de payer un outil dont une règle simple se passe",
+        "Pour prouver que l'IA est toujours préférable",
+        "Parce que c'est obligatoire dans toutes les entreprises"
+      ],
+      "bonnes": [0],
+      "explication": "L'alternative sans IA protège contre un abonnement inutile et rend les cas retenus plus crédibles. Écarter un cas avec son motif est un résultat à part entière."
+    },
+    {
+      "id": "q5",
+      "enonce": "Dans le processus devis vers fiche de production, quelle étape doit rester humaine ?",
+      "choix": [
+        "La lecture des lignes du devis",
+        "La conversion de longueurs en mètres linéaires",
+        "La validation de la fiche qui lance la fabrication",
+        "La récupération du devis dans le logiciel"
+      ],
+      "bonnes": [2],
+      "explication": "Une erreur sur la fiche déclenche une fabrication : la validation reste à une personne responsable. L'IA peut préparer, un calcul se fait au tableur, la récupération relève d'une règle."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "module": "m2",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Quels sont les quatre leviers d'une demande exploitable ?",
+      "choix": [
+        "Politesse, longueur, vitesse, créativité",
+        "Contexte, objectif, contraintes, format",
+        "Rôle, ton, émojis, longueur",
+        "Source, date, auteur, prix"
+      ],
+      "bonnes": [
+        1
+      ],
+      "explication": "Contexte + objectif + contraintes + format : c'est la base de toute demande ponctuelle."
+    },
+    {
+      "id": "q2",
+      "enonce": "Pourquoi ouvrir une conversation neuve pour chacune des trois demandes A, B et C ?",
+      "choix": [
+        "Pour économiser de l'abonnement",
+        "Pour que l'historique ne fausse pas la comparaison",
+        "Parce que l'outil ne gère qu'une demande par conversation",
+        "Pour obtenir des réponses plus longues"
+      ],
+      "bonnes": [
+        1
+      ],
+      "explication": "Si les demandes se suivent dans la même conversation, l'outil réutilise ce qu'il a déjà compris et la comparaison n'est plus honnête."
+    },
+    {
+      "id": "q3",
+      "enonce": "Parmi ces consignes, lesquelles relèvent des contraintes ? (plusieurs réponses)",
+      "choix": [
+        "« N'invente aucune information. »",
+        "« Conserve les unités du devis. »",
+        "« Réponds avec un tableau à sept colonnes. »",
+        "« Ne reprends aucun prix ni aucune remise. »"
+      ],
+      "bonnes": [
+        0,
+        1,
+        3
+      ],
+      "explication": "Ce sont des règles et des interdits. Le tableau à sept colonnes relève du format."
+    },
+    {
+      "id": "q4",
+      "enonce": "Qu'est-ce qui rend une demande C plus fiable qu'une demande A ?",
+      "choix": [
+        "Elle est plus longue",
+        "Elle réduit la place laissée à l'invention grâce au contexte, aux règles et au format",
+        "Elle utilise des mots plus techniques",
+        "Elle est écrite en majuscules"
+      ],
+      "bonnes": [
+        1
+      ],
+      "explication": "La longueur seule n'améliore rien. Ce qui compte, c'est la précision : contexte, règles, gestion des données manquantes, format."
+    },
+    {
+      "id": "q5",
+      "enonce": "Dans la comparaison A, B, C, quel est le bon réflexe ?",
+      "choix": [
+        "Corriger la réponse de A pendant le test pour la rendre meilleure",
+        "Observer l'écart entre les trois réponses sans les améliorer",
+        "Ne garder que la réponse la plus jolie",
+        "Ne lancer que la demande C"
+      ],
+      "bonnes": [
+        1
+      ],
+      "explication": "On observe l'écart pour comprendre ce qui a vraiment changé le résultat. Corriger pendant le test détruit la comparaison."
+    }
+  ]
+}

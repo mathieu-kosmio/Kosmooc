@@ -1,0 +1,55 @@
+---
+import '../styles/tokens.css';
+import '../styles/app.css';
+
+interface Props { title: string; description?: string; current?: string }
+const { title, description = "Parcours IA filière bois : prendre en main l'IA générative dans votre entreprise, badge Niveau 1.", current = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Académie PerfIA</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="/"><strong>PerfIA Académie</strong><span>Kosmio × Xylofutur</span></a>
+        <nav class="nav" aria-label="Navigation principale">
+          <a href="/programme/" aria-current={current === 'programme' ? 'page' : undefined}>Programme</a>
+          <a href="/parcours/" data-auth="in" hidden aria-current={current === 'parcours' ? 'page' : undefined}>Mon parcours</a>
+          <a href="/projet-final/" data-auth="in" hidden aria-current={current === 'projet' ? 'page' : undefined}>Projet final</a>
+          <a href="/evaluation/" data-auth="eval" hidden aria-current={current === 'evaluation' ? 'page' : undefined}>Évaluation</a>
+          <a href="/connexion/" data-auth="out">Connexion</a>
+          <a href="/inscription/" data-auth="out" class="btn btn--primary btn--sm" style="color:#fff">S'inscrire</a>
+          <a href="#" data-auth="in" data-logout hidden>Déconnexion</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <span>Académie PerfIA · Parcours IA filière bois · Kosmio × Xylofutur</span>
+        <span><a href="/confidentialite/">Données personnelles</a> · <a href="https://ia-bois.kosm.io/">Site PerfIA</a></span>
+      </div>
+    </footer>
+    <script>
+      import { pb, isEvaluateur } from '../lib/pb.js';
+      const logged = pb.authStore.isValid;
+      document.querySelectorAll('[data-auth="in"]').forEach((el) => (el.hidden = !logged));
+      document.querySelectorAll('[data-auth="out"]').forEach((el) => (el.hidden = logged));
+      document.querySelectorAll('[data-auth="eval"]').forEach((el) => (el.hidden = !(logged && isEvaluateur())));
+      document.querySelector('[data-logout]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        pb.authStore.clear();
+        window.location.href = '/';
+      });
+      if (logged) pb.collection('users').authRefresh().catch(() => pb.authStore.clear());
+    </script>
+  </body>
+</html>

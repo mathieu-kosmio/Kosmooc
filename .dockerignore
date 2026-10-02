@@ -1,0 +1,6 @@
+**/node_modules
+backend/pocketbase
+backend/pb_data
+backend/pb_public
+tests
+docs/sources

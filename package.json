@@ -1,0 +1,14 @@
+{
+  "name": "perfia-academie",
+  "private": true,
+  "description": "Académie PerfIA : parcours de formation IA filière bois (PocketBase + Astro)",
+  "scripts": {
+    "build": "cd web && npx astro build",
+    "dev:api": "cd backend && ./pocketbase serve --http=127.0.0.1:8090 --dir=pb_data",
+    "dev:web": "cd web && PUBLIC_PB_URL=http://127.0.0.1:8090 npx astro dev",
+    "valider": "node scripts/valider-contenus.mjs",
+    "test:api": "bash tests/api-smoke.sh",
+    "test:e2e": "cd tests && npx playwright test",
+    "test": "npm run valider && npm run test:api && npm run test:e2e"
+  }
+}

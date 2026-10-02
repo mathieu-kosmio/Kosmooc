@@ -1,0 +1,66 @@
+{
+  "module": "m4",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Quels sont les cinq éléments de la cartographie d'un processus ?",
+      "choix": [
+        "Déclencheur, entrées, étapes, décisions, sorties",
+        "Objectif, budget, délai, équipe, outil",
+        "Entrée, transformation, sortie, contrôle, utilisateur",
+        "Contexte, objectif, contraintes, format, test"
+      ],
+      "bonnes": [0],
+      "explication": "La cartographie décrit le processus actuel : ce qui le lance, ce qui entre, qui fait quoi, où l'on interprète ou arbitre, ce qui sort. Les autres listes sont la grille E-T-S-C ou les leviers d'une demande."
+    },
+    {
+      "id": "q2",
+      "enonce": "Lesquels de ces éléments sont des familles d'irritants ? (plusieurs réponses)",
+      "choix": [
+        "La ressaisie",
+        "L'attente",
+        "La dépendance à une personne",
+        "Le choix du fournisseur"
+      ],
+      "bonnes": [0, 1, 2],
+      "explication": "Les six familles sont la ressaisie, l'attente, l'erreur, la recherche, l'oubli et la dépendance à une personne. Le choix du fournisseur relève du module 8."
+    },
+    {
+      "id": "q3",
+      "enonce": "Dans la grille E-T-S-C, que décrit la case Contrôle ?",
+      "choix": [
+        "Le temps que prend l'outil pour répondre",
+        "Ce qu'un humain doit impérativement vérifier",
+        "Le prix de l'abonnement",
+        "La liste des documents d'entrée"
+      ],
+      "bonnes": [1],
+      "explication": "La case Contrôle liste ce qu'une personne vérifie avant usage : dimensions, essences, quantités, délais, informations manquantes. C'est la case la plus souvent oubliée."
+    },
+    {
+      "id": "q4",
+      "enonce": "Une tâche revient deux fois par an et ses résultats sont presque impossibles à vérifier. Que dit la formule valeur × fréquence × faisabilité × contrôlabilité ?",
+      "choix": [
+        "C'est un excellent cas, car la valeur peut être élevée",
+        "C'est un mauvais candidat : une fréquence faible et une contrôlabilité faible tirent le produit vers le bas",
+        "Seule la valeur compte, les autres critères sont secondaires",
+        "Il faut automatiser complètement pour compenser"
+      ],
+      "bonnes": [1],
+      "explication": "Les critères se multiplient. Un score très bas sur un seul d'entre eux suffit à rendre le cas peu intéressant."
+    },
+    {
+      "id": "q5",
+      "enonce": "Quelle ligne complète la fiche E-T-S-C avec l'exigence de robustesse ?",
+      "choix": [
+        "Fonctionner sur un document que le prototype n'a jamais vu",
+        "Fonctionner uniquement sur le document d'exemple",
+        "Remplacer la personne qui valide",
+        "Ne jamais signaler d'information manquante"
+      ],
+      "bonnes": [0],
+      "explication": "Un prototype qui ne marche que sur son exemple ne prouve rien. L'exigence de la fiche prépare le test décisif du module 6."
+    }
+  ]
+}

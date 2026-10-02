@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
+const competences = [
+  ['C1', "Expliquer le fonctionnement et les limites d'une IA générative", 'Quiz M1, au moins 80 %'],
+  ['C2', 'Formuler une demande efficace', "Demande C de l'exercice M2"],
+  ['C3', "Décider si une tâche relève de l'IA", 'Grille de sobriété M3'],
+  ['C4', "Formuler un cas d'usage", 'Fiche E-T-S-C (M4)'],
+  ['C5', 'Construire et tester un prototype réutilisable', 'Prompt métier et tableau de test (M5, M6)'],
+  ['C6', "Utiliser l'IA de façon responsable", 'Charte en 5 règles et autodiagnostic de dépendance (M7, M8)'],
+];
+---
+<Base title="Programme" current="programme">
+  <section class="container" style="padding-block: var(--space-7)">
+    <span class="eyebrow">Programme du Niveau 1</span>
+    <h1 class="t-h1">Le parcours en détail</h1>
+    <p class="t-lead">Chaque module comprend des vidéos courtes, une fiche mémo, un exercice sur votre cas fil rouge et un quiz.</p>
+    <div class="grid" style="margin-top: var(--space-6)">
+      {modules.map((m) => (
+        <article class="card">
+          <span class="t-micro">Module {m.data.ordre} · {m.data.duree} min{m.data.competences.length ? ` · ${m.data.competences.join(', ')}` : ''}</span>
+          <h3><a href={`/modules/${m.data.id}/`}>{m.data.titre}</a></h3>
+          <ul class="objectifs">{m.data.objectifs.map((o) => <li>{o}</li>)}</ul>
+        </article>
+      ))}
+    </div>
+    <h2 class="t-h3" style="margin-top: var(--space-8)">Les six compétences du badge Niveau 1</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Code</th><th>Compétence</th><th>Preuve</th></tr></thead>
+        <tbody>{competences.map(([c, t, p]) => <tr><td><strong>{c}</strong></td><td>{t}</td><td>{p}</td></tr>)}</tbody>
+      </table>
+    </div>
+  </section>
+</Base>

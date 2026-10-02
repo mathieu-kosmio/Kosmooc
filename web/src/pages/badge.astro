@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Seal from '../components/Seal.astro';
+---
+<Base title="Vérification de badge">
+  <div class="container">
+    <div class="badge-cert" id="cert">
+      <Seal />
+      <p class="t-small" id="loading">Vérification en cours…</p>
+      <div id="ok" hidden>
+        <span class="eyebrow">Badge vérifié</span>
+        <h1 id="intitule" style="margin-top:var(--space-3)"></h1>
+        <p class="t-lead">délivré à <strong id="titulaire"></strong><span id="entreprise"></span></p>
+        <p id="dates" class="t-small"></p>
+        <p class="t-small">Compétences attestées : C1 à C6 du référentiel du Parcours IA filière bois (<a href="/programme/">voir le référentiel</a>).<br />Émis par Kosmio et Xylofutur dans le cadre de PerfIA.</p>
+        <div class="no-print" style="display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap;margin-top:var(--space-5)">
+          <button class="btn btn--primary btn--sm" type="button" id="copy">Copier le lien de vérification</button>
+          <a class="btn btn--secondary btn--sm" id="linkedin" target="_blank" rel="noopener">Ajouter à mon profil LinkedIn</a>
+          <button class="btn btn--ghost btn--sm" type="button" onclick="window.print()">Imprimer l'attestation</button>
+        </div>
+      </div>
+      <div id="ko" hidden class="alert alert--error">Badge introuvable. Vérifiez le lien reçu.</div>
+    </div>
+  </div>
+  <script>
+    import { pb, esc, fmtDate } from '../lib/pb.js';
+    const id = new URLSearchParams(location.search).get('id');
+    const $ = (x: string) => document.getElementById(x)!;
+    (async () => {
+      try {
+        if (!id) throw new Error();
+        const b = await pb.collection('badges').getOne(id);
+        $('intitule').textContent = b.intitule;
+        $('titulaire').textContent = b.titulaire;
+        $('entreprise').textContent = b.entreprise ? `, ${b.entreprise}` : '';
+        const expired = b.expire_le && new Date(b.expire_le.replace(' ', 'T')) < new Date();
+        $('dates').innerHTML = `Émis le ${fmtDate(b.emis_le)} · valable jusqu'au ${fmtDate(b.expire_le)}${expired ? ' <span class="pill pill--wip">expiré</span>' : ''}`;
+        const url = location.href;
+        $('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(url); $('copy').textContent = 'Lien copié'; } catch (_) {} });
+        const d = new Date(b.emis_le.replace(' ', 'T'));
+        ($('linkedin') as HTMLAnchorElement).href = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(b.intitule)}&organizationName=${encodeURIComponent('Xylofutur')}&issueYear=${d.getFullYear()}&issueMonth=${d.getMonth() + 1}&certUrl=${encodeURIComponent(url)}&certId=${encodeURIComponent(b.id)}`;
+        $('ok').hidden = false;
+      } catch (_) { $('ko').hidden = false; }
+      $('loading').hidden = true;
+    })();
+  </script>
+</Base>

@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => ({ id: m.data.id, ordre: m.data.ordre, titre: m.data.titre, duree: m.data.duree, quiz: m.data.quiz }));
+---
+<Base title="Mon parcours" current="parcours">
+  <section class="container" style="padding-block: var(--space-7)">
+    <span class="eyebrow" id="hello">Mon parcours</span>
+    <h1 class="t-h2" style="margin-top:var(--space-3)">Parcours IA filière bois, Niveau 1</h1>
+
+    <div class="grid grid--3" style="margin-block: var(--space-5)">
+      <div class="card"><div class="stat" id="pct">0 %</div><div class="stat-label">du parcours terminé</div><div class="progress" style="margin-top:var(--space-3)"><span id="bar"></span></div></div>
+      <div class="card"><div class="stat" id="quizcount">0</div><div class="stat-label">quiz réussis</div></div>
+      <div class="card" id="badge-card"><div class="stat" id="badge-stat">À venir</div><div class="stat-label" id="badge-label">Badge Niveau 1</div></div>
+    </div>
+
+    <div id="next" style="margin-bottom: var(--space-6)"></div>
+
+    <h2 class="t-h3">Modules</h2>
+    <ol class="modules" id="list">
+      {modules.map((m) => (
+        <li>
+          <a class="module-row" href={`/modules/${m.id}/`} data-mid={m.id}>
+            <span class="module-row__num">M{m.ordre}</span>
+            <span><span class="module-row__title">{m.titre}</span><br /><span class="module-row__meta">{m.duree} min{m.quiz ? ' · quiz' : ''}</span></span>
+            <span class="pill pill--todo" data-status>À faire</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <h2 class="t-h3" style="margin-top: var(--space-7)">Projet final et retours</h2>
+    <div id="projet" class="card"><p class="t-small">Chargement…</p></div>
+  </section>
+  <script define:vars={{ modules }}>
+    window.__MODULES__ = modules;
+  </script>
+  <script>
+    import { pb, requireLogin, user, esc, fmtDate } from '../lib/pb.js';
+    if (requireLogin()) load();
+
+    async function load() {
+      const u = user();
+      const modules = (window as any).__MODULES__ as any[];
+      document.getElementById('hello')!.textContent = `Bonjour ${u.name || u.email}`;
+      const f = pb.filter('user = {:u}', { u: u.id });
+      const [progress, attempts, subs, badges] = await Promise.all([
+        pb.collection('progress').getFullList({ filter: f }),
+        pb.collection('quiz_attempts').getFullList({ filter: f + ' && reussi = true' }),
+        pb.collection('submissions').getFullList({ filter: f + ' && type = "projet_final"', sort: '-created' }),
+        pb.collection('badges').getFullList({ filter: f }),
+      ]);
+      const st = Object.fromEntries(progress.map((p: any) => [p.module, p.statut]));
+      const passed = new Set(attempts.map((a: any) => a.module));
+      let done = 0;
+      document.querySelectorAll('[data-mid]').forEach((row: any) => {
+        const s = st[row.dataset.mid];
+        const pill = row.querySelector('[data-status]');
+        if (s === 'termine') { done++; pill.className = 'pill pill--ok'; pill.textContent = 'Terminé'; }
+        else if (s === 'en_cours') { pill.className = 'pill pill--wip'; pill.textContent = 'En cours'; }
+      });
+      const pct = Math.round((done / modules.length) * 100);
+      document.getElementById('pct')!.textContent = `${pct} %`;
+      (document.getElementById('bar') as HTMLElement).style.width = `${pct}%`;
+      document.getElementById('quizcount')!.textContent = String(passed.size);
+
+      const next = modules.find((m) => st[m.id] !== 'termine');
+      document.getElementById('next')!.innerHTML = next
+        ? `<a class="btn btn--primary" href="/modules/${next.id}/">${st[next.id] ? 'Reprendre' : 'Commencer'} : M${next.ordre} ${esc(next.titre)}</a>`
+        : '<a class="btn btn--primary" href="/projet-final/">Tous les modules sont terminés : déposer mon projet final</a>';
+
+      if (badges.length) {
+        const b = badges[0];
+        document.getElementById('badge-stat')!.textContent = 'Obtenu';
+        document.getElementById('badge-label')!.innerHTML = `${esc(b.intitule)}<br /><a href="/badge/?id=${b.id}">Voir et partager mon badge</a>`;
+      }
+
+      const box = document.getElementById('projet')!;
+      if (!subs.length) {
+        box.innerHTML = `<p>Vous n'avez pas encore déposé votre projet final. Il se prépare au fil des modules et se dépose après le module 9.</p><a class="btn btn--secondary btn--sm" href="/projet-final/">Préparer mon projet final</a>`;
+        return;
+      }
+      const evals = await pb.collection('evaluations').getFullList({ filter: pb.filter('submission.user = {:u}', { u: u.id }), sort: '-created' });
+      const label: any = { depose: 'Déposé, en attente d\'évaluation', en_evaluation: 'En cours d\'évaluation', valide: 'Validé', a_reprendre: 'À reprendre' };
+      box.innerHTML = subs.map((s: any) => {
+        const ev = evals.find((e: any) => e.submission === s.id);
+        return `<div style="margin-bottom:var(--space-4)"><strong>Dépôt du ${fmtDate(s.created)}</strong> · <span class="pill ${s.statut === 'valide' ? 'pill--ok' : s.statut === 'a_reprendre' ? 'pill--wip' : ''}">${label[s.statut] || s.statut}</span>
+          ${ev?.commentaire ? `<div class="explication" style="margin-top:var(--space-2);background:var(--km-sage-50);padding:var(--space-3);border-radius:4px"><strong>Retour de l'évaluateur :</strong> ${esc(ev.commentaire)}</div>` : ''}</div>`;
+      }).join('') + (subs[0].statut === 'a_reprendre' ? '<a class="btn btn--secondary btn--sm" href="/projet-final/">Déposer une nouvelle version</a>' : '');
+    }
+  </script>
+</Base>

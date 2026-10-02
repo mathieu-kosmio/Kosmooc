@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^m\\d+$"
+    },
+    "ordre": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "titre": {
+      "type": "string"
+    },
+    "duree": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "resume": {
+      "type": "string"
+    },
+    "objectifs": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "competences": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "statut": {
+      "type": "string",
+      "enum": [
+        "pret",
+        "trame"
+      ]
+    },
+    "videos": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "titre": {
+            "type": "string"
+          },
+          "duree": {
+            "type": "string"
+          },
+          "src": {
+            "default": "",
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "titre",
+          "duree"
+        ]
+      }
+    },
+    "ressources": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "titre": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "fiche",
+              "fichier"
+            ]
+          },
+          "ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "titre",
+          "type",
+          "ref"
+        ]
+      }
+    },
+    "quiz": {
+      "default": false,
+      "type": "boolean"
+    },
+    "exercice": {
+      "default": false,
+      "type": "boolean"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "ordre",
+    "titre",
+    "duree",
+    "resume",
+    "objectifs",
+    "statut"
+  ]
+}

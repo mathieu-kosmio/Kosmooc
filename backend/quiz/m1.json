@@ -1,0 +1,64 @@
+{
+  "module": "m1",
+  "seuil": 0.8,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Que fait un modèle de langage quand il répond ?",
+      "choix": [
+        "Il cherche la réponse dans une base de données",
+        "Il produit la suite de texte la plus plausible",
+        "Il recopie un document de référence"
+      ],
+      "bonnes": [1],
+      "explication": "Un modèle prédit la suite la plus plausible à partir de la demande et du contexte. D'où l'intérêt de vérifier."
+    },
+    {
+      "id": "q2",
+      "enonce": "Quelle est la différence entre un modèle et un agent ?",
+      "choix": [
+        "Un agent est un modèle plus ancien",
+        "Un agent reçoit un objectif, des ressources et des règles, et peut enchaîner plusieurs opérations",
+        "Un agent ne se trompe jamais",
+        "Il n'y a aucune différence"
+      ],
+      "bonnes": [1],
+      "explication": "Un modèle répond à une demande. Un agent enchaîne des opérations pour atteindre un objectif, ce qui exige plus de cadrage et de contrôle."
+    },
+    {
+      "id": "q3",
+      "enonce": "Qu'appelle-t-on le « harnais » ? (plusieurs réponses)",
+      "choix": [
+        "Les règles que l'entreprise fixe à l'outil",
+        "Les gabarits et le savoir-faire fournis à l'outil",
+        "Le contrôle qualité et la validation humaine",
+        "Le nom commercial du modèle"
+      ],
+      "bonnes": [0, 1, 2],
+      "explication": "Le harnais est tout ce que vous mettez autour du modèle : règles, savoir-faire, gabarits, outils, contrôle, validation. Il se garde si vous changez de modèle."
+    },
+    {
+      "id": "q4",
+      "enonce": "Parmi ces tâches, laquelle demande un contrôle humain explicite avant usage ?",
+      "choix": [
+        "Reformuler poliment un mail de relance",
+        "Calculer le nombre de pièces à débiter à partir de longueurs et d'un linéaire",
+        "Résumer un compte rendu de réunion pour soi-même"
+      ],
+      "bonnes": [1],
+      "explication": "Un calcul qui déclenche un débit ou un achat est critique : on le recompte. Les deux autres usages ont peu de conséquences en cas d'erreur."
+    },
+    {
+      "id": "q5",
+      "enonce": "Un devis ne mentionne aucun délai. Quelle consigne limite le risque d'invention ?",
+      "choix": [
+        "« Sois précis et complet. »",
+        "« Si une information est absente du document, écris information absente. N'invente rien. »",
+        "« Réponds le plus vite possible. »",
+        "« Complète ce qui manque avec ce qui est habituel. »"
+      ],
+      "bonnes": [1],
+      "explication": "Sans consigne explicite, l'IA comble les trous avec du plausible. Demander de signaler l'absence est le bon réflexe."
+    }
+  ]
+}

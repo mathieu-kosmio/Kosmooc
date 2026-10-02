@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  const fiches = await getCollection('fiches');
+  return fiches.map((entry) => ({ params: { id: entry.data.module }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<Base title={entry.data.titre}>
+  <div class="container">
+    <article class="fiche">
+      <div class="fiche-head">
+        <strong>PerfIA Académie · Parcours IA filière bois</strong>
+        <span class="t-small">Kosmio × Xylofutur</span>
+      </div>
+      <h1 class="t-h3">{entry.data.titre}</h1>
+      <div class="prose"><Content /></div>
+      <p class="no-print" style="margin-top:var(--space-6)">
+        <button class="btn btn--primary btn--sm" type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button>
+        <a class="btn btn--ghost btn--sm" href={`/modules/${entry.data.module}/`}>Retour au module</a>
+      </p>
+    </article>
+  </div>
+</Base>

@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+const competences = [
+  ['C1', "Expliquer le fonctionnement et les limites d'une IA générative", 'Quiz M1 ≥ 80 % (vérifié automatiquement)'],
+  ['C2', 'Formuler une demande efficace', 'Les 4 leviers présents, sortie exploitable'],
+  ['C3', "Décider si une tâche relève de l'IA", '5 tâches classées et justifiées'],
+  ['C4', "Formuler un cas d'usage", 'Grille E-T-S-C complète, contrôle humain défini'],
+  ['C5', 'Construire et tester un prototype réutilisable', 'Test sur document inédit, erreurs mesurées et transformées en règles'],
+  ['C6', "Utiliser l'IA de façon responsable", 'Charte 5 règles adaptée, dépendances identifiées'],
+];
+---
+<Base title="Évaluation" current="evaluation">
+  <section class="container" style="padding-block: var(--space-7)">
+    <span class="eyebrow">Espace évaluateur</span>
+    <h1 class="t-h2" style="margin-top:var(--space-3)">Évaluation et suivi</h1>
+    <div id="denied" hidden class="alert alert--error">Cet espace est réservé aux évaluateurs.</div>
+    <div id="app" hidden>
+      <div class="grid grid--4" style="margin-block: var(--space-5)">
+        <div class="card"><div class="stat" id="s-inscrits">0</div><div class="stat-label">apprenants inscrits</div></div>
+        <div class="card"><div class="stat" id="s-projets">0</div><div class="stat-label">projets finaux déposés</div></div>
+        <div class="card"><div class="stat" id="s-aeval">0</div><div class="stat-label">dépôts à évaluer</div></div>
+        <div class="card"><div class="stat" id="s-badges">0</div><div class="stat-label">badges émis</div></div>
+      </div>
+      <details class="card" style="margin-bottom: var(--space-6)">
+        <summary><strong>Progression par module</strong></summary>
+        <div class="table-wrap"><table class="table" id="prog"></table></div>
+      </details>
+
+      <div style="display:flex;gap:var(--space-3);align-items:center;flex-wrap:wrap;margin-bottom:var(--space-4)">
+        <h2 class="t-h3" style="margin:0">Dépôts</h2>
+        <select id="filter" style="max-width:260px">
+          <option value="a_evaluer">Projets finaux à évaluer</option>
+          <option value="projets">Tous les projets finaux</option>
+          <option value="exercices">Exercices</option>
+        </select>
+      </div>
+      <div class="table-wrap"><table class="table" id="subs"></table></div>
+
+      <div id="panel" class="card" hidden style="margin-top: var(--space-6)">
+        <h2 class="t-h3" id="p-title"></h2>
+        <div id="p-info" class="t-small"></div>
+        <form id="eval-form" class="form form--wide" style="margin-top: var(--space-5)">
+          <div class="criteria">
+            {competences.map(([c, t, p]) => (
+              <div class="row">
+                <div><strong>{c}</strong> {t}<br /><small style="color:var(--grey-600)">{p}</small>
+                  <input type="text" name={`${c}-com`} placeholder="Commentaire (optionnel)" style="margin-top:var(--space-2)" /></div>
+                <label class="check"><input type="checkbox" name={c} /> Acquise</label>
+              </div>
+            ))}
+          </div>
+          <div class="field"><label for="e-com">Retour à l'apprenant</label><textarea id="e-com" required></textarea></div>
+          <div id="e-msg" role="status"></div>
+          <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+            <button class="btn btn--primary" type="submit" data-decision="valide">Valider le projet</button>
+            <button class="btn btn--secondary" type="submit" data-decision="a_reprendre">Demander une reprise</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <script>
+    import { pb, requireLogin, isEvaluateur, esc, errMsg, fmtDate } from '../lib/pb.js';
+    const $ = (id: string) => document.getElementById(id)!;
+    let current: any = null;
+    let decision = 'valide';
+    const label: any = { depose: 'Déposé', en_evaluation: 'En évaluation', valide: 'Validé', a_reprendre: 'À reprendre' };
+
+    if (requireLogin()) {
+      if (!isEvaluateur()) $('denied').hidden = false;
+      else { $('app').hidden = false; loadStats(); loadSubs(); }
+    }
+
+    async function loadStats() {
+      const s = await pb.send('/api/academie/stats', {});
+      $('s-inscrits').textContent = s.inscrits; $('s-projets').textContent = s.projets_deposes;
+      $('s-aeval').textContent = s.a_evaluer; $('s-badges').textContent = s.badges;
+      const mods = [...new Set([...s.progression.map((r: any) => r.module), ...s.quiz.map((q: any) => q.module)])].sort((a: any, b: any) => Number(a.slice(1)) - Number(b.slice(1)));
+      const get = (m: string, st: string) => s.progression.find((r: any) => r.module === m && r.statut === st)?.n || 0;
+      $('prog').innerHTML = '<thead><tr><th>Module</th><th>En cours</th><th>Terminé</th><th>Tentatives de quiz</th><th>Quiz réussis</th></tr></thead><tbody>' +
+        mods.map((m: any) => { const q = s.quiz.find((x: any) => x.module === m) || {}; return `<tr><td>${esc(m.toUpperCase())}</td><td>${get(m, 'en_cours')}</td><td>${get(m, 'termine')}</td><td>${q.tentatives || 0}</td><td>${q.reussies || 0}</td></tr>`; }).join('') + '</tbody>';
+    }
+
+    async function loadSubs() {
+      const f = ($('filter') as HTMLSelectElement).value;
+      const filter = f === 'exercices' ? 'type = "exercice"' : f === 'projets' ? 'type = "projet_final"' : 'type = "projet_final" && (statut = "depose" || statut = "en_evaluation")';
+      const items = await pb.collection('submissions').getFullList({ filter, sort: '-created', expand: 'user' });
+      $('subs').innerHTML = '<thead><tr><th>Date</th><th>Apprenant</th><th>Entreprise</th><th>Module</th><th>Statut</th><th></th></tr></thead><tbody>' +
+        (items.length ? items.map((s: any) => `<tr><td>${fmtDate(s.created)}</td><td>${esc(s.expand?.user?.name || s.expand?.user?.email || '')}</td><td>${esc(s.expand?.user?.entreprise || '')}</td><td>${esc(s.module.toUpperCase())}</td><td><span class="pill">${label[s.statut] || ''}</span></td><td><button class="btn btn--ghost btn--sm" data-open="${s.id}">Ouvrir</button></td></tr>`).join('')
+          : '<tr><td colspan="6">Aucun dépôt.</td></tr>') + '</tbody>';
+      $('subs').querySelectorAll('[data-open]').forEach((b: any) => b.addEventListener('click', () => open(b.dataset.open)));
+    }
+    $('filter').addEventListener('change', loadSubs);
+
+    async function open(id: string) {
+      current = await pb.collection('submissions').getOne(id, { expand: 'user' });
+      const u = current.expand?.user || {};
+      const token = await pb.files.getToken();
+      const c1 = await pb.collection('quiz_attempts').getList(1, 1, { filter: pb.filter('user = {:u} && module = "m1" && reussi = true', { u: current.user }) });
+      const files = (current.fichiers || []).map((f: string) => `<li><a href="${pb.files.getURL(current, f, { token })}" target="_blank" rel="noopener">${esc(f)}</a></li>`).join('');
+      $('p-title').textContent = `${current.type === 'projet_final' ? 'Projet final' : 'Exercice ' + current.module.toUpperCase()} · ${u.name || u.email}`;
+      const maillons: any = { sylviculture: 'Sylviculture', exploitation: 'Exploitation forestière', scierie: 'Scierie', seconde_transformation: 'Seconde transformation', construction: 'Construction bois', bureau_etudes: "Bureau d'études", negoce: 'Négoce', ameublement: 'Ameublement, agencement', autre: 'Autre' };
+      const infos = [u.entreprise, u.fonction, maillons[u.maillon]].filter(Boolean).map(esc).join(' · ');
+      $('p-info').innerHTML = `<p>${infos} · déposé le ${fmtDate(current.created)}</p>
+        <p><strong>Quiz M1 (C1) :</strong> ${c1.totalItems ? '<span class="pill pill--ok">réussi</span>' : '<span class="pill pill--wip">non réussi : le badge ne pourra pas être émis</span>'}</p>
+        <ul>${files || '<li>Aucun fichier</li>'}</ul>${current.lien ? `<p>Lien : <a href="${esc(current.lien)}" target="_blank" rel="noopener">${esc(current.lien)}</a></p>` : ''}
+        ${current.commentaire ? `<p><strong>Message :</strong> ${esc(current.commentaire)}</p>` : ''}`;
+      ($('eval-form') as HTMLFormElement).reset();
+      (document.querySelector('input[name="C1"]') as HTMLInputElement).checked = c1.totalItems > 0;
+      $('e-msg').innerHTML = '';
+      $('panel').hidden = false;
+      $('panel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-decision]').forEach((b: any) => b.addEventListener('click', () => (decision = b.dataset.decision)));
+    $('eval-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!current) return;
+      const form = e.target as HTMLFormElement;
+      const criteres: any = {};
+      ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'].forEach((c) => {
+        criteres[c] = { acquis: (form.elements.namedItem(c) as HTMLInputElement).checked, commentaire: (form.elements.namedItem(`${c}-com`) as HTMLInputElement).value };
+      });
+      if (decision === 'valide' && current.type === 'projet_final' && !Object.values(criteres).every((x: any) => x.acquis)) {
+        $('e-msg').innerHTML = '<div class="alert alert--error">Pour valider le projet final, les six compétences doivent être acquises.</div>'; return;
+      }
+      try {
+        await pb.collection('evaluations').create({ submission: current.id, decision, criteres, commentaire: ($('e-com') as HTMLTextAreaElement).value });
+        $('e-msg').innerHTML = `<div class="alert alert--ok">Évaluation enregistrée${decision === 'valide' && current.type === 'projet_final' ? ' ; le badge est émis si le quiz M1 est réussi' : ''}.</div>`;
+        loadStats(); loadSubs();
+      } catch (err) { $('e-msg').innerHTML = `<div class="alert alert--error">${esc(errMsg(err))}</div>`; }
+    });
+  </script>
+</Base>

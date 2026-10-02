@@ -1,0 +1,66 @@
+{
+  "module": "m0",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Quel est le rôle du cas fil rouge ?",
+      "choix": [
+        "Il change à chaque module pour varier les exemples",
+        "Un seul cas réel que vous faites avancer de module en module",
+        "Il est imposé par le formateur et identique pour tous",
+        "Il sert uniquement à l'autodiagnostic du module 0"
+      ],
+      "bonnes": [1],
+      "explication": "Un cas unique, choisi par vous, traverse tout le parcours. Travaillé en profondeur, il apprend plus que dix exemples survolés."
+    },
+    {
+      "id": "q2",
+      "enonce": "Quels critères aident à choisir un bon cas fil rouge ? (plusieurs réponses)",
+      "choix": [
+        "La tâche revient souvent",
+        "Elle porte sur des documents ou de l'information",
+        "Le résultat est impossible à vérifier",
+        "Une erreur reste rattrapable avant d'avoir des conséquences"
+      ],
+      "bonnes": [0, 1, 3],
+      "explication": "Fréquence, matière documentaire, résultat contrôlable et risque maîtrisé. Un résultat impossible à vérifier est un mauvais candidat."
+    },
+    {
+      "id": "q3",
+      "enonce": "Que faut-il faire des documents réels utilisés dans les exercices ?",
+      "choix": [
+        "Les déposer tels quels dans l'outil d'IA",
+        "Les anonymiser (noms de clients, adresses, prix)",
+        "Les imprimer et ne jamais les numériser",
+        "Les remplacer par des documents trouvés sur internet"
+      ],
+      "bonnes": [1],
+      "explication": "Pour démarrer, on anonymise. Le module 7 apprend à décider de ce que l'on peut confier à quel outil."
+    },
+    {
+      "id": "q4",
+      "enonce": "Dans le parcours, que faut-il privilégier si le temps manque ?",
+      "choix": [
+        "Regarder toutes les vidéos et sauter les exercices",
+        "Faire l'exercice sur votre cas et survoler le reste",
+        "Passer directement au projet final",
+        "Attendre d'avoir plus de temps pour commencer"
+      ],
+      "bonnes": [1],
+      "explication": "Les exercices sont la partie la plus importante : vidéos et lectures servent à les préparer."
+    },
+    {
+      "id": "q5",
+      "enonce": "Pourquoi noter une estimation du temps passé sur la tâche dès le module 0 ?",
+      "choix": [
+        "Pour la vérifier et la mesurer réellement au module 9",
+        "Pour la transmettre au fournisseur d'IA",
+        "Pour obtenir le badge plus vite",
+        "Elle ne servira plus jamais"
+      ],
+      "bonnes": [0],
+      "explication": "Sans point de départ, la mesure d'après ne prouve rien. L'estimation du module 0 sera confrontée à une mesure réelle au module 9."
+    }
+  ]
+}

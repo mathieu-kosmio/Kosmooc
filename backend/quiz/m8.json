@@ -1,0 +1,63 @@
+{
+  "module": "m8",
+  "seuil": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "enonce": "Qu'est-ce qui départage le plus utilement les grands fournisseurs d'IA pour une PME ? (plusieurs réponses)",
+      "choix": [
+        "L'intégration à l'environnement de travail existant",
+        "L'adéquation aux premiers usages visés",
+        "Les exigences sur la localisation des données",
+        "Le nom commercial du modèle"
+      ],
+      "bonnes": [0, 1, 2],
+      "explication": "Les grands outils se valent sur la plupart des usages. Ce qui départage, c'est l'environnement, les usages visés et la localisation des données, pas le nom du modèle."
+    },
+    {
+      "id": "q2",
+      "enonce": "Vos équipes travaillent surtout dans Outlook, Teams et Excel, avec leurs fichiers rangés dans l'espace Microsoft. Que peut-on en déduire ?",
+      "choix": [
+        "Un outil intégré à cet environnement part avec un avantage d'intégration",
+        "Aucun outil d'IA ne peut être utilisé",
+        "Il faut obligatoirement choisir un modèle ouvert auto-hébergé"
+      ],
+      "bonnes": [0],
+      "explication": "L'intégration à l'environnement existant est un critère majeur, à condition que les fichiers soient réellement rangés dans cet environnement."
+    },
+    {
+      "id": "q3",
+      "enonce": "Quelle est la meilleure façon de limiter la dépendance à un fournisseur ?",
+      "choix": [
+        "Garder prompt, règles, gabarits et cas de test dans des fichiers texte que vous possédez, hors de l'outil",
+        "Ne configurer qu'un assistant dans l'interface du fournisseur",
+        "Ne jamais écrire de règles"
+      ],
+      "bonnes": [0],
+      "explication": "Le harnais est du texte portable. Si vos règles vivent dans un fichier à vous, changer d'outil revient à le réutiliser et à rejouer vos tests."
+    },
+    {
+      "id": "q4",
+      "enonce": "Parmi ces points, lesquels sont des dépendances à repérer ? (plusieurs réponses)",
+      "choix": [
+        "Des conditions d'utilisation qui peuvent changer",
+        "Un modèle remplacé ou retiré par le fournisseur",
+        "Un assistant paramétré uniquement dans l'interface d'un fournisseur",
+        "Un prompt écrit dans un fichier texte à vous"
+      ],
+      "bonnes": [0, 1, 2],
+      "explication": "Conditions, modèles retirés et formats propriétaires sont des dépendances. Un prompt dans un fichier à vous est au contraire ce qui réduit la dépendance."
+    },
+    {
+      "id": "q5",
+      "enonce": "Que dire des options souveraines (fournisseur européen, modèle ouvert auto-hébergé, accompagnement de déploiement) ?",
+      "choix": [
+        "Ce sont les seules options sérieuses, tout le monde doit les choisir",
+        "Ce sont des options parmi d'autres, avec des coûts et des limites propres, pertinentes selon vos exigences et vos moyens",
+        "Elles sont toujours moins chères qu'un abonnement"
+      ],
+      "bonnes": [1],
+      "explication": "Un modèle auto-hébergé remplace l'abonnement par des coûts de serveur et de maintenance. Le bon choix dépend de vos exigences, de vos compétences et de votre budget. Votre harnais portable s'y transportera dans tous les cas."
+    }
+  ]
+}

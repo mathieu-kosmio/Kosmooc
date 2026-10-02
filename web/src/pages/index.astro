@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
+const total = modules.reduce((s, m) => s + m.data.duree, 0);
+const heures = Math.floor(total / 60), minutes = total % 60;
+---
+<Base title="Parcours IA filière bois">
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">Niveau 1 · En ligne, à votre rythme</span>
+      <h1>Prenez en main l'IA générative sur un vrai dossier de votre entreprise</h1>
+      <p class="t-lead">{modules.length} modules courts, environ {minutes > 0 ? `${heures} h ${minutes}` : `${heures} heures`}, construits à partir des ateliers menés avec les entreprises de la filière forêt-bois. Vous repartez avec un premier cas d'usage prototypé, une charte d'usage et un badge Niveau 1 délivré avec Xylofutur.</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--lg" href="/inscription/">Créer mon compte</a>
+        <a class="btn btn--secondary btn--lg" href="/modules/m0/">Voir le module 0</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        <div class="card card--sand">
+          <span class="t-micro">Partir du travail réel</span>
+          <h3>Votre cas fil rouge</h3>
+          <p>Vous choisissez au module 0 une tâche de votre entreprise : devis, dossier de consultation, mails, compte rendu, veille… et vous la faites avancer d'un module à l'autre.</p>
+        </div>
+        <div class="card card--sand">
+          <span class="t-micro">Méthode avant outil</span>
+          <h3>Sobriété et fiabilité</h3>
+          <p>Avant d'automatiser, on vérifie s'il faut de l'IA. Ensuite on définit les contrôles humains, les règles de données et ce qui vous rend dépendant d'un fournisseur.</p>
+        </div>
+        <div class="card card--sand">
+          <span class="t-micro">Reconnu par la filière</span>
+          <h3>Badge Niveau 1</h3>
+          <p>Votre projet final est évalué sur six compétences. Le badge atteste votre formation à la maîtrise de l'IA et se vérifie en ligne.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <span class="eyebrow">Programme</span>
+      <h2 class="t-h2">Dix modules, de la première demande au prototype mesuré</h2>
+      <ol class="modules">
+        {modules.map((m) => (
+          <li>
+            <a class="module-row" href={`/modules/${m.data.id}/`}>
+              <span class="module-row__num">M{m.data.ordre}</span>
+              <span><span class="module-row__title">{m.data.titre}</span><br /><span class="module-row__meta">{m.data.resume}</span></span>
+              <span class="pill">{m.data.duree} min</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--2">
+        <div>
+          <span class="eyebrow">Et après ?</span>
+          <h2 class="t-h3">Niveau 2 : déployer chez vous</h2>
+          <p>Le projet final du Niveau 1 sert de point de départ. Si vous souhaitez aller plus loin, l'équipe PerfIA reprend vos cas réels en formation-action et les déploie sur une infrastructure que vous maîtrisez.</p>
+          <a href="https://ia-bois.kosm.io/souverainete.html">En savoir plus sur le déploiement souverain</a>
+        </div>
+        <div class="card">
+          <h3>Pour qui ?</h3>
+          <p>Dirigeants et salariés des entreprises de la filière : sylviculture, exploitation, scierie, seconde transformation, construction, bureaux d'études, négoce, ameublement. Aucun prérequis technique.</p>
+          <a class="btn btn--primary" href="/inscription/">Commencer le parcours</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

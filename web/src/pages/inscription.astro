@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Inscription">
+  <div class="container">
+    <div class="auth-card card">
+      <span class="eyebrow">Parcours IA filière bois</span>
+      <h1 class="t-h3">Créer mon compte</h1>
+      <div id="sso" hidden style="margin-bottom: var(--space-4)"></div>
+      <form class="form" id="form" novalidate>
+        <div class="field"><label for="name">Prénom et nom</label><input id="name" name="name" type="text" required autocomplete="name" /></div>
+        <div class="field"><label for="email">Email professionnel</label><input id="email" name="email" type="email" required autocomplete="email" /></div>
+        <div class="field"><label for="entreprise">Entreprise</label><input id="entreprise" name="entreprise" type="text" required autocomplete="organization" /></div>
+        <div class="field"><label for="fonction">Fonction</label><input id="fonction" name="fonction" type="text" autocomplete="organization-title" /></div>
+        <div class="field">
+          <label for="maillon">Maillon de la filière</label>
+          <select id="maillon" name="maillon" required>
+            <option value="">Choisir</option>
+            <option value="sylviculture">Sylviculture</option>
+            <option value="exploitation">Exploitation forestière</option>
+            <option value="scierie">Scierie</option>
+            <option value="seconde_transformation">Seconde transformation (menuiserie, charpente, emballage…)</option>
+            <option value="construction">Construction bois</option>
+            <option value="bureau_etudes">Bureau d'études</option>
+            <option value="negoce">Négoce</option>
+            <option value="ameublement">Ameublement, agencement</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+        <div class="field"><label for="password">Mot de passe</label><input id="password" name="password" type="password" minlength="8" required autocomplete="new-password" /><small>8 caractères minimum.</small></div>
+        <label class="check"><input type="checkbox" id="consentement" required /> <span>J'accepte que mes données servent au suivi de ma formation et à la délivrance du badge, selon la <a href="/confidentialite/">politique de données</a>.</span></label>
+        <div id="msg" role="alert"></div>
+        <button class="btn btn--primary" type="submit">Créer mon compte</button>
+        <p class="t-small">Déjà inscrit ? <a href="/connexion/">Se connecter</a></p>
+      </form>
+    </div>
+  </div>
+  <script>
+    import { pb, errMsg, esc } from '../lib/pb.js';
+    import { renderSso } from '../lib/sso.js';
+    renderSso(document.getElementById('sso'));
+    const form = document.getElementById('form') as HTMLFormElement;
+    const msg = document.getElementById('msg')!;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const get = (k: string) => String(fd.get(k) || '').trim();
+      if (!get('name') || !get('email') || !get('entreprise') || !get('maillon') || get('password').length < 8) {
+        msg.innerHTML = '<div class="alert alert--error">Merci de remplir tous les champs obligatoires.</div>'; return;
+      }
+      if (!(document.getElementById('consentement') as HTMLInputElement).checked) {
+        msg.innerHTML = '<div class="alert alert--error">Merci d\'accepter la politique de données.</div>'; return;
+      }
+      try {
+        await pb.collection('users').create({
+          name: get('name'), email: get('email'), entreprise: get('entreprise'), fonction: get('fonction'),
+          maillon: get('maillon'), password: get('password'), passwordConfirm: get('password'), consentement: true,
+        });
+        await pb.collection('users').authWithPassword(get('email'), get('password'));
+        window.location.href = '/modules/m0/';
+      } catch (err) {
+        msg.innerHTML = `<div class="alert alert--error">${esc(errMsg(err))}</div>`;
+      }
+    });
+  </script>
+</Base>
