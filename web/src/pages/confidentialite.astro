@@ -4,16 +4,39 @@ import Base from '../layouts/Base.astro';
 <Base title="Données personnelles">
   <section class="container container--prose prose" style="padding-block: var(--space-7)">
     <h1 class="t-h2">Données personnelles</h1>
-    <p>L'Académie PerfIA est opérée par Kosmio en partenariat avec Xylofutur. Cette page résume l'usage de vos données. Elle est à compléter par les mentions légales de l'éditeur avant ouverture publique.</p>
+    <p>Cette page explique quelles données l'Académie PerfIA collecte, pourquoi, combien de temps elles sont conservées et comment exercer vos droits, conformément au Règlement général sur la protection des données (RGPD).</p>
+
+    <h2>Responsable du traitement</h2>
+    <p>Kosmio, SAS, Villa 8, 301 rue du Romarin, 34160 Castries (RCS Montpellier 983 943 903). Contact : <a href="mailto:contact@kosm.io">contact@kosm.io</a>.</p>
+
     <h2>Données collectées</h2>
-    <p>Nom, email, entreprise, fonction et maillon de la filière ; progression dans les modules ; résultats des quiz ; fichiers et commentaires déposés ; évaluations et badges.</p>
-    <h2>Finalités</h2>
-    <p>Suivre votre formation, évaluer votre projet final, délivrer et permettre la vérification de votre badge, vous envoyer les messages liés au parcours.</p>
-    <h2>Hébergement et conservation</h2>
-    <p>Les données sont hébergées en France sur l'infrastructure de Kosmio. Elles sont conservées pendant la durée de validité du badge, puis supprimées ou anonymisées. Les documents que vous déposez ne doivent contenir ni données personnelles de tiers ni informations confidentielles non anonymisées.</p>
+    <table>
+      <thead><tr><th>Données</th><th>Finalité</th><th>Base légale</th><th>Durée de conservation</th></tr></thead>
+      <tbody>
+        <tr><td>Nom, email, entreprise, fonction, maillon de la filière</td><td>Créer et gérer votre compte, vous écrire au sujet du parcours</td><td>Exécution du service demandé</td><td>Jusqu'à la suppression du compte, au plus 3 ans après la dernière connexion</td></tr>
+        <tr><td>Progression, résultats des quiz</td><td>Suivre votre formation, vérifier la compétence C1</td><td>Exécution du service demandé</td><td>Même durée que le compte</td></tr>
+        <tr><td>Fichiers, liens et commentaires déposés</td><td>Évaluer vos exercices et votre projet final</td><td>Exécution du service demandé</td><td>Même durée que le compte</td></tr>
+        <tr><td>Évaluations et badge</td><td>Délivrer le badge et permettre sa vérification</td><td>Exécution du service demandé</td><td>Durée de validité du badge (2 ans), puis anonymisation</td></tr>
+        <tr><td>Statistiques agrégées (nombre d'inscrits, de modules terminés)</td><td>Piloter et améliorer le parcours</td><td>Intérêt légitime</td><td>Sans donnée nominative</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Destinataires</h2>
+    <p>Les données sont accessibles à l'équipe Kosmio et aux évaluateurs désignés par Kosmio, pour les seuls besoins du parcours. Xylofutur, partenaire du programme, peut recevoir des statistiques agrégées, sans donnée nominative, sauf accord de votre part. Aucune donnée n'est vendue ni utilisée à des fins publicitaires.</p>
+
+    <h2>Hébergement</h2>
+    <p>Les données sont hébergées en France, chez OVH SAS (Roubaix), sur un serveur administré par Kosmio. Elles ne sont pas transférées hors de l'Union européenne.</p>
+
+    <h2>Vos documents</h2>
+    <p>Les documents que vous déposez ne doivent contenir ni données personnelles de tiers, ni informations confidentielles non anonymisées. Les fichiers déposés ne sont accessibles qu'à vous et aux évaluateurs.</p>
+
     <h2>Vérification du badge</h2>
-    <p>La page de vérification d'un badge affiche votre nom, votre entreprise, l'intitulé du badge et ses dates. Elle n'est accessible qu'avec le lien unique du badge.</p>
+    <p>La page de vérification d'un badge affiche votre nom, votre entreprise, l'intitulé du badge et ses dates. Elle n'est accessible qu'avec le lien unique du badge, que vous choisissez de partager ou non.</p>
+
     <h2>Vos droits</h2>
-    <p>Vous pouvez accéder à vos données, les rectifier ou demander leur suppression en écrivant à l'équipe PerfIA de Kosmio.</p>
+    <p>Vous pouvez accéder à vos données, les rectifier, les faire supprimer, en obtenir une copie ou vous opposer à certains traitements en écrivant à <a href="mailto:contact@kosm.io">contact@kosm.io</a>. Nous répondons sous un mois. Vous pouvez aussi saisir la CNIL (<a href="https://www.cnil.fr">cnil.fr</a>).</p>
+
+    <h2>Cookies</h2>
+    <p>Aucun cookie publicitaire ni traceur. Un jeton de connexion est conservé dans votre navigateur pour maintenir votre session ; il disparaît à la déconnexion.</p>
   </section>
 </Base>

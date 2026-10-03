@@ -12,7 +12,7 @@ import Seal from '../components/Seal.astro';
         <h1 id="intitule" style="margin-top:var(--space-3)"></h1>
         <p class="t-lead">délivré à <strong id="titulaire"></strong><span id="entreprise"></span></p>
         <p id="dates" class="t-small"></p>
-        <p class="t-small">Compétences attestées : C1 à C6 du référentiel du Parcours IA filière bois (<a href="/programme/">voir le référentiel</a>).<br />Émis par Kosmio et Xylofutur dans le cadre de PerfIA.</p>
+        <p class="t-small">Compétences attestées : C1 à C6 du référentiel du Parcours IA filière bois (<a href="/programme/">voir le référentiel</a>).<br />Émis par Kosmio dans le cadre de PerfIA, en partenariat avec Xylofutur.</p>
         <div class="no-print" style="display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap;margin-top:var(--space-5)">
           <button class="btn btn--primary btn--sm" type="button" id="copy">Copier le lien de vérification</button>
           <a class="btn btn--secondary btn--sm" id="linkedin" target="_blank" rel="noopener">Ajouter à mon profil LinkedIn</a>
@@ -38,7 +38,7 @@ import Seal from '../components/Seal.astro';
         const url = location.href;
         $('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(url); $('copy').textContent = 'Lien copié'; } catch (_) {} });
         const d = new Date(b.emis_le.replace(' ', 'T'));
-        ($('linkedin') as HTMLAnchorElement).href = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(b.intitule)}&organizationName=${encodeURIComponent('Xylofutur')}&issueYear=${d.getFullYear()}&issueMonth=${d.getMonth() + 1}&certUrl=${encodeURIComponent(url)}&certId=${encodeURIComponent(b.id)}`;
+        ($('linkedin') as HTMLAnchorElement).href = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(b.intitule)}&organizationName=${encodeURIComponent('Kosmio')}&issueYear=${d.getFullYear()}&issueMonth=${d.getMonth() + 1}&certUrl=${encodeURIComponent(url)}&certId=${encodeURIComponent(b.id)}`;
         $('ok').hidden = false;
       } catch (_) { $('ko').hidden = false; }
       $('loading').hidden = true;
