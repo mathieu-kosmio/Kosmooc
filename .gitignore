@@ -6,3 +6,4 @@ tests/test-results/
 tests/node_modules/
 docs/sources/
 .env
+backend/pocketbase.log

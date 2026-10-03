@@ -2,6 +2,10 @@
 
 ## En local
 
+Le plus simple : `bash scripts/demarrer-local.sh` (ajouter `--reset` pour repartir d'une base vide). Le script télécharge PocketBase, construit le site, crée des comptes de démonstration et ouvre le navigateur.
+
+Étapes détaillées, si besoin :
+
 ```bash
 # 1. PocketBase (binaire à télécharger une fois, version 0.30.0)
 cd backend
