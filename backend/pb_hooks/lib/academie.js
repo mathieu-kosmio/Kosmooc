@@ -109,7 +109,7 @@ function appUrl(app) {
 
 function sendMail(app, to, subject, html) {
   try {
-    if (!app.settings().smtp.enabled || !to) return false
+    if (!to || !(app.settings().smtp.enabled || $os.getenv("APP_BREVO_API_KEY"))) return false
     const message = new MailerMessage({
       from: { address: app.settings().meta.senderAddress, name: app.settings().meta.senderName },
       to: [{ address: to }],

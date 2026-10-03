@@ -47,8 +47,13 @@ cd "$ROOT/web"
 echo "Construction du site…"
 npx astro build >/dev/null
 
-# 4. Démarrage
+# 4. Démarrage. E-mails via Brevo : clé lue dans BREVO_API, sinon dans cles.env (ligne « BREVO : clé »).
 cd "$ROOT/backend"
+if [ -z "${BREVO_API:-}" ] && [ -f "$ROOT/cles.env" ]; then
+  BREVO_API="$(sed -nE 's/^BREVO[[:space:]]*[:=][[:space:]]*//p' "$ROOT/cles.env" | head -1)"
+fi
+export APP_BREVO_API_KEY="${BREVO_API:-}"
+export APP_MAIL_FROM="${APP_MAIL_FROM:-mathieu@kosm.io}"
 nohup ./pocketbase serve --http="127.0.0.1:$PORT" --dir=pb_data > "$LOG" 2>&1 &
 for _ in $(seq 1 30); do curl -fs "$B/api/health" >/dev/null 2>&1 && break; sleep 0.5; done
 

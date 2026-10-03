@@ -7,3 +7,5 @@ tests/node_modules/
 docs/sources/
 .env
 backend/pocketbase.log
+cles.env
+.local/
