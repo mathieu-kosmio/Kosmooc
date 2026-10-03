@@ -12,7 +12,8 @@ FROM alpine:3.20
 ARG PB_VERSION=0.30.0
 RUN apk add --no-cache ca-certificates unzip wget \
  && wget -q https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip -O /tmp/pb.zip \
- && unzip /tmp/pb.zip pocketbase -d /pb && rm /tmp/pb.zip && apk del unzip wget
+ && unzip /tmp/pb.zip pocketbase -d /pb && rm /tmp/pb.zip && apk del unzip wget \
+ && echo "text/vtt vtt" >> /etc/mime.types
 WORKDIR /pb
 COPY backend/pb_migrations ./pb_migrations
 COPY backend/pb_hooks ./pb_hooks
