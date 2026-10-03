@@ -37,7 +37,7 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
             {m.videos.map((v) => (
               <figure style="margin:0">
                 {v.src
-                  ? <div class="video">{embed(v.src) ? <iframe src={v.src} title={v.titre} allowfullscreen loading="lazy"></iframe> : <video src={v.src} controls preload="metadata"></video>}</div>
+                  ? <div class="video">{embed(v.src) ? <iframe src={v.src} title={v.titre} allowfullscreen loading="lazy"></iframe> : <video src={v.src} controls preload="metadata" playsinline poster={v.src.replace(/\.mp4$/, '.jpg')}><track kind="subtitles" srclang="fr" label="Français" src={v.src.replace(/\.mp4$/, '.vtt')} /></video>}</div>
                   : <div class="video video--todo"><div><strong>{v.titre}</strong><br /><span class="t-small">Vidéo en cours de tournage</span></div></div>}
                 <figcaption class="video-caption">{v.titre} · {v.duree}</figcaption>
               </figure>

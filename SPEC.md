@@ -76,4 +76,4 @@ Modèle de référence : l'Académie du Numérique Responsable (parcours modulai
 - Le contenu des modules 2 à 9 est masqué côté navigateur pour les visiteurs ; il reste dans le HTML statique. Suffisant pour un pilote gratuit ; à servir depuis l'API si le N1 devient payant.
 - Badge au format PocketBase + page de vérification ; export Open Badges 3.0 à ajouter (ou émission par Certifiko).
 - Paiement, comptes entreprise (un dirigeant suit ses salariés), tuteur IA et rapport « votre cas déployé chez vous » : lots S2 à S4 de la feuille de route.
-- Vidéos : emplacements prêts, URL à renseigner dans le frontmatter (`src`) après tournage.
+- Vidéos : 20 vidéos en motion design (voix de synthèse, personnage illustré), servies depuis `web/public/videos/` avec sous-titres VTT et vignette. Remplaçables par un avatar filmé en V2 sans changer la plateforme.
