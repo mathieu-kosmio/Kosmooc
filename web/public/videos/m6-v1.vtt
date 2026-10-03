@@ -1,0 +1,85 @@
+WEBVTT
+
+00:00:06.500 --> 00:00:12.064
+Combien d'essais faut-il pour qu'une IA fasse bien un travail qui est le vôtre ?
+
+00:00:12.064 --> 00:00:13.941
+Plusieurs, et c'est normal.
+
+00:00:13.941 --> 00:00:18.253
+Prototyper, c'est enchaîner test, erreur, règle, nouveau test.
+
+00:00:18.253 --> 00:00:20.757
+Six boucles structurent la démarche.
+
+00:00:21.457 --> 00:00:24.313
+Première boucle : donner un exemple réel.
+
+00:00:24.313 --> 00:00:26.264
+Un vrai document, anonymisé.
+
+00:00:26.264 --> 00:00:29.538
+Pas un exemple inventé qui ne ressemble à rien.
+
+00:00:29.538 --> 00:00:33.856
+Deuxième boucle : décrire la sortie attendue, champ par champ.
+
+00:00:33.856 --> 00:00:36.643
+Remplissez la fiche à la main, une fois.
+
+00:00:36.643 --> 00:00:38.454
+Elle servira de référence.
+
+00:00:39.154 --> 00:00:42.932
+Troisième boucle : faire produire une première version.
+
+00:00:42.932 --> 00:00:44.718
+On l'appelle version zéro.
+
+00:00:44.718 --> 00:00:47.259
+Elle sera imparfaite, c'est son rôle.
+
+00:00:47.259 --> 00:00:51.723
+Quatrième boucle : comparer la version zéro à la sortie attendue.
+
+00:00:51.723 --> 00:00:54.333
+Chaque différence est une information.
+
+00:00:54.333 --> 00:00:58.798
+Une dimension fausse, une essence mal comprise, un champ inventé.
+
+00:00:59.498 --> 00:01:04.716
+Cinquième boucle, la plus importante : transformer chaque erreur en règle.
+
+00:01:04.716 --> 00:01:06.973
+L'outil a lu DOU comme doussié ?
+
+00:01:06.973 --> 00:01:09.159
+Écrivez : DOU signifie douglas.
+
+00:01:09.159 --> 00:01:12.826
+Votre savoir-faire entre dans l'outil à cet instant.
+
+00:01:13.526 --> 00:01:16.411
+Sixième boucle : retester sur un nouvel exemple.
+
+00:01:16.411 --> 00:01:20.678
+Si le prototype ne marche que sur le premier document, il ne vaut rien.
+
+00:01:21.378 --> 00:01:23.719
+Tenez un journal des corrections.
+
+00:01:23.719 --> 00:01:28.899
+Une ligne par correction : l'erreur, la cause, la règle ajoutée, la date.
+
+00:01:28.899 --> 00:01:34.149
+Quand une correction revient deux fois, elle devient une règle permanente.
+
+00:01:34.849 --> 00:01:40.999
+Ce journal est la première brique de votre harnais, c'est-à-dire de ce que vous mettez autour du modèle.
+
+00:01:40.999 --> 00:01:43.069
+Il restera si vous changez d'outil.
+
+00:01:43.769 --> 00:01:53.521
+À vous de jouer : lancez votre première version sur votre document de référence, comparez à votre fiche remplie à la main, et écrivez votre première ligne de journal.

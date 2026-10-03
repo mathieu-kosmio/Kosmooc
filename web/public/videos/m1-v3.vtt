@@ -1,0 +1,64 @@
+WEBVTT
+
+00:00:06.500 --> 00:00:12.643
+À quelles tâches pouvez-vous faire confiance à une IA, et lesquelles faut-il toujours vérifier ?
+
+00:00:12.643 --> 00:00:15.138
+Voici trois familles pour vous repérer.
+
+00:00:15.838 --> 00:00:27.244
+Très adapté : extraire des informations d'un document, synthétiser, comparer, classer, rédiger de façon structurée, transformer un document d'un format à un autre.
+
+00:00:27.244 --> 00:00:31.163
+Le tri de vos mails par projet entre dans cette famille.
+
+00:00:31.863 --> 00:00:38.285
+À contrôler : les calculs critiques, comme un nombre de pièces à débiter à partir d'un linéaire.
+
+00:00:38.285 --> 00:00:42.567
+Les références réglementaires, un numéro d'article ou une norme.
+
+00:00:42.567 --> 00:00:45.109
+Les informations absentes du document.
+
+00:00:45.109 --> 00:00:47.049
+Les interprétations ambiguës.
+
+00:00:47.749 --> 00:00:58.384
+À éviter sans cadre : prendre seule une décision qui engage l'entreprise, valider automatiquement la qualité, ou transmettre des données sensibles sans avoir vérifié les règles applicables.
+
+00:00:59.084 --> 00:01:02.656
+Le piège le plus courant : l'IA comble les trous.
+
+00:01:02.656 --> 00:01:03.896
+Un délai manque ?
+
+00:01:03.896 --> 00:01:06.010
+Elle en propose un plausible.
+
+00:01:06.010 --> 00:01:08.197
+Une abréviation est inconnue ?
+
+00:01:08.197 --> 00:01:09.290
+Elle la devine.
+
+00:01:09.290 --> 00:01:11.478
+Un calcul ne tombe pas juste ?
+
+00:01:11.478 --> 00:01:12.644
+Elle l'arrondit.
+
+00:01:13.344 --> 00:01:17.106
+Le bon réflexe : lui demander de signaler ce qu'elle ignore.
+
+00:01:17.106 --> 00:01:22.247
+Écrivez : « Si une information est absente du document, écris information absente.
+
+00:01:22.247 --> 00:01:25.883
+» Vous lirez des absences au lieu d'inventions plausibles.
+
+00:01:26.583 --> 00:01:31.684
+Retenez la règle : plus une erreur coûte cher, plus le contrôle doit être explicite.
+
+00:01:31.684 --> 00:01:36.846
+Classez huit tâches de votre entreprise dans ces trois familles, puis passez le quiz.

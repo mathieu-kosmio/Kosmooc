@@ -1,0 +1,82 @@
+WEBVTT
+
+00:00:06.500 --> 00:00:10.461
+Votre prototype marche sur l'exemple avec lequel vous l'avez construit.
+
+00:00:10.461 --> 00:00:12.134
+Marchera-t-il sur le suivant ?
+
+00:00:12.134 --> 00:00:15.370
+C'est la vraie question, et c'est le sujet de cette vidéo.
+
+00:00:16.070 --> 00:00:18.812
+D'abord, le prompt métier.
+
+00:00:18.812 --> 00:00:30.095
+C'est la grille E-T-S-C rendue exécutable, en six blocs : rôle, mission, sources, règles, sortie, contrôle.
+
+00:00:30.795 --> 00:00:39.361
+La mission reprend la Transformation, les sources reprennent l'Entrée, la sortie reprend la Sortie, le contrôle reprend le Contrôle.
+
+00:00:39.361 --> 00:00:44.033
+Le rôle et les règles reprennent ce que vous avez appris au module deux.
+
+00:00:44.033 --> 00:00:50.068
+Rien de nouveau, sinon que la consigne devient un fichier que l'on relit et que l'on corrige.
+
+00:00:50.767 --> 00:00:54.523
+Ce que l'outil ne peut pas deviner, c'est votre métier.
+
+00:00:54.523 --> 00:00:56.640
+Vocabulaire : vos abréviations.
+
+00:00:56.640 --> 00:01:00.738
+Exceptions : le bois vert, le traitement sur un seul repère.
+
+00:01:00.738 --> 00:01:06.065
+Critères de qualité : ce qu'est une bonne fiche pour votre chef de production.
+
+00:01:06.065 --> 00:01:08.182
+Chaque ligne devient une règle.
+
+00:01:08.882 --> 00:01:10.515
+Vient le test décisif.
+
+00:01:10.515 --> 00:01:14.672
+Prenez un second document, représentatif mais différent.
+
+00:01:14.672 --> 00:01:20.389
+Dans notre cas, un devis court avec une ligne piège : idem essence ci-dessus.
+
+00:01:20.389 --> 00:01:22.690
+Lancez sans toucher aux règles.
+
+00:01:22.690 --> 00:01:29.594
+Pas de retouche en cours de route, sinon vous ne testez plus le prototype, vous le réajustez.
+
+00:01:30.295 --> 00:01:39.351
+Mesurez : combien de champs corrects, combien d'erreurs, ce que l'outil a signalé comme manquant, et le temps gagné, estimé avec prudence.
+
+00:01:40.050 --> 00:01:41.698
+Classez chaque écart.
+
+00:01:41.698 --> 00:01:44.759
+Règle manquante : vous pouvez l'écrire.
+
+00:01:44.759 --> 00:01:48.525
+Donnée absente : le document ne la contient pas.
+
+00:01:48.525 --> 00:01:51.429
+Cas particulier : une exception rare.
+
+00:01:51.429 --> 00:01:54.725
+Erreur de l'IA : elle a mal lu ou inventé.
+
+00:01:55.425 --> 00:01:59.520
+Puis décidez : utilisable, à améliorer, ou à re-spécifier.
+
+00:01:59.520 --> 00:02:07.147
+Re-spécifier est une réponse tout à fait légitime : cela veut dire que le cadrage de départ était trop flou.
+
+00:02:07.147 --> 00:02:17.809
+À vous de jouer : écrivez votre prompt en six blocs, testez-le sur un document jamais vu, remplissez le tableau et notez votre décision en deux lignes.

@@ -1,0 +1,52 @@
+WEBVTT
+
+00:00:06.500 --> 00:00:10.097
+Quand vous posez une question à une IA, d'où vient sa réponse ?
+
+00:00:10.097 --> 00:00:13.807
+Beaucoup pensent qu'elle cherche dans une grande base de données.
+
+00:00:13.807 --> 00:00:18.203
+Ce n'est pas le cas, et comprendre pourquoi change votre façon de l'utiliser.
+
+00:00:18.903 --> 00:00:23.336
+Un modèle de langage a été entraîné sur de très grandes quantités de textes.
+
+00:00:23.336 --> 00:00:30.745
+Il en a retenu des régularités : comment les phrases s'enchaînent, comment on rédige un devis, comment on décrit une charpente.
+
+00:00:31.445 --> 00:00:39.421
+Quand vous lui écrivez, il produit la suite la plus plausible, mot après mot, à partir de votre demande et du contexte.
+
+00:00:39.421 --> 00:00:43.778
+Il ne recopie pas un document, et il ne consulte pas un annuaire.
+
+00:00:43.778 --> 00:00:44.448
+Il prédit.
+
+00:00:45.148 --> 00:00:54.499
+Résultat : il est excellent pour reformuler, résumer, classer, extraire des informations, comparer, rédiger de façon structurée.
+
+00:00:54.499 --> 00:00:58.152
+Donnez-lui un devis, il en tire les lignes utiles.
+
+00:00:58.152 --> 00:01:02.609
+Donnez-lui des notes de chantier, il en fait un compte rendu.
+
+00:01:03.310 --> 00:01:07.232
+Mais il ne connaît pas, par défaut, la vérité de votre métier.
+
+00:01:07.232 --> 00:01:11.849
+Vos abréviations maison, vos essences, vos tolérances lui sont inconnues.
+
+00:01:11.849 --> 00:01:17.985
+Et pendant l'usage, il est figé : il n'apprend pas de vos documents d'une conversation à l'autre.
+
+00:01:18.685 --> 00:01:22.941
+Dernier point, essentiel : une réponse fluide peut être fausse.
+
+00:01:22.941 --> 00:01:26.723
+La qualité d'écriture n'est pas une preuve d'exactitude.
+
+00:01:26.723 --> 00:01:33.546
+Lisez la section « Le modèle » du module, puis passez à la vidéo suivante, sur l'agent et le harnais.

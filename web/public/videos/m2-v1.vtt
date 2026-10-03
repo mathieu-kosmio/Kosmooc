@@ -1,0 +1,79 @@
+WEBVTT
+
+00:00:06.500 --> 00:00:11.164
+Pourquoi la même IA répond-elle brillamment à l'un et médiocrement à l'autre ?
+
+00:00:11.164 --> 00:00:13.854
+Le plus souvent, l'écart vient de la demande.
+
+00:00:13.854 --> 00:00:18.578
+Rappelez-vous : l'IA produit la suite la plus plausible de ce que vous écrivez.
+
+00:00:18.578 --> 00:00:20.850
+Moins vous en dites, plus elle comble.
+
+00:00:21.550 --> 00:00:27.630
+Une bonne demande tient en quatre leviers : contexte, objectif, contraintes et format.
+
+00:00:27.630 --> 00:00:31.024
+Voyons-les un par un avec un exemple de scierie.
+
+00:00:31.724 --> 00:00:34.635
+Le contexte : de quoi parle-t-on ?
+
+00:00:34.635 --> 00:00:39.259
+Dites qui vous êtes, quelle entreprise, quel document.
+
+00:00:39.259 --> 00:00:48.678
+Par exemple : « Je prépare la production dans une scierie qui fait des sciages et des aménagements extérieurs.
+
+00:00:48.678 --> 00:00:50.818
+Je joins un devis client.
+
+00:00:50.818 --> 00:00:50.904
+»
+
+00:00:51.603 --> 00:00:54.759
+L'objectif : quel résultat concret voulez-vous ?
+
+00:00:54.759 --> 00:00:57.323
+« Aide-moi sur ce devis » est un sujet.
+
+00:00:57.323 --> 00:01:01.926
+« Produis la fiche qui permettra de lancer le débit » est un objectif.
+
+00:01:01.926 --> 00:01:05.674
+Demandez-vous : qu'est-ce que je ferai de cette réponse ?
+
+00:01:06.375 --> 00:01:09.611
+Les contraintes : ce que l'IA doit respecter.
+
+00:01:09.611 --> 00:01:10.690
+N'invente rien.
+
+00:01:10.690 --> 00:01:12.560
+Garde les unités du devis.
+
+00:01:12.560 --> 00:01:14.214
+Ne reprends aucun prix.
+
+00:01:14.214 --> 00:01:18.458
+Écris « information absente » si le document ne le dit pas.
+
+00:01:18.458 --> 00:01:22.629
+C'est le levier le plus sous-utilisé, et le plus puissant.
+
+00:01:23.329 --> 00:01:26.951
+Le format : tableau, fiche, liste de contrôles.
+
+00:01:26.951 --> 00:01:29.725
+Précisez les colonnes et leur ordre.
+
+00:01:29.725 --> 00:01:37.122
+Un format précis rend la réponse comparable d'un document à l'autre, et plus facile à contrôler.
+
+00:01:37.821 --> 00:01:42.941
+Contexte plus objectif plus contraintes plus format : une consigne exploitable.
+
+00:01:42.941 --> 00:01:49.617
+Relisez une demande que vous avez déjà faite à une IA et repérez lequel de ces quatre leviers manquait.

@@ -1,0 +1,73 @@
+WEBVTT
+
+00:00:06.500 --> 00:00:12.804
+Peut-on décrire un cas d'usage de façon claire en quatre cases seulement ?
+
+00:00:12.804 --> 00:00:13.145
+Oui.
+
+00:00:13.145 --> 00:00:18.853
+C'est la grille E-T-S-C : Entrée, Transformation, Sortie, Contrôle.
+
+00:00:19.553 --> 00:00:23.915
+Entrée : quelles données ou quels documents sont disponibles ?
+
+00:00:23.915 --> 00:00:29.754
+Dans notre exemple, le devis ou la commande, et d'éventuelles pièces en complément.
+
+00:00:29.754 --> 00:00:34.819
+Transformation : que faut-il comprendre, extraire, comparer ou générer ?
+
+00:00:34.819 --> 00:00:40.869
+Ici, identifier les lignes à produire, avec leur essence, leur section, leur quantité.
+
+00:00:41.569 --> 00:00:43.614
+Sortie : quel résultat concret ?
+
+00:00:43.614 --> 00:00:48.024
+Une fiche de production standardisée, avec toujours les mêmes champs.
+
+00:00:48.724 --> 00:00:53.058
+Contrôle : qu'est-ce qu'un humain doit impérativement vérifier ?
+
+00:00:53.058 --> 00:00:58.138
+Les incohérences, les dimensions, les quantités, les délais, ce qui manque.
+
+00:00:58.138 --> 00:01:01.727
+C'est la case la plus importante, et la plus oubliée.
+
+00:01:02.427 --> 00:01:03.917
+Ajoutez trois lignes.
+
+00:01:03.917 --> 00:01:06.896
+L'utilisateur : qui se sert de la sortie ?
+
+00:01:06.896 --> 00:01:13.351
+Le test : comment comparerez-vous le résultat à la bonne réponse, sur plusieurs documents ?
+
+00:01:13.351 --> 00:01:17.891
+L'exigence : par exemple, fonctionner sur un document jamais vu.
+
+00:01:18.592 --> 00:01:21.461
+Reste à savoir si le cas vaut le coup.
+
+00:01:21.461 --> 00:01:28.256
+Quatre critères à multiplier : la valeur, la fréquence, la faisabilité, la contrôlabilité.
+
+00:01:28.256 --> 00:01:30.295
+Notez chacun de un à trois.
+
+00:01:30.995 --> 00:01:33.973
+Un seul critère à un tire le produit vers le bas.
+
+00:01:33.973 --> 00:01:38.226
+Une tâche rare, ou impossible à contrôler, ne mérite pas de prototype.
+
+00:01:38.226 --> 00:01:42.419
+Et la valeur reste une hypothèse tant que vous ne l'avez pas mesurée.
+
+00:01:43.119 --> 00:01:50.215
+À vous de jouer : remplissez la fiche E-T-S-C de votre cas fil rouge, sur une page.
+
+00:01:50.215 --> 00:01:54.404
+Elle sera la première page de votre projet final.

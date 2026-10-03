@@ -1,0 +1,79 @@
+WEBVTT
+
+00:00:06.500 --> 00:00:11.848
+Si votre fournisseur doublait ses prix demain, pourriez-vous changer d'outil en une demi-journée ?
+
+00:00:11.848 --> 00:00:15.231
+La réponse dépend de ce que vous avez construit autour de lui.
+
+00:00:15.931 --> 00:00:17.618
+Six dépendances à repérer.
+
+00:00:17.618 --> 00:00:20.084
+Les données : sont-elles exportables ?
+
+00:00:20.084 --> 00:00:23.523
+Les conditions d'utilisation : elles peuvent changer.
+
+00:00:23.523 --> 00:00:26.638
+La localisation : où sont traitées vos données ?
+
+00:00:26.638 --> 00:00:27.157
+Le prix.
+
+00:00:27.157 --> 00:00:33.322
+Les modèles retirés : un prompt réglé sur un modèle peut se comporter autrement sur le suivant.
+
+00:00:33.322 --> 00:00:35.204
+Et les formats propriétaires.
+
+00:00:35.903 --> 00:00:41.178
+Un assistant paramétré uniquement dans l'interface d'un fournisseur ne se déménage pas.
+
+00:00:41.178 --> 00:00:42.451
+C'est une dépendance.
+
+00:00:43.151 --> 00:00:51.299
+À l'inverse, votre prompt métier, vos règles, vos gabarits, vos cas de test et votre journal de corrections sont du texte.
+
+00:00:51.299 --> 00:00:53.971
+C'est votre harnais, il vous appartient.
+
+00:00:54.672 --> 00:01:01.148
+Changer d'outil revient alors à recoller ce fichier dans un autre projet et à rejouer vos cas de test.
+
+00:01:01.148 --> 00:01:03.180
+Le harnais réduit la dépendance.
+
+00:01:03.180 --> 00:01:07.116
+Si le fournisseur remplace un modèle, rejouez vos cas de test.
+
+00:01:07.116 --> 00:01:09.719
+Vous voyez tout de suite ce qui a changé.
+
+00:01:10.418 --> 00:01:16.620
+Si vos exigences portent sur la localisation ou la maîtrise des données, plusieurs voies existent.
+
+00:01:16.620 --> 00:01:18.138
+Un fournisseur européen.
+
+00:01:18.138 --> 00:01:25.479
+Un modèle ouvert hébergé chez vous ou chez un hébergeur de votre choix, avec des coûts de serveur et de maintenance.
+
+00:01:25.479 --> 00:01:31.048
+Ou un accompagnement de déploiement : Kosmio en propose un, comme d'autres prestataires.
+
+00:01:31.048 --> 00:01:34.149
+À comparer selon votre budget et vos compétences.
+
+00:01:34.849 --> 00:01:35.869
+À vous de jouer.
+
+00:01:35.869 --> 00:01:39.438
+Remplissez la grille d'autodiagnostic en huit questions.
+
+00:01:39.438 --> 00:01:43.007
+Pour chaque non ou en partie, notez une action concrète.
+
+00:01:43.007 --> 00:01:46.831
+Puis écrivez l'outil que vous gardez et la date de réexamen.
