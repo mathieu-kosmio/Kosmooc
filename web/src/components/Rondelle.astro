@@ -29,7 +29,7 @@ const rings = modules.map((m, i) => {
 const outer = rings[rings.length - 1];
 const gid = `aubier-${size}`;
 ---
-<figure class={`rondelle rondelle--${size}`} data-rondelle data-total={modules.length}>
+<figure class={`rondelle rondelle--${size}`} data-rondelle data-total={modules.filter((m) => m.ordre > 0).length}>
   <svg viewBox="0 0 500 500" aria-hidden="true">
     <defs>
       <radialGradient id={gid} cx="48%" cy="51%" r="52%">
@@ -54,7 +54,7 @@ const gid = `aubier-${size}`;
       </g>
     ))}
   </svg>
-  <figcaption data-caption>Un anneau par module · <span>en vert, la fin de chaque étape</span></figcaption>
+  <figcaption data-caption>Au cœur, l'accueil ; un anneau par module · <span>en vert, la fin de chaque étape</span></figcaption>
 </figure>
 
 <script>
@@ -72,7 +72,7 @@ const gid = `aubier-${size}`;
         anneaux.forEach((g) => {
           const id = g.dataset.ring!;
           const fait = st[id] === 'termine';
-          if (fait) done++;
+          if (fait) { if (Number(g.dataset.ordre) > 0) done++; }
           else if (!courant) courant = g;
           g.classList.toggle('is-done', fait);
           fig.querySelector(`[data-fill="${id}"]`)?.classList.toggle('is-done', fait);
@@ -87,7 +87,7 @@ const gid = `aubier-${size}`;
         const cap = fig.querySelector('[data-caption]');
         if (cap) {
           const c = courant as SVGGElement | null;
-          cap.innerHTML = `Vos anneaux de croissance · <span>${done} anneau${done > 1 ? 'x' : ''} sur ${total}</span>` +
+          cap.innerHTML = `Vos anneaux de croissance · <span>${done} module${done > 1 ? 's' : ''} sur ${total}</span>` +
             (c ? ` · M${c.dataset.ordre} en cours` : ' · parcours terminé');
         }
         fig.dispatchEvent(new CustomEvent('rondelle:progress', { bubbles: true, detail: { done, total, courant: courant ? { id: (courant as SVGGElement).dataset.ring, ordre: Number((courant as SVGGElement).dataset.ordre), titre: (courant as SVGGElement).dataset.titre } : null } }));
