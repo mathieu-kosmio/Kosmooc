@@ -2,11 +2,15 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="Projet final" current="projet">
-  <section class="container container--prose" style="padding-block: var(--space-7)">
-    <span class="eyebrow">Badge Niveau 1</span>
-    <h1 class="t-h2" style="margin-top:var(--space-3)">Déposer mon projet final</h1>
-    <p class="t-lead">Votre projet final est un dossier de décision : il rassemble ce que vous avez produit sur votre cas fil rouge, distingue ce qui est mesuré de ce qui est estimé, et dit ce que vous faites ensuite. Il est évalué sur les six compétences du badge.</p>
-    <div class="card card--sand" style="margin-block: var(--space-5)">
+  <header class="page-head">
+    <div class="container">
+      <span class="eyebrow">Badge Niveau 1</span>
+      <h1>Déposer mon <em>projet final.</em></h1>
+      <p class="t-lead">Votre projet final est un dossier de décision : il rassemble ce que vous avez produit sur votre cas fil rouge, distingue ce qui est mesuré de ce qui est estimé, et dit ce que vous faites ensuite. Il est évalué sur les six compétences du badge.</p>
+    </div>
+  </header>
+  <section class="container container--prose" style="padding-block: var(--space-7) var(--space-9)">
+    <div class="card card--sand" style="margin-bottom: var(--space-6)">
       <h2 class="t-h3">Ce que le dossier doit contenir</h2>
       <ol>
         <li>La fiche E-T-S-C de votre cas d'usage (module 4)</li>

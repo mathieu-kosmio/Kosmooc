@@ -1,7 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
+const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => m.data);
+const total = modules.reduce((s, m) => s + m.duree, 0);
+const dureeTotale = `${Math.floor(total / 60)} h${total % 60 ? ' ' + String(total % 60).padStart(2, '0') : ''}`;
+const fmtDuree = (d: number) => (d >= 60 ? `${Math.floor(d / 60)} h${d % 60 ? ' ' + String(d % 60).padStart(2, '0') : ''}` : `${d} min`);
+const phases = [
+  { n: '01', titre: 'Choisir votre cas', de: 0, a: 0 },
+  { n: '02', titre: 'Comprendre et demander', de: 1, a: 3 },
+  { n: '03', titre: 'Prototyper', de: 4, a: 6 },
+  { n: '04', titre: 'Fiabiliser et décider', de: 7, a: 9 },
+];
 const competences = [
   ['C1', "Expliquer le fonctionnement et les limites d'une IA générative", 'Quiz M1, au moins 80 %'],
   ['C2', 'Formuler une demande efficace', "Demande C de l'exercice M2"],
@@ -11,26 +20,80 @@ const competences = [
   ['C6', "Utiliser l'IA de façon responsable", 'Charte en 5 règles et autodiagnostic de dépendance (M7, M8)'],
 ];
 ---
-<Base title="Programme" current="programme">
-  <section class="container" style="padding-block: var(--space-7)">
-    <span class="eyebrow">Programme du Niveau 1</span>
-    <h1 class="t-h1">Le parcours en détail</h1>
-    <p class="t-lead">Chaque module comprend des vidéos courtes, une fiche mémo, un exercice sur votre cas fil rouge et un quiz.</p>
-    <div class="grid" style="margin-top: var(--space-6)">
-      {modules.map((m) => (
-        <article class="card">
-          <span class="t-micro">Module {m.data.ordre} · {m.data.duree} min{m.data.competences.length ? ` · ${m.data.competences.join(', ')}` : ''}</span>
-          <h3><a href={`/modules/${m.data.id}/`}>{m.data.titre}</a></h3>
-          <ul class="objectifs">{m.data.objectifs.map((o) => <li>{o}</li>)}</ul>
-        </article>
-      ))}
+<Base title="Programme" current="programme" description={`Le programme du Niveau 1 : dix modules, environ ${dureeTotale}, six compétences évaluées pour le badge.`}>
+  <header class="page-head">
+    <div class="container">
+      <span class="eyebrow">Programme du Niveau 1</span>
+      <h1>Le parcours <em>en détail.</em></h1>
+      <p class="t-lead">Dix modules, environ {dureeTotale} sur 4 à 6 semaines. Chaque module comprend des vidéos courtes, une fiche mémo, un exercice sur votre cas fil rouge et, souvent, un quiz.</p>
+      <div class="hero__actions"><a class="btn btn--primary" href="/inscription/" data-auth="out">Créer mon compte →</a><a class="btn btn--secondary" href="/modules/m0/">Commencer par le module 0</a></div>
     </div>
-    <h2 class="t-h3" style="margin-top: var(--space-8)">Les six compétences du badge Niveau 1</h2>
-    <div class="table-wrap">
-      <table class="table">
-        <thead><tr><th>Code</th><th>Compétence</th><th>Preuve</th></tr></thead>
-        <tbody>{competences.map(([c, t, p]) => <tr><td><strong>{c}</strong></td><td>{t}</td><td>{p}</td></tr>)}</tbody>
-      </table>
-    </div>
-  </section>
+  </header>
+
+  <div class="container prog">
+    {phases.map((p) => (
+      <section class="prog__phase" aria-labelledby={`ph-${p.n}`}>
+        <div class="prog__label">
+          <span class="prog__n">{p.n}</span>
+          <h2 id={`ph-${p.n}`}>{p.titre}</h2>
+          <span class="prog__mods">{p.de === p.a ? `M${p.de}` : `M${p.de} à M${p.a}`}</span>
+        </div>
+        <div class="prog__list">
+          {modules.filter((m) => m.ordre >= p.de && m.ordre <= p.a).map((m) => (
+            <article class="prog__mod">
+              <div class="prog__top">
+                <span class="prog__num">M{m.ordre}</span>
+                <span class="prog__pills">
+                  {m.ordre <= 1 && <span class="pill pill--ok">Accès libre</span>}
+                  {m.competences.length > 0 && <span class="pill">{m.competences.join(' · ')}</span>}
+                  <span class="prog__duree">{fmtDuree(m.duree)}</span>
+                </span>
+              </div>
+              <h3><a href={`/modules/${m.id}/`}>{m.titre}</a></h3>
+              <ul class="objectifs">{m.objectifs.map((o) => <li>{o}</li>)}</ul>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <section class="prog__comp" aria-labelledby="comp-title">
+      <span class="eyebrow">Badge Niveau 1</span>
+      <h2 id="comp-title">Les six compétences évaluées</h2>
+      <p class="t-lead">Le badge est délivré sur votre projet final. Chaque compétence s'appuie sur une preuve produite pendant le parcours.</p>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th scope="col">Code</th><th scope="col">Compétence</th><th scope="col">Preuve</th></tr></thead>
+          <tbody>{competences.map(([c, t, p]) => <tr><td><strong class="code">{c}</strong></td><td>{t}</td><td>{p}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+  </div>
 </Base>
+
+<style>
+  .prog { padding-block: var(--space-8) var(--space-9); display: grid; gap: var(--space-8); }
+  .prog__phase { display: grid; gap: var(--space-5); }
+  @media (min-width: 1024px) { .prog__phase { grid-template-columns: 260px minmax(0, 1fr); gap: var(--space-7); } }
+  .prog__label { align-self: start; }
+  @media (min-width: 1024px) { .prog__label { position: sticky; top: 96px; } }
+  .prog__n { font-family: var(--font-display); font-weight: 700; font-size: 3rem; line-height: 1; letter-spacing: -0.03em; color: var(--xf-green-500); }
+  .prog__label h2 { font-size: var(--text-h3); margin: var(--space-3) 0 var(--space-2); }
+  .prog__mods { font-family: var(--font-mono); font-size: var(--text-micro); font-weight: 700; letter-spacing: var(--tracking-mono); text-transform: uppercase; color: var(--grey-600); }
+  .prog__list { display: grid; gap: var(--space-4); min-width: 0; }
+  .prog__mod { background: var(--white); border: 1px solid var(--grey-300); border-radius: var(--radius-lg); padding: var(--space-6); transition: border-color .25s var(--ease-out), box-shadow .25s var(--ease-out); }
+  .prog__mod:hover { border-color: var(--xf-green-500); box-shadow: var(--shadow-md); }
+  .prog__top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .prog__num { font-family: var(--font-mono); font-weight: 700; font-size: .85rem; color: var(--km-sage-600); letter-spacing: .06em; }
+  .prog__pills { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+  .prog__duree { font-family: var(--font-mono); font-size: .78rem; font-weight: 700; color: var(--ink-700); }
+  .prog__mod h3 { font-size: 1.35rem; margin: var(--space-3) 0 var(--space-4); }
+  .prog__mod h3 a { color: var(--ink-900); text-decoration: none; }
+  .prog__mod h3 a:hover { color: var(--xf-green-600); }
+  .prog__mod h3 a::after { content: " →"; color: var(--xf-green-500); }
+  .prog__mod .objectifs { font-size: .95rem; color: var(--ink-700); }
+  .prog__comp { border-top: 1px solid var(--grey-300); padding-top: var(--space-8); }
+  .prog__comp h2 { font-size: var(--text-h2); margin: var(--space-4) 0 var(--space-4); }
+  .prog__comp .t-lead { max-width: 60ch; margin-bottom: var(--space-6); }
+  .code { font-family: var(--font-mono); color: var(--xf-gold-600); }
+</style>

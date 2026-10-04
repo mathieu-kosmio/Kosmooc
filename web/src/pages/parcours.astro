@@ -4,11 +4,15 @@ import { getCollection } from 'astro:content';
 const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => ({ id: m.data.id, ordre: m.data.ordre, titre: m.data.titre, duree: m.data.duree, quiz: m.data.quiz }));
 ---
 <Base title="Mon parcours" current="parcours">
-  <section class="container" style="padding-block: var(--space-7)">
-    <span class="eyebrow" id="hello">Mon parcours</span>
-    <h1 class="t-h2" style="margin-top:var(--space-3)">Parcours IA filière bois, Niveau 1</h1>
+  <header class="page-head">
+    <div class="container">
+      <span class="eyebrow" id="hello">Mon parcours</span>
+      <h1>Parcours IA filière bois, <em>Niveau 1.</em></h1>
+    </div>
+  </header>
+  <section class="container" style="padding-block: var(--space-7) var(--space-9)">
 
-    <div class="grid grid--3" style="margin-block: var(--space-5)">
+    <div class="grid grid--3" style="margin-bottom: var(--space-6)">
       <div class="card"><div class="stat" id="pct">0 %</div><div class="stat-label">du parcours terminé</div><div class="progress" style="margin-top:var(--space-3)"><span id="bar"></span></div></div>
       <div class="card"><div class="stat" id="quizcount">0</div><div class="stat-label">quiz réussis</div></div>
       <div class="card" id="badge-card"><div class="stat" id="badge-stat">À venir</div><div class="stat-label" id="badge-label">Badge Niveau 1</div></div>

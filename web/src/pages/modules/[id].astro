@@ -5,31 +5,53 @@ import '../../styles/widgets.css';
 
 export async function getStaticPaths() {
   const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
+  const tous = modules.map((x) => ({ id: x.data.id, ordre: x.data.ordre, titre: x.data.titre }));
   return modules.map((entry, i) => ({
     params: { id: entry.data.id },
-    props: { entry, prev: modules[i - 1]?.data ?? null, next: modules[i + 1]?.data ?? null },
+    props: { entry, tous, prev: modules[i - 1]?.data ?? null, next: modules[i + 1]?.data ?? null },
   }));
 }
 
-const { entry, prev, next } = Astro.props;
+const { entry, tous, prev, next } = Astro.props;
 const m = entry.data;
 const { Content } = await render(entry);
 // Accès libre aux modules 0 et 1 (découverte) ; les suivants demandent un compte.
 const libre = m.ordre <= 1;
+const fmtDuree = (d: number) => (d >= 60 ? `${Math.floor(d / 60)} h${d % 60 ? ' ' + String(d % 60).padStart(2, '0') : ''}` : `${d} min`);
 const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\//.test(src);
 ---
 <Base title={`M${m.ordre} · ${m.titre}`} description={m.resume}>
+  <header class="module-head">
+    <div class="container">
+      <nav class="crumbs" aria-label="Fil d'Ariane"><a href="/programme/">Programme</a><span aria-hidden="true">/</span><span>Module {m.ordre}</span></nav>
+      <span class="eyebrow">Niveau 1 · Module {m.ordre}</span>
+      <h1>{m.titre}</h1>
+      <p class="t-lead">{m.resume}</p>
+      <div class="module-meta">
+        <span class="pill">{fmtDuree(m.duree)}</span>
+        {m.videos.length > 0 && <span class="pill">{m.videos.length} vidéo{m.videos.length > 1 ? 's' : ''}</span>}
+        {m.exercice && <span class="pill">Exercice</span>}
+        {m.quiz && <span class="pill">Quiz</span>}
+        {m.competences.length > 0 && <span class="pill">Compétence{m.competences.length > 1 ? 's' : ''} {m.competences.join(', ')}</span>}
+        {libre && <span class="pill pill--ok">Accès libre</span>}
+      </div>
+      <ol class="rail" aria-label="Modules du parcours">
+        {tous.map((t) => (
+          <li><a href={`/modules/${t.id}/`} class={t.ordre < m.ordre ? 'is-past' : undefined} aria-current={t.id === m.id ? 'page' : undefined} title={`M${t.ordre} · ${t.titre}`}><span></span><small>M{t.ordre}</small></a></li>
+        ))}
+      </ol>
+    </div>
+  </header>
+
   <div class="container module-layout" data-module={m.id} data-quiz={m.quiz ? '1' : ''} data-exercice={m.exercice ? '1' : ''} data-libre={libre ? '1' : ''}>
     <article>
-      <span class="eyebrow">Module {m.ordre} · {m.duree} min</span>
-      <h1 class="t-h1" style="margin-top: var(--space-3)">{m.titre}</h1>
-      <p class="t-lead">{m.resume}</p>
-      {m.statut === 'trame' && <p class="alert alert--info">Module en cours de production : la version finale arrive prochainement.</p>}
+      {m.statut === 'trame' && <p class="alert alert--info" style="margin-bottom:var(--space-6)">Module en cours de production : la version finale arrive prochainement.</p>}
 
       <div id="gate" class="gate" hidden>
-        <h2 class="t-h3">Ce module est réservé aux inscrits</h2>
-        <p>Créez votre compte gratuitement pour suivre le parcours, enregistrer votre progression et obtenir le badge.</p>
-        <a class="btn btn--primary" href="/inscription/">Créer mon compte</a> <a class="btn btn--ghost" href={`/connexion/?suite=/modules/${m.id}/`}>J'ai déjà un compte</a>
+        <span class="eyebrow">Réservé aux inscrits</span>
+        <h2 class="t-h3" style="margin-top:var(--space-3)">Créez votre compte pour suivre ce module</h2>
+        <p>La création du compte est gratuite. Elle débloque les modules 2 à 9, les quiz, le dépôt de vos exercices et le suivi de votre progression jusqu'au badge.</p>
+        <div class="hero__actions"><a class="btn btn--primary" href="/inscription/">Créer mon compte →</a><a class="btn btn--secondary" href={`/connexion/?suite=/modules/${m.id}/`}>J'ai déjà un compte</a></div>
       </div>
 
       <div id="content" hidden={!libre}>
@@ -40,7 +62,7 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
                 {v.src
                   ? <div class="video">{embed(v.src) ? <iframe src={v.src} title={v.titre} allowfullscreen loading="lazy"></iframe> : <video src={v.src} controls preload="metadata" playsinline poster={v.src.replace(/\.mp4$/, '.jpg')}><track kind="subtitles" srclang="fr" label="Français" src={v.src.replace(/\.mp4$/, '.vtt')} /></video>}</div>
                   : <div class="video video--todo"><div><strong>{v.titre}</strong><br /><span class="t-small">Vidéo en cours de tournage</span></div></div>}
-                <figcaption class="video-caption">{v.titre} · {v.duree}</figcaption>
+                <figcaption class="video-caption"><strong>{v.titre}</strong><span>{v.duree}</span></figcaption>
               </figure>
             ))}
           </div>
@@ -71,9 +93,11 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
         )}
       </div>
 
-      <nav style="display:flex;justify-content:space-between;gap:var(--space-4);margin-top:var(--space-8);flex-wrap:wrap" aria-label="Modules">
-        {prev ? <a class="btn btn--ghost" href={`/modules/${prev.id}/`}>← M{prev.ordre} {prev.titre}</a> : <span></span>}
-        {next ? <a class="btn btn--ghost" href={`/modules/${next.id}/`}>M{next.ordre} {next.titre} →</a> : <a class="btn btn--ghost" href="/projet-final/">Projet final →</a>}
+      <nav class="pager" aria-label="Modules précédent et suivant">
+        {prev && <a href={`/modules/${prev.id}/`}><small>← Module {prev.ordre}</small><strong>{prev.titre}</strong></a>}
+        {next
+          ? <a class="pager__next" href={`/modules/${next.id}/`}><small>Module {next.ordre} →</small><strong>{next.titre}</strong></a>
+          : <a class="pager__next" href="/projet-final/"><small>Pour finir →</small><strong>Déposer mon projet final</strong></a>}
       </nav>
     </article>
 
@@ -89,7 +113,7 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
             <span class="t-micro">Ressources</span>
             <ul class="resources" style="margin-top:var(--space-3)">
               {m.ressources.map((r) => (
-                <li><a href={r.type === 'fiche' ? `/fiches/${r.ref}/` : `/ressources/${r.ref}`} download={r.type === 'fichier' ? '' : undefined}><span class="pill">{r.type === 'fiche' ? 'Fiche' : 'Fichier'}</span> {r.titre}</a></li>
+                <li><a href={r.type === 'fiche' ? `/fiches/${r.ref}/` : `/ressources/${r.ref}`} download={r.type === 'fichier' ? '' : undefined}><span class={r.type === 'fiche' ? 'pill pill--ok' : 'pill'}>{r.type === 'fiche' ? 'Fiche' : 'Fichier'}</span><span>{r.titre}</span></a></li>
               ))}
             </ul>
           </div>
@@ -97,7 +121,7 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
         <div class="card" id="status-card" hidden>
           <span class="t-micro">Ma progression</span>
           <p id="status-text" class="t-small" style="margin:var(--space-3) 0"></p>
-          <button class="btn btn--primary btn--sm" id="btn-done" type="button">Marquer comme terminé</button>
+          <button class="btn btn--primary btn--sm" id="btn-done" type="button" style="width:100%;justify-content:center">Marquer comme terminé</button>
           <div id="status-msg" role="status" style="margin-top:var(--space-3)"></div>
         </div>
       </div>

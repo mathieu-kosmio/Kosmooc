@@ -12,10 +12,11 @@ const { Content } = await render(entry);
   <div class="container">
     <article class="fiche">
       <div class="fiche-head">
-        <strong>PerfIA Académie · Parcours IA filière bois</strong>
+        <span style="display:flex;align-items:center;gap:var(--space-3)"><img src="/marques/perfia-encre.svg" alt="" width="44" height="22" /><strong>PerfIA Académie · Parcours IA filière bois</strong></span>
         <span class="t-small">Kosmio × Xylofutur</span>
       </div>
-      <h1 class="t-h3">{entry.data.titre}</h1>
+      <span class="eyebrow">Fiche mémo · Module {entry.data.module.replace('m', '')}</span>
+      <h1 style="margin-top:var(--space-3)">{entry.data.titre}</h1>
       <div class="prose"><Content /></div>
       <p class="no-print" style="margin-top:var(--space-6)">
         <button class="btn btn--primary btn--sm" type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button>

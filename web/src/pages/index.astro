@@ -1,78 +1,493 @@
 ---
 import Base from '../layouts/Base.astro';
+import Seal from '../components/Seal.astro';
 import { getCollection } from 'astro:content';
-const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
-const total = modules.reduce((s, m) => s + m.data.duree, 0);
+
+const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => m.data);
+const total = modules.reduce((s, m) => s + m.duree, 0);
 const heures = Math.floor(total / 60), minutes = total % 60;
+const dureeTotale = minutes > 0 ? `${heures} h ${String(minutes).padStart(2, '0')}` : `${heures} h`;
+const dMin = Math.min(...modules.map((m) => m.duree));
+const dMax = Math.max(...modules.map((m) => m.duree));
+const fmtDuree = (d: number) => (d >= 60 ? `${Math.floor(d / 60)} h${d % 60 ? ' ' + String(d % 60).padStart(2, '0') : ''}` : `${d} min`);
+
+// Visuel du héros : une rondelle de bois dont chaque cerne est un module (M0 au cœur, M9 en périphérie).
+const CX = 250, CY = 250;
+const rings = modules.map((m, i) => {
+  const r = 30 + i * 21;
+  const pts: string[] = [];
+  for (let a = 0; a <= 360; a += 6) {
+    const t = (a * Math.PI) / 180;
+    const k = 1 + 0.035 * Math.sin(3 * t + i * 0.7) + 0.022 * Math.sin(5 * t + i * 1.9) + 0.012 * Math.sin(9 * t + i);
+    const x = CX - i * 1.6 + r * k * Math.cos(t);
+    const y = CY + i * 0.9 + r * k * 0.96 * Math.sin(t);
+    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+  }
+  // Point où la ligne de comptage (vers le haut à droite) croise le cerne
+  const ta = 0;
+  const k = 1 + 0.035 * Math.sin(3 * ta + i * 0.7) + 0.022 * Math.sin(5 * ta + i * 1.9) + 0.012 * Math.sin(9 * ta + i);
+  const lx = CX - i * 1.6 + r * k * Math.cos(ta);
+  const ly = CY + i * 0.9 + r * k * 0.96 * Math.sin(ta);
+  return { d: `M${pts.join('L')}Z`, lx, ly, ordre: m.ordre, titre: m.titre, len: Math.round(2 * Math.PI * r * 1.05) };
+});
+const outer = rings[rings.length - 1];
+
+const cas = [
+  'Devis vers fiche de production', 'Lecture de DCE', 'Tri des mails par projet', 'Compte rendu de chantier',
+  'Fiche réglementaire EUDR', 'Contrôle de liste de débit', 'Synthèse hebdomadaire ERP', 'Mode opératoire vers fiche procédure',
+];
+
+const phases = [
+  { n: '01', titre: 'Choisir votre cas', mods: 'M0', txt: "Vous faites le point sur vos usages et vous choisissez la tâche réelle que vous allez faire avancer jusqu'au bout." },
+  { n: '02', titre: 'Comprendre et demander', mods: 'M1 à M3', txt: "Ce que fait un modèle, comment formuler une demande qui tient, et comment repérer les tâches où l'IA n'apporte rien." },
+  { n: '03', titre: 'Prototyper', mods: 'M4 à M6', txt: 'Votre cas devient une fiche E-T-S-C, un projet dans votre outil, puis une procédure réutilisable testée sur un document inédit.' },
+  { n: '04', titre: 'Fiabiliser et décider', mods: 'M7 à M9', txt: 'Contrôles, données, dépendances, mesure avant et après : vous décidez de la suite sur des faits.' },
+];
+
+const competences = [
+  ['C1', "Expliquer le fonctionnement et les limites d'une IA générative", 'Quiz du module 1'],
+  ['C2', 'Formuler une demande efficace', 'Demande C du module 2'],
+  ['C3', "Décider si une tâche relève de l'IA", 'Grille de sobriété, module 3'],
+  ['C4', "Formuler un cas d'usage", 'Fiche E-T-S-C, module 4'],
+  ['C5', 'Construire et tester un prototype réutilisable', 'Prompt métier et tableau de test, modules 5 et 6'],
+  ['C6', "Utiliser l'IA de façon responsable", 'Charte et autodiagnostic, modules 7 et 8'],
+];
+
+const metiers = [
+  'Sylviculture et exploitation forestière', 'Scieries et première transformation', 'Menuiserie, charpente et emballage',
+  "Construction bois et bureaux d'études", 'Négoce et distribution', 'Ameublement et agencement',
+];
+
+const faq = [
+  ['Faut-il des compétences techniques ?', "Aucune. Le parcours s'adresse aux dirigeants et aux salariés de la filière. Si vous savez joindre un fichier à un mail, vous pouvez suivre les modules."],
+  ["Quel outil d'IA faut-il ?", "Celui que vous utilisez déjà, ou un outil grand public : ChatGPT, Claude, Le Chat de Mistral, Copilot ou Gemini. Le module 8 vous aide ensuite à choisir en connaissance de cause et à limiter votre dépendance."],
+  ['Combien de temps cela prend-il ?', `Environ ${dureeTotale} au total, à répartir sur 4 à 6 semaines. Les modules durent de ${fmtDuree(dMin)} à ${fmtDuree(dMax)} et se suivent à votre rythme.`],
+  ["Puis-je essayer avant de m'inscrire ?", 'Oui. Les modules 0 et 1 sont en accès libre. La création du compte est gratuite et débloque la suite, les quiz et le suivi de votre progression.'],
+  ['Mes documents sont-ils protégés ?', "Vous travaillez sur des documents anonymisés : le module 0 explique comment faire, le module 7 vous apprend à décider de ce que vous pouvez confier à un outil. Les fichiers déposés sur la plateforme ne sont visibles que par vous et les évaluateurs."],
+  ['Y a-t-il des moments en groupe ?', "Oui. Après le module 5, une séance collective d'une heure en visio réunit les participants de la session pour partager les premiers prototypes et débloquer ce qui coince. La date est envoyée par mail."],
+  ['Que vaut le badge Niveau 1 ?', "Il atteste votre formation à la maîtrise de l'IA sur six compétences, évaluées à partir de votre projet final. Chaque badge a une page de vérification en ligne que vous pouvez partager."],
+  ['Et après le Niveau 1 ?', "Votre projet final sert de point de départ au Niveau 2 : l'équipe PerfIA reprend vos cas réels en formation-action et les déploie sur une infrastructure que vous maîtrisez."],
+];
 ---
-<Base title="Parcours IA filière bois">
-  <section class="hero">
+<Base title="Parcours IA filière bois" description={`Dix modules en ligne pour prendre en main l'IA générative sur une tâche réelle de votre entreprise. Environ ${dureeTotale}, badge Niveau 1, Kosmio × Xylofutur.`}>
+  <!-- ============ Héros ============ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__grid">
+      <div class="hero__text">
+        <div class="hero__logos">
+          <img src="/marques/kosmio-blanc.svg" alt="Kosmio" />
+          <span aria-hidden="true">×</span>
+          <img src="/marques/xylofutur-blanc.png" alt="Xylofutur" />
+        </div>
+        <span class="eyebrow">Parcours IA filière bois · Niveau 1</span>
+        <h1 id="hero-title">Prenez en main l'IA <em>sur un vrai dossier de votre entreprise.</em></h1>
+        <p class="hero__lead">Dix modules courts en ligne, à votre rythme. Vous partez d'une tâche réelle, un devis, un DCE, des mails, et vous repartez avec un prototype testé, une charte d'usage et un badge Niveau 1.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--primary btn--lg" href="/inscription/">Créer mon compte →</a>
+          <a class="btn btn--light btn--lg" href="/modules/m0/">Voir le module 0</a>
+        </div>
+        <p class="hero__sig"><b>{modules.length} modules</b> · environ {dureeTotale} sur 4 à 6 semaines · modules 0 et 1 en accès libre</p>
+      </div>
+
+      <figure class="cernes" aria-label="Le parcours vu comme une rondelle de bois : chaque cerne est un module, du module 0 au cœur au module 9 en périphérie.">
+        <svg viewBox="0 0 500 500" role="img" aria-hidden="true">
+          <defs>
+            <radialGradient id="aubier" cx="48%" cy="51%" r="52%">
+              <stop offset="0" stop-color="#3A3226" />
+              <stop offset=".75" stop-color="#2B2C2C" />
+              <stop offset="1" stop-color="#1F2D3D" />
+            </radialGradient>
+          </defs>
+          <path d={outer.d} transform="translate(250 250) scale(1.06) translate(-250 -250)" fill="url(#aubier)" stroke="#BA8748" stroke-opacity=".35" stroke-width="10" />
+          {rings.map((r, i) => {
+            const etape = [0, 3, 6, 9].includes(i);
+            return <path class="cerne" d={r.d} fill="none" stroke={etape ? '#00B194' : '#BA8748'} stroke-opacity={etape ? 0.95 : 0.3 + i * 0.04} stroke-width={etape ? 2.4 : 1.5} style={`--len:${r.len};--i:${i}`} />;
+          })}
+          <circle cx={CX} cy={CY} r="5" fill="#BA8748" />
+          <line class="comptage" x1={CX} y1={CY} x2={outer.lx + 26} y2={outer.ly} stroke="#F3E3CF" stroke-opacity=".55" stroke-width="1.2" />
+          {rings.map((r, i) => (
+            <g class="repere" style={`--i:${i}`}>
+              <circle cx={r.lx} cy={r.ly} r={[0, 3, 6, 9].includes(i) ? 3.6 : 2.4} fill={[0, 3, 6, 9].includes(i) ? '#00B194' : '#F3E3CF'} />
+              {[0, 3, 6, 9].includes(i) && <text x={r.lx} y={r.ly - 12} text-anchor="middle">M{r.ordre}</text>}
+            </g>
+          ))}
+        </svg>
+        <figcaption>Un cerne par module · <span>en vert, la fin de chaque étape</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ Bandeau des cas ============ -->
+  <div class="marquee" aria-label="Exemples de cas fil rouge">
+    <div class="marquee__track">
+      {[0, 1].map((k) => (
+        <div class="marquee__set" aria-hidden={k === 1 ? 'true' : undefined}>
+          {cas.map((c) => <span>{c}</span>)}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ============ Vidéo ============ -->
+  <section class="sec">
+    <div class="container sec-video">
+      <div class="sec-head sec-head--center reveal">
+        <span class="eyebrow">Le parcours en deux minutes</span>
+        <h2>Comprendre, essayer, <em>décider.</em></h2>
+      </div>
+      <figure class="video-frame reveal">
+        <video src="/videos/m0-v1.mp4" controls preload="metadata" playsinline poster="/videos/m0-v1.jpg">
+          <track kind="subtitles" srclang="fr" label="Français" src="/videos/m0-v1.vtt" />
+        </video>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ Principe ============ -->
+  <section class="sec sec--sand">
     <div class="container">
-      <span class="eyebrow">Niveau 1 · En ligne, à votre rythme</span>
-      <h1>Prenez en main l'IA générative sur un vrai dossier de votre entreprise</h1>
-      <p class="t-lead">{modules.length} modules courts, environ {minutes > 0 ? `${heures} h ${minutes}` : `${heures} heures`}, construits à partir des ateliers menés avec les entreprises de la filière forêt-bois. Vous repartez avec un premier cas d'usage prototypé, une charte d'usage et un badge Niveau 1, en partenariat avec Xylofutur.</p>
-      <div class="hero__actions">
-        <a class="btn btn--primary btn--lg" href="/inscription/">Créer mon compte</a>
-        <a class="btn btn--secondary btn--lg" href="/modules/m0/">Voir le module 0</a>
+      <div class="sec-head reveal">
+        <span class="eyebrow">Le principe</span>
+        <h2>Votre tâche réelle sert de fil rouge, <em>du premier au dernier module.</em></h2>
+        <p class="t-lead">Au module 0, vous choisissez une tâche qui revient souvent dans votre entreprise. Chaque module la fait avancer d'un cran, jusqu'au dossier de décision qui compose votre projet final.</p>
+      </div>
+      <div class="facts">
+        <article class="fact reveal">
+          <div class="fact__num">1 cas</div>
+          <p>Le vôtre, choisi parmi huit cas types de la filière ou proposé par vous, avec un vrai document anonymisé.</p>
+        </article>
+        <article class="fact reveal">
+          <div class="fact__num">{dureeTotale}</div>
+          <p>Sur 4 à 6 semaines, en modules de {fmtDuree(dMin)} à {fmtDuree(dMax)}, avec une séance collective en visio après le module 5.</p>
+        </article>
+        <article class="fact reveal">
+          <div class="fact__num">6</div>
+          <p>Compétences évaluées sur votre projet final pour délivrer le badge Niveau 1, vérifiable en ligne.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="grid grid--3">
-        <div class="card card--sand">
-          <span class="t-micro">Partir du travail réel</span>
-          <h3>Votre cas fil rouge</h3>
-          <p>Vous choisissez au module 0 une tâche de votre entreprise : devis, dossier de consultation, mails, compte rendu, veille… et vous la faites avancer d'un module à l'autre.</p>
-        </div>
-        <div class="card card--sand">
-          <span class="t-micro">Méthode avant outil</span>
-          <h3>Sobriété et fiabilité</h3>
-          <p>Avant d'automatiser, on vérifie s'il faut de l'IA. Ensuite on définit les contrôles humains, les règles de données et ce qui vous rend dépendant d'un fournisseur.</p>
-        </div>
-        <div class="card card--sand">
-          <span class="t-micro">Avec la filière</span>
-          <h3>Badge Niveau 1</h3>
-          <p>Votre projet final est évalué sur six compétences. Le badge atteste votre formation à la maîtrise de l'IA et se vérifie en ligne.</p>
-        </div>
+  <!-- ============ Pour qui ============ -->
+  <section class="sec">
+    <div class="container pourqui">
+      <div class="reveal">
+        <span class="eyebrow">Pour qui ?</span>
+        <h2>Conçu pour les entreprises <em>de la filière forêt-bois.</em></h2>
+        <p class="t-lead">Dirigeants et salariés, sans prérequis technique. Il vous faut un ordinateur, un outil d'IA grand public et un document de votre quotidien.</p>
+        <ul class="metiers">
+          {metiers.map((m) => <li>{m}</li>)}
+        </ul>
       </div>
+      <figure class="pourqui__visual reveal">
+        <img src="/marques/bois-ia.webp" alt="Grumes de bois empilées, sections claires et écorce sombre, traversées de fins traits lumineux." loading="lazy" width="800" height="1200" />
+        <figcaption>Votre métier d'abord.<br />L'outil ensuite.</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="section section--alt">
+  <!-- ============ Méthode ============ -->
+  <section class="sec sec--sand">
     <div class="container">
-      <span class="eyebrow">Programme</span>
-      <h2 class="t-h2">Dix modules, de la première demande au prototype mesuré</h2>
-      <ol class="modules">
-        {modules.map((m) => (
-          <li>
-            <a class="module-row" href={`/modules/${m.data.id}/`}>
-              <span class="module-row__num">M{m.data.ordre}</span>
-              <span><span class="module-row__title">{m.data.titre}</span><br /><span class="module-row__meta">{m.data.resume}</span></span>
-              <span class="pill">{m.data.duree} min</span>
-            </a>
+      <div class="sec-head reveal">
+        <span class="eyebrow">La méthode</span>
+        <h2>Quatre étapes, <em>du premier essai à la décision.</em></h2>
+      </div>
+      <ol class="phases">
+        {phases.map((p) => (
+          <li class="phase reveal">
+            <span class="phase__n">{p.n} · {p.mods}</span>
+            <h3>{p.titre}</h3>
+            <p>{p.txt}</p>
           </li>
         ))}
       </ol>
     </div>
   </section>
 
-  <section class="section">
+  <!-- ============ Programme ============ -->
+  <section class="sec" id="programme">
+    <div class="container programme">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Programme</span>
+        <h2>Dix modules, <em>de la première demande au prototype mesuré.</em></h2>
+        <p class="t-lead">Chaque module associe des vidéos courtes, une fiche mémo, un exercice sur votre cas et, souvent, un quiz.</p>
+      </div>
+      <ol class="mods">
+        {modules.map((m) => (
+          <li class="reveal">
+            <a class="mod" href={`/modules/${m.id}/`}>
+              <span class="mod__num">M{m.ordre}</span>
+              <span class="mod__body">
+                <span class="mod__title">{m.titre}</span>
+                <span class="mod__resume">{m.resume}</span>
+              </span>
+              <span class="mod__meta">
+                {m.ordre <= 1 && <span class="pill pill--ok">Accès libre</span>}
+                {m.competences.length > 0 && <span class="pill">{m.competences.join(' · ')}</span>}
+                <span class="mod__duree">{fmtDuree(m.duree)}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <p class="programme__more"><a class="btn btn--secondary" href="/programme/">Voir le programme détaillé →</a></p>
+    </div>
+  </section>
+
+  <!-- ============ Badge ============ -->
+  <section class="sec sec--dark">
+    <div class="container badge-sec">
+      <div class="reveal">
+        <span class="eyebrow">Le badge Niveau 1</span>
+        <h2>Six compétences, <em>prouvées sur votre projet.</em></h2>
+        <p class="t-lead">Votre projet final rassemble ce que vous avez produit sur votre cas. Il est évalué sur six compétences ; le badge atteste votre formation à la maîtrise de l'IA et se vérifie en ligne.</p>
+        <div class="badge-sec__seal"><Seal /></div>
+      </div>
+      <dl class="comp">
+        {competences.map(([c, t, p]) => (
+          <div class="comp__row reveal">
+            <dt><span>{c}</span>{t}</dt>
+            <dd>{p}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="sec sec--sand" id="faq">
+    <div class="container faq">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Questions fréquentes</span>
+        <h2>Vous vous demandez sûrement…</h2>
+      </div>
+      <div class="faq__list">
+        {faq.map(([q, r]) => (
+          <details>
+            <summary>{q}</summary>
+            <p>{r}{q.startsWith('Et après') && <> <a href="https://perfia.kosm.io/souverainete.html">En savoir plus sur le déploiement souverain</a>.</>}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Appel final ============ -->
+  <section class="sec final">
     <div class="container">
-      <div class="grid grid--2">
-        <div>
-          <span class="eyebrow">Et après ?</span>
-          <h2 class="t-h3">Niveau 2 : déployer chez vous</h2>
-          <p>Le projet final du Niveau 1 sert de point de départ. Si vous souhaitez aller plus loin, l'équipe PerfIA reprend vos cas réels en formation-action et les déploie sur une infrastructure que vous maîtrisez.</p>
-          <a href="https://perfia.kosm.io/souverainete.html">En savoir plus sur le déploiement souverain</a>
+      <span class="eyebrow">Prêt à commencer ?</span>
+      <h2>Commencez par <em>votre cas.</em></h2>
+      <p class="t-lead">Créez votre compte, suivez le module 0 et choisissez la tâche que vous allez faire avancer pendant le parcours.</p>
+      <div class="hero__ctas">
+        <a class="btn btn--primary btn--lg" href="/inscription/">Créer mon compte →</a>
+        <a class="btn btn--light btn--lg" href="/programme/">Lire le programme</a>
+      </div>
+      <div class="contacts">
+        <div class="contact">
+          <img src="/marques/kosmio-blanc.svg" alt="Kosmio" height="26" />
+          <p>Mathieu Pesin · Accompagnement IA filière bois</p>
+          <p><a href="mailto:mathieu@kosm.io">mathieu@kosm.io</a></p>
         </div>
-        <div class="card">
-          <h3>Pour qui ?</h3>
-          <p>Dirigeants et salariés des entreprises de la filière : sylviculture, exploitation, scierie, seconde transformation, construction, bureaux d'études, négoce, ameublement. Aucun prérequis technique.</p>
-          <a class="btn btn--primary" href="/inscription/">Commencer le parcours</a>
+        <div class="contact">
+          <img src="/marques/xylofutur-blanc.png" alt="Xylofutur" height="32" />
+          <p>Pôle de compétitivité Forêt-Bois-Papier</p>
+          <p><a href="https://www.xylofutur.fr/">xylofutur.fr →</a></p>
         </div>
       </div>
     </div>
   </section>
+
+  <div class="sticky-cta" data-auth="out">
+    <a class="btn btn--primary" href="/inscription/">Créer mon compte →</a>
+  </div>
 </Base>
+
+<script>
+  const sticky = document.querySelector<HTMLElement>('.sticky-cta');
+  const hero = document.querySelector('.hero');
+  if (sticky && hero && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => sticky.classList.toggle('visible', !e.isIntersecting), { threshold: 0 }).observe(hero);
+  }
+</script>
+
+<style>
+  /* ============ Héros ============ */
+  .hero {
+    position: relative; overflow: hidden; color: var(--white);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(0,177,148,0.18), transparent 60%),
+      radial-gradient(900px 500px at 0% 100%, rgba(186,135,72,0.18), transparent 60%),
+      var(--ink-900);
+    padding-block: clamp(3.5rem, 9vw, 8rem);
+  }
+  .hero__grid { display: grid; gap: var(--space-7); align-items: center; }
+  @media (min-width: 1024px) { .hero__grid { grid-template-columns: 1.35fr 1fr; gap: var(--space-8); } }
+  .hero__text { min-width: 0; }
+  .hero__logos { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
+  .hero__logos img { height: 26px; width: auto; display: block; opacity: .92; }
+  .hero__logos img + span + img { height: 30px; }
+  .hero__logos span { color: rgba(255,255,255,.35); font-size: .9rem; }
+  .hero .eyebrow { color: var(--xf-green-500); }
+  .hero h1 {
+    color: var(--white); font-size: clamp(2.6rem, 6.4vw, 5.25rem); line-height: .98;
+    letter-spacing: -0.03em; margin: var(--space-5) 0; text-wrap: balance;
+  }
+  .hero h1 em { font-style: italic; color: var(--xf-green-500); }
+  .hero__lead { font-size: var(--text-lead); line-height: 1.55; color: rgba(255,255,255,.8); max-width: 40ch; margin: 0 0 var(--space-7); }
+  .hero__ctas { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .hero__sig { margin: var(--space-7) 0 0; font-family: var(--font-mono); font-size: .72rem; color: rgba(255,255,255,.58); letter-spacing: var(--tracking-mono); text-transform: uppercase; line-height: 1.8; }
+  .hero__sig b { color: var(--xf-gold-500); }
+
+  :global(.btn--light) { background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,.85); }
+  :global(.btn--light:hover) { background: var(--white); color: var(--ink-900); }
+
+  .cernes { margin: 0; width: 100%; max-width: 500px; justify-self: center; }
+  .cernes svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .cernes text { font-family: var(--font-mono); font-size: 16px; font-weight: 700; fill: var(--xf-green-500); paint-order: stroke; stroke: #262B2E; stroke-width: 4px; }
+  .cernes figcaption { margin-top: var(--space-4); text-align: center; font-family: var(--font-mono); font-size: .68rem; letter-spacing: var(--tracking-mono); text-transform: uppercase; color: rgba(255,255,255,.55); }
+  .cernes figcaption span { color: var(--xf-green-500); }
+  @media (prefers-reduced-motion: no-preference) {
+    .cerne { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: trace 1.4s var(--ease-out) forwards; animation-delay: calc(var(--i) * 110ms + 200ms); }
+    .repere { opacity: 0; animation: apparait .5s var(--ease-out) forwards; animation-delay: calc(var(--i) * 110ms + 900ms); }
+    .comptage { opacity: 0; animation: apparait .6s var(--ease-out) forwards; animation-delay: 1.9s; }
+  }
+  @keyframes trace { to { stroke-dashoffset: 0; } }
+  @keyframes apparait { to { opacity: 1; } }
+
+  /* ============ Bandeau ============ */
+  .marquee { background: var(--xf-green-500); color: var(--white); padding-block: var(--space-4); overflow: hidden; }
+  .marquee__track { display: flex; width: max-content; }
+  .marquee__set { display: flex; flex: none; gap: var(--space-7); padding-right: var(--space-7); font-family: var(--font-mono); font-weight: 700; text-transform: uppercase; letter-spacing: var(--tracking-mono); font-size: .78rem; white-space: nowrap; }
+  .marquee__set span { display: inline-flex; align-items: center; gap: var(--space-3); }
+  .marquee__set span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.7); }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee__track { animation: defile 45s linear infinite; }
+    .marquee:hover .marquee__track { animation-play-state: paused; }
+  }
+  @keyframes defile { to { transform: translateX(-50%); } }
+
+  /* ============ Sections ============ */
+  .sec { padding-block: clamp(4rem, 8vw, 7.5rem); }
+  .sec--sand { background: var(--xf-sand-100); }
+  .sec--dark { background: var(--ink-900); color: var(--white); }
+  .sec-head { max-width: 52rem; margin-bottom: var(--space-8); }
+  .sec-head--center { text-align: center; margin-inline: auto; margin-bottom: var(--space-7); }
+  .sec h2 { font-size: var(--text-h1); margin: var(--space-4) 0 var(--space-5); text-wrap: balance; }
+  .sec h2 em { font-style: italic; color: var(--xf-green-600); }
+  .sec-head .t-lead { max-width: 60ch; margin: 0; }
+
+  .video-frame { margin: 0 auto; max-width: 920px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); background: var(--ink-900); aspect-ratio: 16 / 9; }
+  .video-frame video { width: 100%; height: 100%; display: block; }
+
+  .facts { display: grid; gap: var(--space-5); }
+  @media (min-width: 768px) { .facts { grid-template-columns: repeat(3, 1fr); } }
+  .fact { position: relative; overflow: hidden; background: var(--white); border: 1px solid var(--grey-300); border-radius: var(--radius-lg); padding: var(--space-7) var(--space-6); transition: transform .3s var(--ease-out), box-shadow .3s var(--ease-out); }
+  .fact:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .fact::after { content: ""; position: absolute; right: -34px; bottom: -34px; width: 120px; height: 120px; border-radius: 50%; border: 10px solid var(--xf-green-50); box-shadow: 0 0 0 10px var(--white), 0 0 0 20px var(--xf-green-50); }
+  .fact__num { position: relative; z-index: 1; font-family: var(--font-display); font-weight: 700; color: var(--xf-green-600); font-size: clamp(2.75rem, 5vw, 4rem); line-height: 1; letter-spacing: -0.03em; }
+  .fact p { position: relative; z-index: 1; color: var(--ink-700); margin: var(--space-4) 0 0; max-width: 32ch; }
+
+  .pourqui { display: grid; gap: var(--space-8); align-items: center; }
+  @media (min-width: 900px) { .pourqui { grid-template-columns: 1.1fr .9fr; } }
+  .pourqui > * { min-width: 0; }
+  .metiers { list-style: none; padding: 0; margin: var(--space-6) 0 0; display: grid; gap: var(--space-2); }
+  @media (min-width: 560px) { .metiers { grid-template-columns: 1fr 1fr; } }
+  .metiers li { display: flex; gap: var(--space-3); align-items: baseline; padding: var(--space-3) var(--space-4); background: var(--xf-sand-100); border: 1px solid rgba(201,191,177,.6); border-radius: var(--radius-md); font-size: .95rem; }
+  .metiers li::before { content: "→"; color: var(--xf-green-500); font-weight: 700; flex: none; }
+  .pourqui__visual { position: relative; margin: 0; border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4 / 5; box-shadow: var(--shadow-lg); max-width: 520px; justify-self: center; width: 100%; }
+  .pourqui__visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pourqui__visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,24,32,0) 45%, rgba(15,24,32,.85) 100%); }
+  .pourqui__visual figcaption { position: absolute; z-index: 1; left: var(--space-6); right: var(--space-6); bottom: var(--space-6); color: var(--white); font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; line-height: 1.12; letter-spacing: var(--tracking-tight); }
+
+  .phases { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-5); counter-reset: none; }
+  @media (min-width: 768px) { .phases { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .phases { grid-template-columns: repeat(4, 1fr); } }
+  .phase { position: relative; background: var(--white); border: 1px solid var(--grey-300); border-radius: var(--radius-lg); padding: var(--space-6); transition: transform .3s var(--ease-out), box-shadow .3s var(--ease-out); }
+  .phase:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .phase__n { font-family: var(--font-mono); font-size: .72rem; font-weight: 700; color: var(--xf-green-600); letter-spacing: var(--tracking-mono); text-transform: uppercase; }
+  .phase h3 { font-size: 1.3rem; margin: var(--space-3) 0; }
+  .phase p { color: var(--ink-700); font-size: .95rem; margin: 0; line-height: 1.55; }
+  @media (min-width: 1100px) {
+    .phase:not(:last-child)::after { content: ""; position: absolute; top: 2.15rem; right: calc(var(--space-5) * -1); width: var(--space-5); height: 2px; background: var(--xf-green-500); opacity: .5; }
+  }
+
+  .mods { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3); }
+  .mod {
+    display: grid; grid-template-columns: 4.5rem minmax(0,1fr) auto; gap: var(--space-5); align-items: center;
+    padding: var(--space-5) var(--space-6); border: 1px solid var(--grey-300); border-radius: var(--radius-lg);
+    text-decoration: none; color: inherit; background: var(--white);
+    transition: border-color .25s var(--ease-out), transform .25s var(--ease-out), box-shadow .25s var(--ease-out);
+  }
+  .mod:hover { border-color: var(--xf-green-500); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .mod__num { font-family: var(--font-display); font-weight: 700; font-size: 2rem; letter-spacing: -0.03em; color: var(--km-sage-500); line-height: 1; }
+  .mod:hover .mod__num { color: var(--xf-green-600); }
+  .mod__body { display: grid; gap: 2px; min-width: 0; }
+  .mod__title { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--ink-900); letter-spacing: var(--tracking-tight); }
+  .mod__resume { color: var(--grey-600); font-size: .92rem; line-height: 1.45; }
+  .mod__meta { display: flex; gap: var(--space-2); align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+  .mod__duree { font-family: var(--font-mono); font-size: .78rem; font-weight: 700; color: var(--ink-700); min-width: 4.5em; text-align: right; font-variant-numeric: tabular-nums; }
+  @media (max-width: 719.98px) {
+    .mod { grid-template-columns: 3rem minmax(0,1fr); padding: var(--space-4); gap: var(--space-3) var(--space-4); }
+    .mod__num { font-size: 1.5rem; }
+    .mod__meta { grid-column: 2; justify-content: flex-start; }
+    .mod__duree { text-align: left; min-width: 0; }
+  }
+  .programme__more { margin: var(--space-7) 0 0; }
+
+  .sec--dark h2 { color: var(--white); }
+  .sec--dark h2 em { color: var(--xf-green-500); }
+  .sec--dark .eyebrow { color: var(--xf-green-500); }
+  .sec--dark .t-lead { color: rgba(255,255,255,.75); }
+  .badge-sec { display: grid; gap: var(--space-8); }
+  @media (min-width: 1024px) { .badge-sec { grid-template-columns: .9fr 1.1fr; align-items: start; } }
+  .badge-sec > * { min-width: 0; }
+  .badge-sec__seal { margin-top: var(--space-7); width: 128px; }
+  .badge-sec__seal :global(.badge-seal) { width: 128px; height: 128px; margin: 0; }
+  .comp { margin: 0; display: grid; gap: 0; border-top: 1px solid rgba(255,255,255,.14); }
+  .comp__row { display: grid; gap: var(--space-2) var(--space-5); padding: var(--space-5) 0; border-bottom: 1px solid rgba(255,255,255,.14); }
+  @media (min-width: 640px) { .comp__row { grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); align-items: baseline; } }
+  .comp dt { display: flex; gap: var(--space-4); align-items: baseline; font-family: var(--font-display); font-weight: 700; font-size: 1.12rem; line-height: 1.3; color: var(--white); }
+  .comp dt span { font-family: var(--font-mono); font-size: .8rem; color: var(--xf-gold-500); letter-spacing: .08em; flex: none; width: 2.2rem; }
+  .comp dd { margin: 0; color: rgba(255,255,255,.65); font-size: .92rem; padding-left: calc(2.2rem + var(--space-4)); }
+  @media (min-width: 640px) { .comp dd { padding-left: 0; } }
+
+  .faq { max-width: 56rem; }
+  .faq__list { display: grid; gap: var(--space-3); }
+  .faq details { background: var(--white); border: 1px solid var(--grey-300); border-radius: var(--radius-md); padding: 0; transition: border-color .2s var(--ease-out); }
+  .faq details[open] { border-color: var(--xf-green-500); }
+  .faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-5) var(--space-6); font-family: var(--font-display); font-weight: 700; font-size: 1.08rem; line-height: 1.35; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; flex: none; font-size: 1.6rem; line-height: 1; color: var(--xf-green-500); transition: transform .3s var(--ease-out); }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq summary:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+  .faq details p { margin: 0; padding: 0 var(--space-6) var(--space-5); color: var(--ink-700); max-width: 68ch; }
+
+  .final {
+    color: var(--white);
+    background:
+      radial-gradient(800px 400px at 90% 100%, rgba(186,135,72,0.25), transparent 60%),
+      radial-gradient(800px 400px at 10% 0%, rgba(0,177,148,0.25), transparent 60%),
+      var(--ink-900);
+  }
+  .final .eyebrow { color: var(--xf-green-500); }
+  .final h2 { color: var(--white); font-size: var(--text-display-2); line-height: 1; letter-spacing: -0.03em; }
+  .final h2 em { color: var(--xf-green-500); }
+  .final .t-lead { color: rgba(255,255,255,.78); max-width: 46ch; margin-bottom: var(--space-7); }
+  .contacts { display: grid; gap: var(--space-5); margin-top: var(--space-8); }
+  @media (min-width: 768px) { .contacts { grid-template-columns: 1fr 1fr; } }
+  .contact { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12); border-radius: var(--radius-lg); padding: var(--space-6); }
+  .contact img { height: 28px; width: auto; display: block; margin-bottom: var(--space-4); }
+  .contact p { color: rgba(255,255,255,.72); margin: var(--space-2) 0 0; }
+  .contact a { color: var(--xf-green-500); }
+
+  .sticky-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    background: var(--ink-900); padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    display: flex; justify-content: center; transform: translateY(100%); transition: transform .35s var(--ease-out);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.15);
+  }
+  .sticky-cta.visible { transform: none; }
+  .sticky-cta .btn { width: 100%; max-width: 420px; justify-content: center; }
+  @media (min-width: 1024px) { .sticky-cta { display: none; } }
+</style>
