@@ -27,3 +27,5 @@ Plateforme de formation du Parcours IA filière bois (Kosmio × Xylofutur), Nive
 - Durée annoncée : 8 à 10 heures sur 4 à 6 semaines ; elle se calcule depuis le champ `duree` des modules, à tenir à jour.
 - `docs/sources/` contient des documents client internes : ne jamais les publier ni les copier dans `web/`.
 - Mathieu valide les scripts, la voix, les mises en ligne, les prix et tout envoi externe.
+- Documents : ne jamais parler d'imprimer, toujours de télécharger en PDF.
+- Accompagnement : une séance individuelle en visio, réservée par l'apprenant sur https://cal.com/kosmio/perfia-academie (pas de séance collective).
