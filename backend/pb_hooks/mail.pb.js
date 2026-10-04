@@ -7,18 +7,18 @@
  * Actif dès que APP_BREVO_API_KEY est défini ; sinon PocketBase garde son SMTP habituel.
  *
  * Variables :
- *   APP_BREVO_API_KEY  clé API Brevo v3 (secret, jamais committée)
+ *   APP_BREVO_API_KEY ou BREVO_API  clé API Brevo v3 (secret, jamais committée)
  *   APP_MAIL_FROM      expéditeur « Mooc PerfIA <adresse> » ou adresse seule, validée chez Brevo ;
- *                      à défaut, l'expéditeur des réglages PocketBase.
+ *                      à défaut, « Mooc PerfIA <mathieu@kosm.io> ».
  */
 onMailerSend((e) => {
-  const key = String($os.getenv("APP_BREVO_API_KEY") || "").trim()
+  const key = String($os.getenv("APP_BREVO_API_KEY") || $os.getenv("BREVO_API") || "").trim()
   if (!key) return e.next()
 
   const msg = e.message
   const addr = (a) => (a.name ? { email: a.address, name: a.name } : { email: a.address })
   let sender = addr(msg.from)
-  const custom = String($os.getenv("APP_MAIL_FROM") || "").trim()
+  const custom = String($os.getenv("APP_MAIL_FROM") || "Mooc PerfIA <mathieu@kosm.io>").trim()
   if (custom) {
     const m = custom.match(/^(.*?)\s*<([^>]+)>$/)
     sender = m ? (m[1].trim() ? { email: m[2].trim(), name: m[1].trim() } : { email: m[2].trim() }) : { email: custom, name: sender.name }
