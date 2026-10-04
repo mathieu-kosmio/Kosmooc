@@ -1,6 +1,6 @@
  MENUISERIE DES LANDES - Scierie
  ZA des Pins, 40000 Mont-de-Marsan                                                  DEVIS
- Tél. 05 49 00 00 00 - contact@menuiserie-des-landes.example                                                                                                N° DEV-2026-0412
+ Tél. 05 58 00 00 00 - contact@menuiserie-des-landes.example                                                                                                N° DEV-2026-0412
  SIRET 000 000 000 00000 - APE 1610A
                                                                                                                                         Établi le 02/09/2026
                                                                                                                                             Validité 30 jours
@@ -19,7 +19,7 @@
 
  Rep.       Désignation                                                                                Qté                U          P.U. HT        Total HT
 
-    1       Poutre CHÊNE avivé C24, purgé d'aubier                                                      12        pce                148,00        1 776,00
+    1       Poutre CHÊNE avivé D24, purgé d'aubier                                                      12        pce                148,00        1 776,00
             Section 100 x 220 mm - longueur 5,20 m
 
     2       Bastaing DOU sec 18 %                                                                       86         ml                     9,80       842,80

@@ -9,11 +9,14 @@ const warn = [];
 const modDir = join(root, 'web/src/content/modules');
 const walk = (d) => readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]));
 
-for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'contenus')), ...walk(join(root, 'backend/quiz'))]) {
+for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'contenus')), ...walk(join(root, 'backend/quiz')), ...walk(join(root, 'web/public/ressources')).filter((x) => /\.(md|txt)$/.test(x))]) {
   const t = readFileSync(f, 'utf8');
   if (t.includes('—')) errors.push(`${f} : tiret cadratin interdit`);
   if (/socamex/i.test(t)) errors.push(`${f} : nom de client réel`);
   if (/il ne s'agit pas de/i.test(t)) warn.push(`${f} : tournure « il ne s'agit pas de » à reformuler`);
+  if (/ia-bois\.kosm\.io|ia-bois point kosm/i.test(t)) errors.push(`${f} : ancienne adresse ia-bois.kosm.io, utiliser perfia.kosm.io`);
+  if (/ch[êe]ne[^\n]{0,40}\bC(14|16|18|20|22|24|27|30)\b/i.test(t)) errors.push(`${f} : classe de résistance résineux (C..) associée au chêne, les feuillus sont en classe D`);
+  if (/(?<!« )\bskill\b|\bbaseline\b/i.test(t)) warn.push(`${f} : anglicisme (skill, baseline) à traduire pour le public filière`);
 }
 
 for (const file of readdirSync(modDir).filter((x) => x.endsWith('.md'))) {

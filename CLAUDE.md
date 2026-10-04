@@ -23,5 +23,7 @@ Plateforme de formation du Parcours IA filière bois (Kosmio × Xylofutur), Nive
 - Contenus : pas de tiret cadratin, pas de « il ne s'agit pas de X mais de Y », aucun nom de client réel, aucun gain présenté comme mesuré s'il ne l'est pas.
 - Schéma : nouvelle migration pour toute évolution, jamais de modification d'une migration déployée.
 - Hooks : logique partagée dans `backend/pb_hooks/lib/academie.js`, chargée par `require` dans chaque handler.
+- Adresse publique PerfIA : `perfia.kosm.io` (l'ancienne `ia-bois.kosm.io` est interdite, contrôlée par `npm run valider`).
+- Durée annoncée : 8 à 10 heures sur 4 à 6 semaines ; elle se calcule depuis le champ `duree` des modules, à tenir à jour.
 - `docs/sources/` contient des documents client internes : ne jamais les publier ni les copier dans `web/`.
 - Mathieu valide les scripts, la voix, les mises en ligne, les prix et tout envoi externe.

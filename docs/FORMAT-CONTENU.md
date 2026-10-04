@@ -40,7 +40,10 @@ Corps en Markdown :
 - une section `## Exercice` quand `exercice: true` : consigne pas à pas sur le cas fil rouge, livrable attendu, durée ;
 - pas de tiret cadratin (le caractère « — » est interdit) ;
 - pas de tournure « il ne s'agit pas de X mais de Y » ;
-- aucune marque client réelle : SOCAMEX devient « votre entreprise » ou une entreprise fictive (« Menuiserie des Landes »).
+- aucune marque client réelle : SOCAMEX devient « votre entreprise » ou une entreprise fictive (« Menuiserie des Landes ») ;
+- vocabulaire du public : pas d'anglicisme quand un mot français existe (« procédure réutilisable » plutôt que skill, « point de départ » plutôt que baseline) ;
+- exactitude métier : classes de résistance C pour les résineux et le peuplier, D pour les feuillus (chêne, châtaignier) ; indicatifs et adresses cohérents avec la région de l'entreprise fictive ;
+- adresse publique du site PerfIA : https://perfia.kosm.io (outil de choix : /choix-ia.html, niveau 2 : /souverainete.html).
 
 ## 2. Quiz : `backend/quiz/<id>.json`
 

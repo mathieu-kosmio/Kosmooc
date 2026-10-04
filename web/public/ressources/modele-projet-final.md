@@ -2,7 +2,7 @@
 
 Nom : ........................   Entreprise : ........................   Date : ..../..../....
 
-Consigne : remplissez chaque partie en vous appuyant sur vos exercices des modules 4 à 9. Anonymisez tous les documents. N'écrivez aucun gain que vous n'avez pas mesuré : indiquez « mesuré » ou « estimé » à côté de chaque chiffre.
+Consigne : remplissez chaque partie en vous appuyant sur vos exercices des modules 0 à 9. Anonymisez tous les documents. Ce document est un dossier de décision : indiquez « mesuré » (sur combien de cas) ou « estimé » à côté de chaque chiffre. Des estimations bien étiquetées sont acceptées ; un gain affiché sans mesure ne l'est pas.
 
 ## 1. Mon cas (module 0)
 
@@ -80,7 +80,7 @@ Outil retenu :   Raison :   Date de réexamen :
 
 ## 7. Mesure et décision de suite (module 9)
 
-| Donnée de départ (baseline) | Valeur | Mesurée ou estimée |
+| Donnée du point de départ | Valeur | Mesurée (sur combien de cas) ou estimée |
 |---|---|---|
 | Volume annuel de la tâche | | |
 | Temps unitaire, exceptions comprises | | |
@@ -88,8 +88,18 @@ Outil retenu :   Raison :   Date de réexamen :
 | Taux d'erreur et coût d'une erreur | | |
 | Délai de bout en bout | | |
 
-Comparaison avant / après observée :
+Mesure avant / après (même type de document, contrôle humain compris) :
+
+| | À la main | Avec le prototype |
+|---|---|---|
+| Document (anonymisé) | | |
+| Temps passé | | |
+| Erreurs ou reprises | | |
+
+Plan de mesure pour les quatre semaines suivantes (quoi, qui, jusqu'à quand) :
 
 Décision de suite : abandonner / améliorer / observer en parallèle / déployer. Justification :
 
 Propriétaire métier du prototype :   Première date de revue :
+
+Chemin envisagé pour la suite : seul / avec notre prestataire habituel / niveau 2 PerfIA. Pourquoi :

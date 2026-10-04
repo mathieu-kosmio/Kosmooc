@@ -10,7 +10,9 @@
         "Synthétiser un CCTP",
         "Produire une fiche qui lance une fabrication"
       ],
-      "bonnes": [2],
+      "bonnes": [
+        2
+      ],
       "explication": "Plus la conséquence d'une erreur est lourde, plus le contrôle doit être explicite. Une fiche qui lance une fabrication engage du bois, du temps et un client."
     },
     {
@@ -22,19 +24,25 @@
         "Puis-je l'anonymiser ou le réduire au strict nécessaire ?",
         "Le document est-il long ?"
       ],
-      "bonnes": [0, 1, 2],
+      "bonnes": [
+        0,
+        1,
+        2
+      ],
       "explication": "Les quatre questions sont : le droit, la nature des données, les paramètres et conditions du service, l'anonymisation. La longueur n'en fait pas partie."
     },
     {
       "id": "q3",
-      "enonce": "Pendant l'usage d'un outil d'IA, le modèle apprend-il de votre conversation en direct ?",
+      "enonce": "Votre outil d'IA semble se souvenir de vous d'une conversation à l'autre. Que se passe-t-il ?",
       "choix": [
-        "Oui, il retient tout ce que vous lui dites pour la conversation suivante",
-        "Non, il est figé pendant l'usage. L'entraînement est une opération distincte, faite plus tard",
-        "Oui, mais seulement pour les documents de plus de dix pages"
+        "Le modèle s'est réentraîné en direct sur vos conversations",
+        "Le modèle reste figé ; c'est une fonction de mémoire de l'outil, liée à votre compte, à vérifier dans les réglages",
+        "Rien n'est jamais conservé, c'est une impression"
       ],
-      "bonnes": [1],
-      "explication": "Un modèle est figé pendant l'usage. Reste à vérifier, sur votre compte, ce qui est conservé et si l'amélioration des modèles par vos données est activée."
+      "bonnes": [
+        1
+      ],
+      "explication": "Le modèle est figé pendant l'usage. La mémoire, l'historique et l'option d'entraînement sont des réglages de votre compte : regardez ce qu'ils conservent et décidez."
     },
     {
       "id": "q4",
@@ -44,7 +52,9 @@
         "Un usage à haut risque",
         "Un usage interne à risque minimal"
       ],
-      "bonnes": [2],
+      "bonnes": [
+        2
+      ],
       "explication": "Un usage interne comme le passage du devis à la fiche relève du risque minimal. Le niveau change si l'IA touche au recrutement ou à l'évaluation des salariés."
     },
     {
@@ -56,7 +66,9 @@
         "Ce qui doit toujours être contrôlé par une personne",
         "Comment nous remplaçons les salariés par l'IA"
       ],
-      "bonnes": [3],
+      "bonnes": [
+        3
+      ],
       "explication": "Les cinq règles portent sur l'autorisé, le non transmis, le contrôlé, le signalement des incertitudes et la capitalisation des usages qui fonctionnent."
     }
   ]

@@ -54,13 +54,13 @@
       "id": "q5",
       "enonce": "Pourquoi noter une estimation du temps passé sur la tâche dès le module 0 ?",
       "choix": [
-        "Pour la vérifier et la mesurer réellement au module 9",
+        "Pour la confronter au relevé réel tenu jusqu'au module 9",
         "Pour la transmettre au fournisseur d'IA",
         "Pour obtenir le badge plus vite",
         "Elle ne servira plus jamais"
       ],
       "bonnes": [0],
-      "explication": "Sans point de départ, la mesure d'après ne prouve rien. L'estimation du module 0 sera confrontée à une mesure réelle au module 9."
+      "explication": "Sans point de départ, la mesure d'après ne prouve rien. L'estimation du module 0 sera confrontée au relevé que vous tenez à chaque occurrence de la tâche jusqu'au module 9."
     }
   ]
 }

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import '../../styles/widgets.css';
 
 export async function getStaticPaths() {
   const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
@@ -105,6 +106,9 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
 
   <script>
     import { pb, user, esc, errMsg } from '../../lib/pb.js';
+    import { mountWidgets } from '../../widgets/index.js';
+
+    mountWidgets();
 
     const root = document.querySelector('[data-module]') as HTMLElement;
     const moduleId = root.dataset.module!;
