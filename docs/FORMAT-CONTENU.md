@@ -43,7 +43,8 @@ Corps en Markdown :
 - aucune marque client réelle : SOCAMEX devient « votre entreprise » ou une entreprise fictive (« Menuiserie des Landes ») ;
 - vocabulaire du public : pas d'anglicisme quand un mot français existe (« procédure réutilisable » plutôt que skill, « point de départ » plutôt que baseline) ;
 - exactitude métier : classes de résistance C pour les résineux et le peuplier, D pour les feuillus (chêne, châtaignier) ; indicatifs et adresses cohérents avec la région de l'entreprise fictive ;
-- adresse publique du site PerfIA : https://perfia.kosm.io (outil de choix : /choix-ia.html, niveau 2 : /souverainete.html).
+- adresse publique du site PerfIA : https://perfia.kosm.io (outil de choix : /choix-ia.html, niveau 2 : /souverainete.html) ;
+- processothèque PerfIA (processus de la filière, aide au choix du cas fil rouge) : https://processotheque.kosmio.dev/referentiel?source=academie ; le paramètre `source=academie` affiche un encadré d'aide au choix.
 
 ## 2. Quiz : `backend/quiz/<id>.json`
 
