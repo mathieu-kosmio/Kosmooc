@@ -1,0 +1,133 @@
+---
+// Rondelle de bois : un cerne par module, M0 au cœur, M9 en périphérie.
+// Visiteur : rondelle complète. Apprenant connecté : seuls les cernes des modules
+// terminés se colorent, le module en cours est tracé en pointillé vert.
+interface Props { modules: { id: string; ordre: number; titre: string }[]; size?: 'hero' | 'panel' }
+const { modules, size = 'hero' } = Astro.props;
+
+const CX = 250, CY = 250;
+const ETAPES = [0, 3, 6, 9];
+const forme = (i: number, t: number) => 1 + 0.035 * Math.sin(3 * t + i * 0.7) + 0.022 * Math.sin(5 * t + i * 1.9) + 0.012 * Math.sin(9 * t + i);
+const rings = modules.map((m, i) => {
+  const r = 30 + i * 21;
+  const pts: string[] = [];
+  for (let a = 0; a <= 360; a += 6) {
+    const t = (a * Math.PI) / 180;
+    const k = forme(i, t);
+    pts.push(`${(CX - i * 1.6 + r * k * Math.cos(t)).toFixed(1)},${(CY + i * 0.9 + r * k * 0.96 * Math.sin(t)).toFixed(1)}`);
+  }
+  const k0 = forme(i, 0);
+  const etape = ETAPES.includes(i);
+  return {
+    ...m, i, etape,
+    d: `M${pts.join('L')}Z`,
+    lx: CX - i * 1.6 + r * k0, ly: CY + i * 0.9,
+    len: Math.round(2 * Math.PI * r * 1.05),
+    style: `--len:${Math.round(2 * Math.PI * r * 1.05)};--i:${i};--c:${etape ? '#00B194' : '#BA8748'};--o:${etape ? 0.95 : (0.3 + i * 0.04).toFixed(2)};--w:${etape ? 2.4 : 1.5}`,
+  };
+});
+const outer = rings[rings.length - 1];
+const gid = `aubier-${size}`;
+---
+<figure class={`rondelle rondelle--${size}`} data-rondelle data-total={modules.length}>
+  <svg viewBox="0 0 500 500" aria-hidden="true">
+    <defs>
+      <radialGradient id={gid} cx="48%" cy="51%" r="52%">
+        <stop offset="0" stop-color="#3A3226" />
+        <stop offset=".75" stop-color="#2B2C2C" />
+        <stop offset="1" stop-color="#1F2D3D" />
+      </radialGradient>
+    </defs>
+    <path class="disque" d={outer.d} transform="translate(250 250) scale(1.06) translate(-250 -250)" fill={`url(#${gid})`} stroke="#BA8748" stroke-opacity=".35" stroke-width="10" />
+    {[...rings].reverse().map((r) => <path class="bois" data-fill={r.id} d={r.d} />)}
+    {rings.map((r) => (
+      <g class="anneau" data-ring={r.id} data-ordre={r.ordre} data-titre={r.titre}>
+        <path class="cerne" d={r.d} style={r.style} />
+      </g>
+    ))}
+    <circle class="moelle" cx={CX} cy={CY} r="5" />
+    <line class="comptage" x1={CX} y1={CY} x2={outer.lx + 26} y2={outer.ly} />
+    {rings.map((r) => (
+      <g class="repere" data-rep={r.id} style={`--i:${r.i}`}>
+        <circle cx={r.lx} cy={r.ly} r={r.etape ? 3.6 : 2.4} class={r.etape ? 'is-etape' : ''} />
+        {r.etape && <text x={r.lx} y={r.ly - 12} text-anchor="middle">M{r.ordre}</text>}
+      </g>
+    ))}
+  </svg>
+  <figcaption data-caption>Un cerne par module · <span>en vert, la fin de chaque étape</span></figcaption>
+</figure>
+
+<script>
+  import { pb, user } from '../lib/pb.js';
+
+  const figures = document.querySelectorAll<HTMLElement>('[data-rondelle]');
+  const u = user();
+  if (u && figures.length) {
+    pb.collection('progress').getFullList({ filter: pb.filter('user = {:u}', { u: u.id }) }).then((list: any[]) => {
+      const st: Record<string, string> = Object.fromEntries(list.map((p) => [p.module, p.statut]));
+      figures.forEach((fig) => {
+        const anneaux = [...fig.querySelectorAll<SVGGElement>('.anneau')];
+        let done = 0;
+        let courant: SVGGElement | null = null;
+        anneaux.forEach((g) => {
+          const id = g.dataset.ring!;
+          const fait = st[id] === 'termine';
+          if (fait) done++;
+          else if (!courant) courant = g;
+          g.classList.toggle('is-done', fait);
+          fig.querySelector(`[data-fill="${id}"]`)?.classList.toggle('is-done', fait);
+          fig.querySelector(`[data-rep="${id}"]`)?.classList.toggle('is-done', fait);
+        });
+        if (courant) {
+          (courant as SVGGElement).classList.add('is-current');
+          fig.querySelector(`[data-rep="${(courant as SVGGElement).dataset.ring}"]`)?.classList.add('is-current');
+        }
+        fig.classList.add('is-perso');
+        const total = Number(fig.dataset.total);
+        const cap = fig.querySelector('[data-caption]');
+        if (cap) {
+          const c = courant as SVGGElement | null;
+          cap.innerHTML = `Votre rondelle · <span>${done} cerne${done > 1 ? 's' : ''} sur ${total}</span>` +
+            (c ? ` · M${c.dataset.ordre} en cours` : ' · parcours terminé');
+        }
+        fig.dispatchEvent(new CustomEvent('rondelle:progress', { bubbles: true, detail: { done, total, courant: courant ? { id: (courant as SVGGElement).dataset.ring, ordre: Number((courant as SVGGElement).dataset.ordre), titre: (courant as SVGGElement).dataset.titre } : null } }));
+      });
+    }).catch(() => {});
+  }
+</script>
+
+<style>
+  .rondelle { margin: 0; width: 100%; justify-self: center; }
+  .rondelle--hero { max-width: 500px; }
+  .rondelle--panel { max-width: 340px; }
+  .rondelle svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .bois { fill: #BA8748; fill-opacity: 0; transition: fill-opacity .9s var(--ease-out); }
+  .cerne { fill: none; stroke: var(--c); stroke-opacity: var(--o); stroke-width: var(--w); transition: stroke .6s var(--ease-out), stroke-opacity .6s var(--ease-out); }
+  .moelle { fill: #BA8748; }
+  .comptage { stroke: #F3E3CF; stroke-opacity: .55; stroke-width: 1.2; }
+  .repere circle { fill: #F3E3CF; transition: fill .6s var(--ease-out); }
+  .repere circle.is-etape { fill: #00B194; }
+  .rondelle text { font-family: var(--font-mono); font-size: 16px; font-weight: 700; fill: var(--xf-green-500); paint-order: stroke; stroke: #262B2E; stroke-width: 4px; }
+  .rondelle figcaption { margin-top: var(--space-4); text-align: center; font-family: var(--font-mono); font-size: .68rem; letter-spacing: var(--tracking-mono); text-transform: uppercase; color: rgba(255,255,255,.6); line-height: 1.7; }
+  .rondelle figcaption :global(span) { color: var(--xf-green-500); }
+
+  /* Apprenant connecté : seuls les modules terminés gardent leur couleur */
+  .is-perso .disque { fill-opacity: .55; }
+  .is-perso .anneau:not(.is-done) .cerne { stroke: #F3E3CF; stroke-opacity: .13; stroke-width: 1.1; }
+  .is-perso .bois.is-done { fill-opacity: .09; }
+  .is-perso .repere:not(.is-done) circle { fill: rgba(243,227,207,.25); }
+  .is-perso .repere:not(.is-done) text { fill: rgba(243,227,207,.45); }
+  .is-perso .anneau.is-current .cerne { stroke: #00B194; stroke-opacity: .95; stroke-width: 2.2; stroke-dasharray: 3 7; }
+  .is-perso .repere.is-current circle { fill: #00B194; }
+  .is-perso .repere.is-current text { fill: var(--xf-green-500); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cerne { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: trace 1.4s var(--ease-out) forwards; animation-delay: calc(var(--i) * 110ms + 200ms); }
+    .repere { opacity: 0; animation: apparait .5s var(--ease-out) forwards; animation-delay: calc(var(--i) * 110ms + 900ms); }
+    .comptage { opacity: 0; animation: apparait .6s var(--ease-out) forwards; animation-delay: 1.9s; }
+    .is-perso .anneau.is-current .cerne { animation: avance 1.6s linear infinite; stroke-dashoffset: 0; }
+  }
+  @keyframes trace { to { stroke-dashoffset: 0; } }
+  @keyframes apparait { to { opacity: 1; } }
+  @keyframes avance { to { stroke-dashoffset: -20; } }
+</style>

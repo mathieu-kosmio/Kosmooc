@@ -19,7 +19,7 @@ const { Content } = await render(entry);
       <h1 style="margin-top:var(--space-3)">{entry.data.titre}</h1>
       <div class="prose"><Content /></div>
       <p class="no-print" style="margin-top:var(--space-6)">
-        <button class="btn btn--primary btn--sm" type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button>
+        <button class="btn btn--primary btn--sm" type="button" onclick="window.print()">Télécharger en PDF</button>
         <a class="btn btn--ghost btn--sm" href={`/modules/${entry.data.module}/`}>Retour au module</a>
       </p>
     </article>

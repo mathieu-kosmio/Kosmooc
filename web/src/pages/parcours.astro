@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Rondelle from '../components/Rondelle.astro';
 import { getCollection } from 'astro:content';
 const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => ({ id: m.data.id, ordre: m.data.ordre, titre: m.data.titre, duree: m.data.duree, quiz: m.data.quiz }));
 ---
@@ -12,13 +13,27 @@ const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b
   </header>
   <section class="container" style="padding-block: var(--space-7) var(--space-9)">
 
+    <div class="dash">
+      <div class="dash__ring">
+        <Rondelle modules={modules.map((m) => ({ id: m.id, ordre: m.ordre, titre: m.titre }))} size="panel" />
+      </div>
+      <div class="dash__side">
+        <div id="next"></div>
+        <div class="card seance-card">
+          <span class="t-micro">Inclus dans votre parcours</span>
+          <h2 class="t-h3">Votre séance individuelle en visio</h2>
+          <p>Choisissez un créneau avec Mathieu Pesin, votre formateur, pour travailler sur votre cas. Le meilleur moment : après le module 5, quand votre projet est monté.</p>
+          <a class="btn btn--primary" href="https://cal.com/kosmio/perfia-academie" target="_blank" rel="noopener">Réserver ma séance ↗</a>
+        </div>
+      </div>
+    </div>
+
     <div class="grid grid--3" style="margin-bottom: var(--space-6)">
       <div class="card"><div class="stat" id="pct">0 %</div><div class="stat-label">du parcours terminé</div><div class="progress" style="margin-top:var(--space-3)"><span id="bar"></span></div></div>
       <div class="card"><div class="stat" id="quizcount">0</div><div class="stat-label">quiz réussis</div></div>
       <div class="card" id="badge-card"><div class="stat" id="badge-stat">À venir</div><div class="stat-label" id="badge-label">Badge Niveau 1</div></div>
     </div>
 
-    <div id="next" style="margin-bottom: var(--space-6)"></div>
 
     <h2 class="t-h3">Modules</h2>
     <ol class="modules" id="list">
@@ -94,3 +109,15 @@ const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b
     }
   </script>
 </Base>
+
+<style>
+  .dash { display: grid; gap: var(--space-5); margin-bottom: var(--space-5); }
+  @media (min-width: 900px) { .dash { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); } }
+  .dash__ring { background: radial-gradient(500px 300px at 90% 0%, rgba(0,177,148,.18), transparent 60%), var(--ink-900); border-radius: var(--radius-lg); padding: var(--space-6) var(--space-5); display: grid; place-items: center; }
+  .dash__side { display: grid; gap: var(--space-5); align-content: start; min-width: 0; }
+  .dash__side #next:empty { display: none; }
+  .dash__side #next :global(.btn) { width: 100%; justify-content: center; height: auto; min-height: 56px; padding-block: var(--space-3); text-align: center; }
+  .seance-card { background: var(--xf-green-50); border-color: rgba(0,153,130,.3); }
+  .seance-card h2 { margin: var(--space-3) 0; }
+  .seance-card p { color: var(--ink-700); }
+</style>

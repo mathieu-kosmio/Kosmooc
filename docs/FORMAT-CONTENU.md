@@ -24,7 +24,7 @@ videos:                     # 0 à 3 vidéos
     script: m0-v1           # renvoie à contenus/scripts/m0-v1.md
 ressources:                 # téléchargements et fiches
   - titre: "Fiche mémo M0"
-    type: fiche             # fiche = page imprimable générée depuis web/src/content/fiches/<ref>.md
+    type: fiche             # fiche = page téléchargeable en PDF générée depuis web/src/content/fiches/<ref>.md
     ref: m0
   - titre: "Devis exemple (cas devis vers fiche de production)"
     type: fichier           # fichier = téléchargement depuis web/public/ressources/<ref>
@@ -69,7 +69,7 @@ Les bonnes réponses restent côté serveur. Le front reçoit une version sans r
 
 ## 3. Fiche mémo : `web/src/content/fiches/<id>.md`
 
-2 pages imprimées maximum. Frontmatter : `titre`, `module`. Corps : l'essentiel du module, un encadré « À retenir », la consigne de l'exercice en résumé.
+2 pages maximum une fois téléchargée en PDF. Frontmatter : `titre`, `module`. Corps : l'essentiel du module, un encadré « À retenir », la consigne de l'exercice en résumé.
 
 ## 4. Script vidéo : `contenus/scripts/<id>-v<n>.md`
 

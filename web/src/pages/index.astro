@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Seal from '../components/Seal.astro';
+import Rondelle from '../components/Rondelle.astro';
 import { getCollection } from 'astro:content';
 
 const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => m.data);
@@ -11,26 +12,7 @@ const dMin = Math.min(...modules.map((m) => m.duree));
 const dMax = Math.max(...modules.map((m) => m.duree));
 const fmtDuree = (d: number) => (d >= 60 ? `${Math.floor(d / 60)} h${d % 60 ? ' ' + String(d % 60).padStart(2, '0') : ''}` : `${d} min`);
 
-// Visuel du héros : une rondelle de bois dont chaque cerne est un module (M0 au cœur, M9 en périphérie).
-const CX = 250, CY = 250;
-const rings = modules.map((m, i) => {
-  const r = 30 + i * 21;
-  const pts: string[] = [];
-  for (let a = 0; a <= 360; a += 6) {
-    const t = (a * Math.PI) / 180;
-    const k = 1 + 0.035 * Math.sin(3 * t + i * 0.7) + 0.022 * Math.sin(5 * t + i * 1.9) + 0.012 * Math.sin(9 * t + i);
-    const x = CX - i * 1.6 + r * k * Math.cos(t);
-    const y = CY + i * 0.9 + r * k * 0.96 * Math.sin(t);
-    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-  }
-  // Point où la ligne de comptage (vers le haut à droite) croise le cerne
-  const ta = 0;
-  const k = 1 + 0.035 * Math.sin(3 * ta + i * 0.7) + 0.022 * Math.sin(5 * ta + i * 1.9) + 0.012 * Math.sin(9 * ta + i);
-  const lx = CX - i * 1.6 + r * k * Math.cos(ta);
-  const ly = CY + i * 0.9 + r * k * 0.96 * Math.sin(ta);
-  return { d: `M${pts.join('L')}Z`, lx, ly, ordre: m.ordre, titre: m.titre, len: Math.round(2 * Math.PI * r * 1.05) };
-});
-const outer = rings[rings.length - 1];
+
 
 const cas = [
   'Devis vers fiche de production', 'Lecture de DCE', 'Tri des mails par projet', 'Compte rendu de chantier',
@@ -40,7 +22,7 @@ const cas = [
 const phases = [
   { n: '01', titre: 'Choisir votre cas', mods: 'M0', txt: "Vous faites le point sur vos usages et vous choisissez la tâche réelle que vous allez faire avancer jusqu'au bout." },
   { n: '02', titre: 'Comprendre et demander', mods: 'M1 à M3', txt: "Ce que fait un modèle, comment formuler une demande qui tient, et comment repérer les tâches où l'IA n'apporte rien." },
-  { n: '03', titre: 'Prototyper', mods: 'M4 à M6', txt: 'Votre cas devient une fiche E-T-S-C, un projet dans votre outil, puis une procédure réutilisable testée sur un document inédit.' },
+  { n: '03', titre: 'Prototyper', mods: 'M4 à M6', txt: 'Votre cas devient une fiche E-T-S-C, puis un projet dans votre outil. Votre séance individuelle tombe à ce moment-là, avant de tester une procédure réutilisable sur un document inédit.' },
   { n: '04', titre: 'Fiabiliser et décider', mods: 'M7 à M9', txt: 'Contrôles, données, dépendances, mesure avant et après : vous décidez de la suite sur des faits.' },
 ];
 
@@ -58,13 +40,15 @@ const metiers = [
   "Construction bois et bureaux d'études", 'Négoce et distribution', 'Ameublement et agencement',
 ];
 
+const CAL = 'https://cal.com/kosmio/perfia-academie';
+
 const faq = [
   ['Faut-il des compétences techniques ?', "Aucune. Le parcours s'adresse aux dirigeants et aux salariés de la filière. Si vous savez joindre un fichier à un mail, vous pouvez suivre les modules."],
   ["Quel outil d'IA faut-il ?", "Celui que vous utilisez déjà, ou un outil grand public : ChatGPT, Claude, Le Chat de Mistral, Copilot ou Gemini. Le module 8 vous aide ensuite à choisir en connaissance de cause et à limiter votre dépendance."],
   ['Combien de temps cela prend-il ?', `Environ ${dureeTotale} au total, à répartir sur 4 à 6 semaines. Les modules durent de ${fmtDuree(dMin)} à ${fmtDuree(dMax)} et se suivent à votre rythme.`],
   ["Puis-je essayer avant de m'inscrire ?", 'Oui. Les modules 0 et 1 sont en accès libre. La création du compte est gratuite et débloque la suite, les quiz et le suivi de votre progression.'],
   ['Mes documents sont-ils protégés ?', "Vous travaillez sur des documents anonymisés : le module 0 explique comment faire, le module 7 vous apprend à décider de ce que vous pouvez confier à un outil. Les fichiers déposés sur la plateforme ne sont visibles que par vous et les évaluateurs."],
-  ['Y a-t-il des moments en groupe ?', "Oui. Après le module 5, une séance collective d'une heure en visio réunit les participants de la session pour partager les premiers prototypes et débloquer ce qui coince. La date est envoyée par mail."],
+  ['Serai-je accompagné ?', "Oui. En plus des modules, vous réservez une séance individuelle en visio avec votre formateur, directement dans son agenda en ligne, au créneau qui vous convient. Nous conseillons de la placer après le module 5, quand votre projet est monté : on travaille alors sur votre cas et vos propres documents."],
   ['Que vaut le badge Niveau 1 ?', "Il atteste votre formation à la maîtrise de l'IA sur six compétences, évaluées à partir de votre projet final. Chaque badge a une page de vérification en ligne que vous pouvez partager."],
   ['Et après le Niveau 1 ?', "Votre projet final sert de point de départ au Niveau 2 : l'équipe PerfIA reprend vos cas réels en formation-action et les déploie sur une infrastructure que vous maîtrisez."],
 ];
@@ -83,37 +67,15 @@ const faq = [
         <h1 id="hero-title">Prenez en main l'IA <em>sur un vrai dossier de votre entreprise.</em></h1>
         <p class="hero__lead">Dix modules courts en ligne, à votre rythme. Vous partez d'une tâche réelle, un devis, un DCE, des mails, et vous repartez avec un prototype testé, une charte d'usage et un badge Niveau 1.</p>
         <div class="hero__ctas">
-          <a class="btn btn--primary btn--lg" href="/inscription/">Créer mon compte →</a>
-          <a class="btn btn--light btn--lg" href="/modules/m0/">Voir le module 0</a>
+          <a class="btn btn--primary btn--lg" href="/inscription/" data-auth="out">Créer mon compte →</a>
+          <a class="btn btn--primary btn--lg" href="/parcours/" data-auth="in" hidden id="reprendre">Reprendre mon parcours →</a>
+          <a class="btn btn--light btn--lg" href="/modules/m0/" data-auth="out">Voir le module 0</a>
+          <a class="btn btn--light btn--lg" href="/parcours/" data-auth="in" hidden>Mon tableau de bord</a>
         </div>
-        <p class="hero__sig"><b>{modules.length} modules</b> · environ {dureeTotale} sur 4 à 6 semaines · modules 0 et 1 en accès libre</p>
+        <p class="hero__sig"><b>{modules.length} modules</b> · environ {dureeTotale} sur 4 à 6 semaines · <b>une séance individuelle en visio</b> avec votre formateur</p>
       </div>
 
-      <figure class="cernes" aria-label="Le parcours vu comme une rondelle de bois : chaque cerne est un module, du module 0 au cœur au module 9 en périphérie.">
-        <svg viewBox="0 0 500 500" role="img" aria-hidden="true">
-          <defs>
-            <radialGradient id="aubier" cx="48%" cy="51%" r="52%">
-              <stop offset="0" stop-color="#3A3226" />
-              <stop offset=".75" stop-color="#2B2C2C" />
-              <stop offset="1" stop-color="#1F2D3D" />
-            </radialGradient>
-          </defs>
-          <path d={outer.d} transform="translate(250 250) scale(1.06) translate(-250 -250)" fill="url(#aubier)" stroke="#BA8748" stroke-opacity=".35" stroke-width="10" />
-          {rings.map((r, i) => {
-            const etape = [0, 3, 6, 9].includes(i);
-            return <path class="cerne" d={r.d} fill="none" stroke={etape ? '#00B194' : '#BA8748'} stroke-opacity={etape ? 0.95 : 0.3 + i * 0.04} stroke-width={etape ? 2.4 : 1.5} style={`--len:${r.len};--i:${i}`} />;
-          })}
-          <circle cx={CX} cy={CY} r="5" fill="#BA8748" />
-          <line class="comptage" x1={CX} y1={CY} x2={outer.lx + 26} y2={outer.ly} stroke="#F3E3CF" stroke-opacity=".55" stroke-width="1.2" />
-          {rings.map((r, i) => (
-            <g class="repere" style={`--i:${i}`}>
-              <circle cx={r.lx} cy={r.ly} r={[0, 3, 6, 9].includes(i) ? 3.6 : 2.4} fill={[0, 3, 6, 9].includes(i) ? '#00B194' : '#F3E3CF'} />
-              {[0, 3, 6, 9].includes(i) && <text x={r.lx} y={r.ly - 12} text-anchor="middle">M{r.ordre}</text>}
-            </g>
-          ))}
-        </svg>
-        <figcaption>Un cerne par module · <span>en vert, la fin de chaque étape</span></figcaption>
-      </figure>
+      <Rondelle modules={modules.map((m) => ({ id: m.id, ordre: m.ordre, titre: m.titre }))} />
     </div>
   </section>
 
@@ -158,12 +120,47 @@ const faq = [
         </article>
         <article class="fact reveal">
           <div class="fact__num">{dureeTotale}</div>
-          <p>Sur 4 à 6 semaines, en modules de {fmtDuree(dMin)} à {fmtDuree(dMax)}, avec une séance collective en visio après le module 5.</p>
+          <p>Sur 4 à 6 semaines, en modules de {fmtDuree(dMin)} à {fmtDuree(dMax)}, que vous suivez à votre rythme.</p>
         </article>
         <article class="fact reveal">
           <div class="fact__num">6</div>
           <p>Compétences évaluées sur votre projet final pour délivrer le badge Niveau 1, vérifiable en ligne.</p>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Séance individuelle ============ -->
+  <section class="sec seance">
+    <div class="container seance__grid">
+      <div class="reveal">
+        <span class="eyebrow">Inclus dans le parcours</span>
+        <h2>Une séance individuelle, <em>sur votre cas.</em></h2>
+        <p class="t-lead">À mi-parcours, vous réservez une séance en visio avec Mathieu Pesin, votre formateur PerfIA, au créneau qui vous arrange. On ouvre ensemble votre cas, vos premiers essais et ce qui coince, et on adapte la suite du parcours à votre entreprise.</p>
+        <ul class="seance__points">
+          <li><span><strong>Vous choisissez le moment</strong> dans l'agenda en ligne, sans échange de mails.</span></li>
+          <li><span><strong>On travaille sur vos documents</strong>, avec votre outil d'IA et vos contraintes.</span></li>
+          <li><span><strong>Vous repartez avec vos prochaines étapes</strong>, ajustées à votre cas.</span></li>
+        </ul>
+        <div class="hero__ctas">
+          <a class="btn btn--primary btn--lg" href="/inscription/" data-auth="out">Créer mon compte →</a>
+          <a class="btn btn--primary btn--lg" href={CAL} data-auth="in" hidden target="_blank" rel="noopener">Réserver ma séance ↗</a>
+        </div>
+      </div>
+      <div class="agenda reveal" aria-hidden="true">
+        <div class="agenda__head">
+          <span class="agenda__avatar">MP</span>
+          <div><strong>Séance individuelle PerfIA</strong><span>Visio · avec Mathieu Pesin</span></div>
+        </div>
+        <div class="agenda__days">
+          {[['Lun', ['9:30', '14:00']], ['Mar', ['11:00']], ['Mer', ['9:00', '16:30']], ['Jeu', ['10:00', '15:00']], ['Ven', ['9:30']]].map(([j, h]) => (
+            <div class="agenda__day">
+              <span>{j}</span>
+              {(h as string[]).map((x) => <i class={j === 'Jeu' && x === '10:00' ? 'is-on' : ''}>{x}</i>)}
+            </div>
+          ))}
+        </div>
+        <p class="agenda__note">Exemple de créneaux · vous choisissez le vôtre</p>
       </div>
     </div>
   </section>
@@ -278,7 +275,7 @@ const faq = [
     <div class="container">
       <span class="eyebrow">Prêt à commencer ?</span>
       <h2>Commencez par <em>votre cas.</em></h2>
-      <p class="t-lead">Créez votre compte, suivez le module 0 et choisissez la tâche que vous allez faire avancer pendant le parcours.</p>
+      <p class="t-lead">Créez votre compte, suivez le module 0 et choisissez la tâche que vous allez faire avancer. À mi-parcours, vous la reprenez avec votre formateur en séance individuelle.</p>
       <div class="hero__ctas">
         <a class="btn btn--primary btn--lg" href="/inscription/">Créer mon compte →</a>
         <a class="btn btn--light btn--lg" href="/programme/">Lire le programme</a>
@@ -304,6 +301,12 @@ const faq = [
 </Base>
 
 <script>
+  document.addEventListener('rondelle:progress', (e: any) => {
+    const c = e.detail?.courant; const a = document.getElementById('reprendre') as HTMLAnchorElement | null;
+    if (!a) return;
+    if (c) { a.href = `/modules/${c.id}/`; a.textContent = `Reprendre : M${c.ordre} ${c.titre} →`; }
+    else { a.href = '/projet-final/'; a.textContent = 'Déposer mon projet final →'; }
+  });
   const sticky = document.querySelector<HTMLElement>('.sticky-cta');
   const hero = document.querySelector('.hero');
   if (sticky && hero && 'IntersectionObserver' in window) {
@@ -342,18 +345,7 @@ const faq = [
   :global(.btn--light) { background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,.85); }
   :global(.btn--light:hover) { background: var(--white); color: var(--ink-900); }
 
-  .cernes { margin: 0; width: 100%; max-width: 500px; justify-self: center; }
-  .cernes svg { width: 100%; height: auto; display: block; overflow: visible; }
-  .cernes text { font-family: var(--font-mono); font-size: 16px; font-weight: 700; fill: var(--xf-green-500); paint-order: stroke; stroke: #262B2E; stroke-width: 4px; }
-  .cernes figcaption { margin-top: var(--space-4); text-align: center; font-family: var(--font-mono); font-size: .68rem; letter-spacing: var(--tracking-mono); text-transform: uppercase; color: rgba(255,255,255,.55); }
-  .cernes figcaption span { color: var(--xf-green-500); }
-  @media (prefers-reduced-motion: no-preference) {
-    .cerne { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: trace 1.4s var(--ease-out) forwards; animation-delay: calc(var(--i) * 110ms + 200ms); }
-    .repere { opacity: 0; animation: apparait .5s var(--ease-out) forwards; animation-delay: calc(var(--i) * 110ms + 900ms); }
-    .comptage { opacity: 0; animation: apparait .6s var(--ease-out) forwards; animation-delay: 1.9s; }
-  }
-  @keyframes trace { to { stroke-dashoffset: 0; } }
-  @keyframes apparait { to { opacity: 1; } }
+
 
   /* ============ Bandeau ============ */
   .marquee { background: var(--xf-green-500); color: var(--white); padding-block: var(--space-4); overflow: hidden; }
@@ -388,6 +380,27 @@ const faq = [
   .fact__num { position: relative; z-index: 1; font-family: var(--font-display); font-weight: 700; color: var(--xf-green-600); font-size: clamp(2.75rem, 5vw, 4rem); line-height: 1; letter-spacing: -0.03em; }
   .fact p { position: relative; z-index: 1; color: var(--ink-700); margin: var(--space-4) 0 0; max-width: 32ch; }
 
+
+  .seance { background: var(--xf-green-50); }
+  .seance__grid { display: grid; gap: var(--space-8); align-items: center; }
+  @media (min-width: 960px) { .seance__grid { grid-template-columns: 1.15fr .85fr; } }
+  .seance__grid > * { min-width: 0; }
+  .seance .t-lead { color: var(--ink-700); max-width: 56ch; }
+  .seance__points { list-style: none; padding: 0; margin: var(--space-6) 0 var(--space-7); display: grid; gap: var(--space-3); }
+  .seance__points li { display: flex; gap: var(--space-3); align-items: baseline; color: var(--ink-700); }
+  .seance__points li::before { content: "→"; color: var(--xf-green-600); font-weight: 700; flex: none; }
+  .seance__points strong { color: var(--ink-900); font-weight: var(--fw-semibold); }
+  .agenda { background: var(--white); border: 1px solid rgba(0,153,130,.25); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-lg); max-width: 440px; justify-self: center; width: 100%; transform: rotate(1.2deg); }
+  .agenda__head { display: flex; gap: var(--space-4); align-items: center; padding-bottom: var(--space-5); border-bottom: 1px solid var(--grey-300); }
+  .agenda__avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--ink-900); color: var(--white); font-family: var(--font-display); font-weight: 700; }
+  .agenda__head strong { display: block; font-family: var(--font-display); font-size: 1.05rem; }
+  .agenda__head span { font-size: var(--text-small); color: var(--grey-600); }
+  .agenda__days { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: var(--space-2); margin-top: var(--space-5); }
+  .agenda__day { display: grid; gap: var(--space-2); align-content: start; text-align: center; }
+  .agenda__day span { font-family: var(--font-mono); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--grey-600); margin-bottom: var(--space-1); }
+  .agenda__day i { font-style: normal; font-size: .8rem; font-weight: 600; font-variant-numeric: tabular-nums; padding: 8px 0; border-radius: var(--radius-sm); border: 1px solid var(--grey-300); color: var(--ink-700); }
+  .agenda__day i.is-on { background: var(--xf-green-500); border-color: var(--xf-green-500); color: var(--white); box-shadow: 0 6px 16px rgba(0,177,148,.35); }
+  .agenda__note { margin: var(--space-5) 0 0; font-size: .78rem; color: var(--grey-600); text-align: center; }
   .pourqui { display: grid; gap: var(--space-8); align-items: center; }
   @media (min-width: 900px) { .pourqui { grid-template-columns: 1.1fr .9fr; } }
   .pourqui > * { min-width: 0; }
