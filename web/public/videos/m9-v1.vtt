@@ -1,79 +1,80 @@
 WEBVTT
 
-00:00:06.500 --> 00:00:12.789
+00:00:06.500 --> 00:00:12.734
 Comment prouver que votre prototype vous fait gagner du temps, si vous ne savez pas combien la tâche en prenait avant ?
 
-00:00:12.789 --> 00:00:15.695
+00:00:12.734 --> 00:00:15.826
 Sans point de départ, la mesure d'après ne prouve rien.
 
-00:00:16.395 --> 00:00:18.654
-La baseline tient en cinq données.
+00:00:16.526 --> 00:00:19.275
+Le point de départ tient en cinq données.
 
-00:00:18.654 --> 00:00:20.580
+00:00:19.275 --> 00:00:21.351
 Le volume annuel de la tâche.
 
-00:00:20.580 --> 00:00:23.238
+00:00:21.351 --> 00:00:24.045
 Le temps unitaire, exceptions comprises.
 
-00:00:23.238 --> 00:00:24.766
+00:00:24.045 --> 00:00:25.784
 Le coût horaire chargé.
 
-00:00:24.766 --> 00:00:27.689
+00:00:25.784 --> 00:00:28.702
 Le taux d'erreur et ce que coûte une erreur.
 
-00:00:27.689 --> 00:00:29.350
+00:00:28.702 --> 00:00:30.553
 Le délai de bout en bout.
 
-00:00:29.350 --> 00:00:35.529
-Si une donnée est une estimation, écrivez le mot estimé et vérifiez-la sur quelques semaines.
+00:00:31.253 --> 00:00:35.046
+Le temps vient du relevé que vous tenez depuis le module 0.
 
-00:00:35.529 --> 00:00:39.847
+00:00:35.046 --> 00:00:37.989
+Ce qui n'est pas mesuré, écrivez « estimé ».
+
+00:00:37.989 --> 00:00:42.120
 Aucun gain n'est annoncé tant qu'il n'a pas été mesuré chez vous.
 
-00:00:40.547 --> 00:00:54.061
+00:00:42.820 --> 00:00:55.385
 Une fois le prototype en place, suivez peu d'indicateurs : le temps avant et après, le taux de champs corrects, le nombre de corrections, la part des reprises importantes, et l'adoption par la personne qui s'en sert.
 
-00:00:54.761 --> 00:00:58.041
+00:00:56.085 --> 00:00:59.708
 Un indicateur est précieux : le coût par tâche réussie.
 
-00:00:58.041 --> 00:00:59.771
+00:00:59.708 --> 00:01:01.835
 Prenons des chiffres fictifs.
 
-00:00:59.771 --> 00:01:05.557
+00:01:01.835 --> 00:01:07.873
 Une solution à dix centimes la requête qui demande deux reprises coûte trente centimes par tâche.
 
-00:01:05.557 --> 00:01:10.865
+00:01:07.873 --> 00:01:13.450
 Une solution à vingt-deux centimes qui réussit du premier coup coûte vingt-deux centimes.
 
-00:01:10.865 --> 00:01:13.430
+00:01:13.450 --> 00:01:16.382
 La moins chère n'est pas celle qu'on croit.
 
-00:01:14.130 --> 00:01:18.489
+00:01:17.082 --> 00:01:21.617
 Avant de brancher l'outil, observez-le deux à quatre semaines en parallèle.
 
-00:01:18.489 --> 00:01:23.372
+00:01:21.617 --> 00:01:26.643
 La personne travaille normalement, l'outil propose sans rien décider, et on compare.
 
-00:01:24.072 --> 00:01:33.639
+00:01:27.343 --> 00:01:36.721
 Notez le taux d'accord, les cas où l'outil avait raison, ceux où la personne avait raison et ce que l'outil ignorait, et les erreurs critiques manquées.
 
-00:01:34.338 --> 00:01:35.580
+00:01:37.421 --> 00:01:39.059
 Ensuite, décidez.
 
-00:01:35.580 --> 00:01:41.861
+00:01:39.059 --> 00:01:45.217
 Abandonner, avec le motif : c'est une réussite si vous avez évité une dépense inutile.
 
-00:01:41.861 --> 00:01:42.591
+00:01:45.217 --> 00:01:46.396
 Améliorer.
 
-00:01:42.591 --> 00:01:43.760
+00:01:46.396 --> 00:01:47.968
 Observer encore.
 
-00:01:43.760 --> 00:01:50.406
+00:01:47.968 --> 00:01:54.453
 Ou déployer, avec un propriétaire métier, un journal de corrections et une revue régulière.
 
-00:01:51.107 --> 00:01:52.110
-À vous de jouer.
+00:01:55.153 --> 00:02:07.640
+Consigne pour vous : remplissez le point de départ depuis votre relevé, chronométrez la tâche à la main puis avec votre prototype, et écrivez votre plan de mesure pour les quatre semaines suivantes.
 
-00:01:52.110 --> 00:02:00.070
-Remplissez la baseline de votre cas, en marquant chaque donnée mesurée ou estimée, puis comparez-la à votre test du module six.
