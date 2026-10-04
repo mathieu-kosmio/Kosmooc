@@ -113,7 +113,7 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
             <span class="t-micro">Ressources</span>
             <ul class="resources" style="margin-top:var(--space-3)">
               {m.ressources.map((r) => (
-                <li><a href={r.type === 'fiche' ? `/fiches/${r.ref}/` : `/ressources/${r.ref}`} download={r.type === 'fichier' ? '' : undefined}><span class={r.type === 'fiche' ? 'pill pill--ok' : 'pill'}>{r.type === 'fiche' ? 'Fiche' : 'Fichier'}</span><span>{r.titre}</span></a></li>
+                <li><a href={r.type === 'fiche' ? `/fiches/${r.ref}/` : `/ressources/${r.ref}`} download={r.type === 'fichier' ? '' : undefined}><span class={r.type === 'fiche' ? 'pill pill--ok' : 'pill'}>{r.type === 'fiche' ? 'Fiche' : /\.docx$/.test(r.ref) ? 'Word' : /\.pdf$/.test(r.ref) ? 'PDF' : 'Fichier'}</span><span>{r.titre}</span></a></li>
               ))}
             </ul>
           </div>

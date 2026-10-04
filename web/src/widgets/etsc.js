@@ -1,4 +1,5 @@
-import { shell, store, esc, copy, download } from './util.js';
+import { shell, store, esc, copy } from './util.js';
+import { docx, downloadBlob } from './docx.js';
 
 const CHAMPS = [
   { id: 'E', label: 'Entrée', q: 'Quelles données ou quels documents sont disponibles ?', ex: 'Le devis accepté, parfois un plan ou un mail' },
@@ -26,7 +27,7 @@ export default function etsc(el) {
     </div>
     <div class="wg-actions">
       <button type="button" class="btn btn--primary btn--sm" data-act="copy">Copier la fiche</button>
-      <button type="button" class="btn btn--secondary btn--sm" data-act="dl">Télécharger (.txt)</button>
+      <button type="button" class="btn btn--secondary btn--sm" data-act="dl">Télécharger (Word)</button>
       <span class="wg-score" data-progress></span>
     </div>`;
   const prog = () => {
@@ -37,7 +38,7 @@ export default function etsc(el) {
   body.addEventListener('click', (e) => {
     const a = e.target.closest('[data-act]');
     if (a?.dataset.act === 'copy') copy(texte(), a);
-    if (a?.dataset.act === 'dl') download('fiche-etsc.txt', texte());
+    if (a?.dataset.act === 'dl') downloadBlob('fiche-etsc.docx', docx([{ titre: 'Fiche E-T-S-C de mon cas' }, ...CHAMPS.map((c) => ({ sous: c.label, aide: c.q, texte: v[c.id] || '' })), { note: 'Académie PerfIA · à joindre à votre projet final (partie 2).' }]));
   });
   prog();
 }

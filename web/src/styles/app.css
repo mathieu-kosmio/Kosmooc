@@ -153,7 +153,6 @@ a.module-row:hover { border-color: var(--xf-green-500); box-shadow: var(--shadow
 
 .prose { max-width: 70ch; }
 .prose > :first-child { margin-top: 0; }
-.prose p, .prose li { color: var(--ink-900); }
 .prose h2 { font-size: var(--text-h3); margin-top: var(--space-8); margin-bottom: var(--space-4); text-wrap: balance; }
 .prose h3 { font-size: 1.2rem; margin-top: var(--space-6); margin-bottom: var(--space-3); }
 .prose ul, .prose ol { padding-left: 1.3em; }

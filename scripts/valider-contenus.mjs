@@ -41,6 +41,7 @@ for (const file of readdirSync(modDir).filter((x) => x.endsWith('.md'))) {
   if (/^exercice:\s*true/m.test(fm) && !/^## Exercice/m.test(t)) errors.push(`${file} : exercice: true sans section « ## Exercice »`);
   for (const m of fm.matchAll(/type:\s*fiche\s*\n\s*ref:\s*(\S+)/g)) if (!existsSync(join(root, 'web/src/content/fiches', `${m[1]}.md`))) errors.push(`${file} : fiche ${m[1]} absente`);
   for (const m of fm.matchAll(/type:\s*fichier\s*\n\s*ref:\s*(\S+)/g)) if (!existsSync(join(root, 'web/public/ressources', m[1]))) errors.push(`${file} : ressource ${m[1]} absente`);
+  for (const m of fm.matchAll(/type:\s*fichier\s*\n\s*ref:\s*(\S+)/g)) if (!/\.(docx|xlsx|pdf)$/.test(m[1])) errors.push(`${file} : ressource ${m[1]} : à remplir en .docx (ou .xlsx), à lire en .pdf ; pas de .txt ni de .md`);
   for (const m of fm.matchAll(/script:\s*(\S+)/g)) if (!existsSync(join(root, 'contenus/scripts', `${m[1]}.md`))) warn.push(`${file} : script ${m[1]} pas encore écrit`);
   if (/src:\s*""/.test(fm)) warn.push(`${file} : vidéo(s) à tourner`);
 }
