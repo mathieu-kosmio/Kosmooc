@@ -19,10 +19,10 @@ const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b
       </div>
       <div class="dash__side">
         <div id="next"></div>
-        <div class="card seance-card">
-          <span class="t-micro">Inclus dans votre parcours</span>
+        <div class="card seance-card" id="seance" hidden>
+          <span class="t-micro">Inclus dans votre parcours formation ou accompagnement</span>
           <h2 class="t-h3">Votre séance individuelle en visio</h2>
-          <p>Choisissez un créneau avec Mathieu Pesin, votre formateur, pour travailler sur votre cas. Le meilleur moment : après le module 5, quand votre projet est monté.</p>
+          <p>Choisissez un créneau avec Mathieu Pesin, votre formateur, pour travailler sur votre cas. Le meilleur moment : après le module 5, quand votre projet est monté. La séance est incluse pour les personnes inscrites à la formation en atelier ou à l'accompagnement PerfIA.</p>
           <a class="btn btn--primary" href="https://cal.com/kosmio/perfia-academie" target="_blank" rel="noopener">Réserver ma séance ↗</a>
         </div>
       </div>
@@ -71,6 +71,7 @@ const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b
       ]);
       const st = Object.fromEntries(progress.map((p: any) => [p.module, p.statut]));
       const passed = new Set(attempts.map((a: any) => a.module));
+      document.getElementById('seance')!.hidden = st['m5'] !== 'termine';
       let done = 0;
       document.querySelectorAll('[data-mid]').forEach((row: any) => {
         const s = st[row.dataset.mid];

@@ -25,7 +25,7 @@ img, video, svg { max-width: 100%; }
 }
 .site-header__inner { display: flex; align-items: center; gap: var(--space-5); height: 72px; position: relative; }
 .brand { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--ink-900); flex: none; }
-.brand__logo { width: 44px; height: 22px; display: block; }
+.brand__logo { width: 48px; height: 24px; display: block; flex: none; }
 .brand__name { font-family: var(--font-display); font-weight: var(--fw-bold); font-size: 1.05rem; letter-spacing: var(--tracking-tight); white-space: nowrap; }
 .brand__name strong { color: var(--xf-green-600); font-weight: 800; }
 .brand__name span { font-family: var(--font-body); font-weight: var(--fw-medium); color: var(--grey-600); font-size: .9rem; letter-spacing: 0; margin-left: 2px; }

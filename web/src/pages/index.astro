@@ -22,7 +22,7 @@ const cas = [
 const phases = [
   { n: '01', titre: 'Choisir votre cas', mods: 'M0', txt: "Vous faites le point sur vos usages et vous choisissez la tâche réelle que vous allez faire avancer jusqu'au bout." },
   { n: '02', titre: 'Comprendre et demander', mods: 'M1 à M3', txt: "Ce que fait un modèle, comment formuler une demande qui tient, et comment repérer les tâches où l'IA n'apporte rien." },
-  { n: '03', titre: 'Prototyper', mods: 'M4 à M6', txt: 'Votre cas devient une fiche E-T-S-C, puis un projet dans votre outil. Votre séance individuelle tombe à ce moment-là, avant de tester une procédure réutilisable sur un document inédit.' },
+  { n: '03', titre: 'Prototyper', mods: 'M4 à M6', txt: "Votre cas devient une fiche E-T-S-C, puis un projet dans votre outil. Si vous suivez la formation en atelier ou l'accompagnement PerfIA, votre séance individuelle tombe à ce moment-là, avant de tester une procédure réutilisable sur un document inédit." },
   { n: '04', titre: 'Fiabiliser et décider', mods: 'M7 à M9', txt: 'Contrôles, données, dépendances, mesure avant et après : vous décidez de la suite sur des faits.' },
 ];
 
@@ -48,12 +48,12 @@ const faq = [
   ['Combien de temps cela prend-il ?', `Environ ${dureeTotale} au total, à répartir sur 4 à 6 semaines. Les modules durent de ${fmtDuree(dMin)} à ${fmtDuree(dMax)} et se suivent à votre rythme.`],
   ["Puis-je essayer avant de m'inscrire ?", 'Oui. Les modules 0 et 1 sont en accès libre. La création du compte est gratuite et débloque la suite, les quiz et le suivi de votre progression.'],
   ['Mes documents sont-ils protégés ?', "Vous travaillez sur des documents anonymisés : le module 0 explique comment faire, le module 7 vous apprend à décider de ce que vous pouvez confier à un outil. Les fichiers déposés sur la plateforme ne sont visibles que par vous et les évaluateurs."],
-  ['Serai-je accompagné ?', "Oui. En plus des modules, vous réservez une séance individuelle en visio avec votre formateur, directement dans son agenda en ligne, au créneau qui vous convient. Nous conseillons de la placer après le module 5, quand votre projet est monté : on travaille alors sur votre cas et vos propres documents."],
+  ['Serai-je accompagné ?', "Oui. Avec la formation en atelier ou l'accompagnement PerfIA, une séance individuelle en visio avec votre formateur est incluse : vous la réservez directement dans son agenda en ligne, au créneau qui vous convient. Nous conseillons de la placer après le module 5, quand votre projet est monté : on travaille alors sur votre cas et vos propres documents."],
   ['Que vaut le badge Niveau 1 ?', "Il atteste votre formation à la maîtrise de l'IA sur six compétences, évaluées à partir de votre projet final. Chaque badge a une page de vérification en ligne que vous pouvez partager."],
   ['Et après le Niveau 1 ?', "Votre projet final sert de point de départ au Niveau 2 : l'équipe PerfIA reprend vos cas réels en formation-action et les déploie sur une infrastructure que vous maîtrisez."],
 ];
 ---
-<Base title="Parcours IA filière bois" description={`Dix modules en ligne pour prendre en main l'IA générative sur une tâche réelle de votre entreprise. Environ ${dureeTotale}, badge Niveau 1, Kosmio × Xylofutur.`}>
+<Base title="Parcours IA filière bois" description={`Un module d'accueil et 9 modules en ligne pour prendre en main l'IA générative sur une tâche réelle de votre entreprise. Environ ${dureeTotale}, badge Niveau 1, Kosmio × Xylofutur.`}>
   <!-- ============ Héros ============ -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="container hero__grid">
@@ -65,14 +65,14 @@ const faq = [
         </div>
         <span class="eyebrow">Parcours IA filière bois · Niveau 1</span>
         <h1 id="hero-title">Prenez en main l'IA <em>sur un vrai dossier de votre entreprise.</em></h1>
-        <p class="hero__lead">Dix modules courts en ligne, à votre rythme. Vous partez d'une tâche réelle, un devis, un DCE, des mails, et vous repartez avec un prototype testé, une charte d'usage et un badge Niveau 1.</p>
+        <p class="hero__lead">Un module d'accueil et 9 modules courts en ligne, à votre rythme. Vous partez d'une tâche réelle, un devis, un DCE, des mails, et vous repartez avec un prototype testé, une charte d'usage et un badge Niveau 1.</p>
         <div class="hero__ctas">
           <a class="btn btn--primary btn--lg" href="/inscription/" data-auth="out">Créer mon compte →</a>
           <a class="btn btn--primary btn--lg" href="/parcours/" data-auth="in" hidden id="reprendre">Reprendre mon parcours →</a>
           <a class="btn btn--light btn--lg" href="/modules/m0/" data-auth="out">Voir le module 0</a>
           <a class="btn btn--light btn--lg" href="/parcours/" data-auth="in" hidden>Mon tableau de bord</a>
         </div>
-        <p class="hero__sig"><b>{modules.length} modules</b> · environ {dureeTotale} sur 4 à 6 semaines · <b>une séance individuelle en visio</b> avec votre formateur</p>
+        <p class="hero__sig"><b>un module d'accueil et 9 modules</b> · environ {dureeTotale} sur 4 à 6 semaines · <b>une séance individuelle en visio</b> incluse avec la formation en atelier ou l'accompagnement</p>
       </div>
 
       <Rondelle modules={modules.map((m) => ({ id: m.id, ordre: m.ordre, titre: m.titre }))} />
@@ -134,9 +134,9 @@ const faq = [
   <section class="sec seance">
     <div class="container seance__grid">
       <div class="reveal">
-        <span class="eyebrow">Inclus dans le parcours</span>
+        <span class="eyebrow">Inclus dans la formation en atelier ou l'accompagnement</span>
         <h2>Une séance individuelle, <em>sur votre cas.</em></h2>
-        <p class="t-lead">À mi-parcours, vous réservez une séance en visio avec Mathieu Pesin, votre formateur PerfIA, au créneau qui vous arrange. On ouvre ensemble votre cas, vos premiers essais et ce qui coince, et on adapte la suite du parcours à votre entreprise.</p>
+        <p class="t-lead">Incluse avec la formation en atelier ou l'accompagnement PerfIA, cette séance en visio avec Mathieu Pesin, votre formateur, se réserve à mi-parcours au créneau qui vous arrange. On ouvre ensemble votre cas, vos premiers essais et ce qui coince, et on adapte la suite du parcours à votre entreprise.</p>
         <ul class="seance__points">
           <li><span><strong>Vous choisissez le moment</strong> dans l'agenda en ligne, sans échange de mails.</span></li>
           <li><span><strong>On travaille sur vos documents</strong>, avec votre outil d'IA et vos contraintes.</span></li>
@@ -207,7 +207,7 @@ const faq = [
     <div class="container programme">
       <div class="sec-head reveal">
         <span class="eyebrow">Programme</span>
-        <h2>Dix modules, <em>de la première demande au prototype mesuré.</em></h2>
+        <h2>9 modules, <em>de la première demande au prototype mesuré.</em></h2>
         <p class="t-lead">Chaque module associe des vidéos courtes, une fiche mémo, un exercice sur votre cas et, souvent, un quiz.</p>
       </div>
       <ol class="mods">
@@ -275,7 +275,7 @@ const faq = [
     <div class="container">
       <span class="eyebrow">Prêt à commencer ?</span>
       <h2>Commencez par <em>votre cas.</em></h2>
-      <p class="t-lead">Créez votre compte, suivez le module 0 et choisissez la tâche que vous allez faire avancer. À mi-parcours, vous la reprenez avec votre formateur en séance individuelle.</p>
+      <p class="t-lead">Créez votre compte, suivez le module 0 et choisissez la tâche que vous allez faire avancer. Avec la formation en atelier ou l'accompagnement PerfIA, vous la reprenez à mi-parcours avec votre formateur en séance individuelle.</p>
       <div class="hero__ctas">
         <a class="btn btn--primary btn--lg" href="/inscription/">Créer mon compte →</a>
         <a class="btn btn--light btn--lg" href="/programme/">Lire le programme</a>

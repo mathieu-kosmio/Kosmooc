@@ -54,7 +54,7 @@ const gid = `aubier-${size}`;
       </g>
     ))}
   </svg>
-  <figcaption data-caption>Un cerne par module · <span>en vert, la fin de chaque étape</span></figcaption>
+  <figcaption data-caption>Un anneau par module · <span>en vert, la fin de chaque étape</span></figcaption>
 </figure>
 
 <script>
@@ -87,7 +87,7 @@ const gid = `aubier-${size}`;
         const cap = fig.querySelector('[data-caption]');
         if (cap) {
           const c = courant as SVGGElement | null;
-          cap.innerHTML = `Votre rondelle · <span>${done} cerne${done > 1 ? 's' : ''} sur ${total}</span>` +
+          cap.innerHTML = `Vos anneaux de croissance · <span>${done} anneau${done > 1 ? 'x' : ''} sur ${total}</span>` +
             (c ? ` · M${c.dataset.ordre} en cours` : ' · parcours terminé');
         }
         fig.dispatchEvent(new CustomEvent('rondelle:progress', { bubbles: true, detail: { done, total, courant: courant ? { id: (courant as SVGGElement).dataset.ring, ordre: Number((courant as SVGGElement).dataset.ordre), titre: (courant as SVGGElement).dataset.titre } : null } }));
