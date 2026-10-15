@@ -1,6 +1,6 @@
 import { shell, store, esc, reduced, COLORS } from './util.js';
 
-// Notes indicatives des huit cas proposés au module 0 (valeur, fréquence, faisabilité, contrôlabilité).
+// Notes indicatives des neuf cas proposés au module 0 (valeur, fréquence, faisabilité, contrôlabilité).
 const EXEMPLES = [
   { nom: 'Devis vers fiche', v: 3, f: 3, fa: 3, c: 2 },
   { nom: 'Lire un DCE', v: 3, f: 2, fa: 3, c: 2 },
@@ -10,6 +10,7 @@ const EXEMPLES = [
   { nom: 'Liste de débit', v: 3, f: 3, fa: 2, c: 2 },
   { nom: 'Synthèse ERP', v: 2, f: 3, fa: 2, c: 2 },
   { nom: 'Mode opératoire', v: 3, f: 1, fa: 2, c: 2 },
+  { nom: 'Contrôle ARC', v: 3, f: 2, fa: 3, c: 3 },
 ];
 const CRITERES = [
   { k: 'v', label: 'Valeur', aide: 'gain attendu (hypothèse)' },
@@ -25,7 +26,7 @@ const verdict = (s) => {
 };
 
 export default async function priorisation3d(el) {
-  const body = shell(el, { eyebrow: 'Outil 3D · priorisation', titre: 'Placez votre cas dans le cube', consigne: 'Valeur × fréquence × faisabilité × contrôlabilité, chacun de 1 à 3. Votre cas est la grosse sphère ; sa taille suit la faisabilité. Faites tourner le cube et comparez aux huit cas du module 0.', type: '3d' });
+  const body = shell(el, { eyebrow: 'Outil 3D · priorisation', titre: 'Placez votre cas dans le cube', consigne: 'Valeur × fréquence × faisabilité × contrôlabilité, chacun de 1 à 3. Votre cas est la grosse sphère ; sa taille suit la faisabilité. Faites tourner le cube et comparez aux neuf cas du module 0.', type: '3d' });
   const st = store.get('priorisation', { v: 2, f: 2, fa: 2, c: 2 });
 
   body.innerHTML = `
