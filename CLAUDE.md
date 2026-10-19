@@ -1,6 +1,6 @@
 # Académie PerfIA : consignes pour Claude
 
-Plateforme de formation du Parcours IA filière bois (Kosmio × Xylofutur), Niveau 1. Lire `SPEC.md` pour la plateforme et `docs/FORMAT-CONTENU.md` pour les contenus.
+Plateforme de formation de l'Académie PerfIA (Kosmio × Xylofutur) : deux parcours, « Les bases de l'IA » (attestation AI Act, Open Badges) et « Mettre en place l'IA » (badge Niveau 1), sur une bibliothèque de modules commune définie dans `backend/parcours.json`. Lire `SPEC.md` pour la plateforme et `docs/FORMAT-CONTENU.md` pour les contenus.
 
 ## Organisation des agents
 
@@ -24,7 +24,8 @@ Plateforme de formation du Parcours IA filière bois (Kosmio × Xylofutur), Nive
 - Schéma : nouvelle migration pour toute évolution, jamais de modification d'une migration déployée.
 - Hooks : logique partagée dans `backend/pb_hooks/lib/academie.js`, chargée par `require` dans chaque handler.
 - Adresse publique PerfIA : `perfia.kosm.io` (l'ancienne `ia-bois.kosm.io` est interdite, contrôlée par `npm run valider`).
-- Durée annoncée : 8 à 10 heures sur 4 à 6 semaines ; elle se calcule depuis le champ `duree` des modules, à tenir à jour.
+- Durée annoncée : environ 2 h 35 pour les bases, 8 à 10 heures pour la mise en place ; elle se calcule depuis le champ `duree` des modules de chaque parcours, à tenir à jour.
+- Modules communs (m1, m2, m7, m11) : aucun renvoi à un numéro de module propre à un seul parcours.
 - `docs/sources/` contient des documents client internes : ne jamais les publier ni les copier dans `web/`.
 - Mathieu valide les scripts, la voix, les mises en ligne, les prix et tout envoi externe.
 - Documents : ne jamais parler d'imprimer, toujours de télécharger en PDF.

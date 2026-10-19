@@ -35,7 +35,7 @@ test('parcours apprenant puis évaluation et badge', async ({ page, request, bro
   await page.fill('#password', apprenant.pw);
   await page.check('#consentement');
   await page.getByRole('button', { name: 'Créer mon compte' }).click();
-  await page.waitForURL('**/modules/m0/');
+  await page.waitForURL('**/modules/m0/**');
   await expect(page.locator('#status-card')).toBeVisible();
 
   // Module 0 : quiz puis terminé
@@ -62,8 +62,8 @@ test('parcours apprenant puis évaluation et badge', async ({ page, request, bro
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Fiche mémo');
 
   // Parcours : progression
-  await page.goto('/parcours/');
-  await expect(page.locator('#pct')).toHaveText('20 %');
+  await page.goto('/parcours/?p=mettre-en-place');
+  await expect(page.locator('[data-panel="mettre-en-place"] [data-pct]')).toHaveText('17 %');
   await page.screenshot({ path: 'captures/parcours.png', fullPage: true });
 
   // Projet final
@@ -98,9 +98,10 @@ test('parcours apprenant puis évaluation et badge', async ({ page, request, bro
   await expect(ep.locator('#e-msg .alert--ok')).toBeVisible();
 
   // Retour apprenant : badge
-  await page.goto('/parcours/');
-  await expect(page.locator('#badge-stat')).toHaveText('Obtenu');
-  await page.getByRole('link', { name: 'Voir et partager mon badge' }).click();
+  await page.goto('/parcours/?p=mettre-en-place');
+  const mep = page.locator('[data-panel="mettre-en-place"]');
+  await expect(mep.locator('[data-badge-stat]')).toHaveText('Obtenu');
+  await mep.getByRole('link', { name: 'Voir, télécharger et partager' }).click();
   await expect(page.locator('#ok')).toBeVisible();
   await expect(page.locator('#titulaire')).toHaveText('Alice Martin');
   await page.screenshot({ path: 'captures/badge.png', fullPage: true });
@@ -109,4 +110,62 @@ test('parcours apprenant puis évaluation et badge', async ({ page, request, bro
   const anon = await (await browser.newContext({ baseURL: B })).newPage();
   await anon.goto(page.url());
   await expect(anon.locator('#ok')).toBeVisible();
+});
+
+test('parcours Les bases de l\'IA : modules communs acquis, attestation Open Badges', async ({ page, request }) => {
+  const email = `bases${rnd}@test.fr`;
+  await page.goto('/inscription/');
+  await page.fill('#name', 'Bruno Bases');
+  await page.fill('#email', email);
+  await page.fill('#entreprise', 'Scierie du Lot');
+  await page.selectOption('#maillon', 'scierie');
+  await page.check('input[name="parcours"][value="bases"]');
+  await page.fill('#password', 'Test-12345');
+  await page.check('#consentement');
+  await page.getByRole('button', { name: 'Créer mon compte' }).click();
+  await page.waitForURL('**/modules/m10/**');
+  await expect(page.locator('.eyebrow').first()).toContainText("Les bases de l'IA · Module 0");
+  await page.getByRole('button', { name: 'Marquer comme terminé' }).click();
+  await expect(page.locator('#status-msg .alert--ok')).toBeVisible();
+
+  for (const m of ['m1', 'm2', 'm7', 'm11']) {
+    await page.goto(`/modules/${m}/?p=bases`);
+    await answerQuiz(page, m);
+    await page.getByRole('button', { name: 'Marquer comme terminé' }).click();
+    await expect(page.locator('#status-msg .alert--ok')).toBeVisible();
+  }
+  // Le dernier module annonce l'attestation, émise par le serveur
+  await expect(page.locator('#attestation a')).toBeVisible();
+
+  // Tableau de bord : parcours terminé, attestation obtenue, modules communs acquis dans l'autre parcours
+  await page.goto('/parcours/?p=bases');
+  const bases = page.locator('[data-panel="bases"]');
+  await expect(bases.locator('[data-pct]')).toHaveText('100 %');
+  await expect(bases.locator('[data-badge-stat]')).toHaveText('Obtenu');
+  await page.getByRole('tab', { name: /Mettre en place/ }).click();
+  const mep = page.locator('[data-panel="mettre-en-place"]');
+  await expect(mep.locator('[data-mid="m1"] [data-status]')).toHaveText('Terminé, acquis');
+  await expect(mep.locator('[data-mid="m11"] [data-status]')).toHaveText('Terminé, acquis');
+  await expect(mep.locator('[data-mid="m3"] [data-status]')).toHaveText('À faire');
+  await page.screenshot({ path: 'captures/parcours-bases.png', fullPage: true });
+
+  // Dans « Mettre en place », le module suivant de M6 saute les modules déjà acquis
+  await page.goto('/modules/m6/?p=mettre-en-place');
+  await expect(page.locator('nav.pager[data-ctx="mettre-en-place"] [data-next]')).toContainText('Écrire la charte IA');
+
+  // Attestation : page publique et Open Badges 2.0
+  await page.goto('/parcours/?p=bases');
+  await bases.getByRole('link', { name: 'Voir, télécharger et partager' }).click();
+  await expect(page.locator('#eyebrow')).toHaveText('Attestation vérifiée');
+  const href = await page.locator('#ob-json').getAttribute('href');
+  const a = await (await request.get(href)).json();
+  expect(a.type).toBe('Assertion');
+  expect(a.verification.type).toBe('hosted');
+  expect(a.recipient.hashed).toBe(true);
+  const bc = await (await request.get(a.badge)).json();
+  expect(bc.type).toBe('BadgeClass');
+  expect(bc.alignment[0].targetName).toContain('article 4');
+  const img = await (await request.get(`${href}/image`)).text();
+  expect(img).toContain('<openbadges:assertion');
+  await page.screenshot({ path: 'captures/attestation-bases.png', fullPage: true });
 });

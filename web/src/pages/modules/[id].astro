@@ -2,29 +2,44 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import '../../styles/widgets.css';
+import { assembler, LIBRES } from '../../lib/parcours.js';
 
 export async function getStaticPaths() {
-  const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre);
-  const tous = modules.map((x) => ({ id: x.data.id, ordre: x.data.ordre, titre: x.data.titre }));
-  return modules.map((entry, i) => ({
-    params: { id: entry.data.id },
-    props: { entry, tous, prev: modules[i - 1]?.data ?? null, next: modules[i + 1]?.data ?? null },
-  }));
+  const entries = await getCollection('modules');
+  const parcours = assembler(entries);
+  return entries.map((entry) => {
+    // Un contexte par parcours qui contient le module : numéro affiché, voisins, fin de parcours.
+    const contextes = parcours.filter((p) => p.modules.some((x) => x.id === entry.data.id)).map((p) => {
+      const i = p.modules.findIndex((x) => x.id === entry.data.id);
+      return {
+        id: p.id, titre: p.titre, label: p.modules[i].label,
+        seq: p.modules.map((x) => ({ id: x.id, label: x.label, titre: x.titre })),
+        prev: p.modules[i - 1] ?? null, next: p.modules[i + 1] ?? null,
+        fin: p.badge === 'perfia-bases' ? { href: `/parcours/?p=${p.id}`, small: 'Pour finir →', strong: 'Obtenir mon attestation' } : { href: '/projet-final/', small: 'Pour finir →', strong: 'Déposer mon projet final' },
+      };
+    }).sort((a, b) => (b.id === 'mettre-en-place') - (a.id === 'mettre-en-place'));
+    return { params: { id: entry.data.id }, props: { entry, contextes } };
+  });
 }
 
-const { entry, tous, prev, next } = Astro.props;
+const { entry, contextes } = Astro.props;
 const m = entry.data;
+const ctx0 = contextes[0];
 const { Content } = await render(entry);
-// Accès libre aux modules 0 et 1 (découverte) ; les suivants demandent un compte.
-const libre = m.ordre <= 1;
+// Accès libre aux modules d'accueil et au module 1 (découverte) ; les suivants demandent un compte.
+const libre = LIBRES.has(m.id);
 const fmtDuree = (d: number) => (d >= 60 ? `${Math.floor(d / 60)} h${d % 60 ? ' ' + String(d % 60).padStart(2, '0') : ''}` : `${d} min`);
 const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\//.test(src);
 ---
-<Base title={`M${m.ordre} · ${m.titre}`} description={m.resume}>
+<Base title={`M${ctx0.label} · ${m.titre}`} description={m.resume}>
   <header class="module-head">
     <div class="container">
-      <nav class="crumbs" aria-label="Fil d'Ariane"><a href="/programme/">Programme</a><span aria-hidden="true">/</span><span>Module {m.ordre}</span></nav>
-      <span class="eyebrow">Niveau 1 · Module {m.ordre}</span>
+      {contextes.map((c, k) => (
+        <div data-ctx={c.id} hidden={k > 0}>
+          <nav class="crumbs" aria-label="Fil d'Ariane"><a href={`/programme/#${c.id}`}>{c.titre}</a><span aria-hidden="true">/</span><span>Module {c.label}</span></nav>
+          <span class="eyebrow">{c.titre} · Module {c.label}</span>
+        </div>
+      ))}
       <h1>{m.titre}</h1>
       <p class="t-lead">{m.resume}</p>
       <div class="module-meta">
@@ -35,11 +50,16 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
         {m.competences.length > 0 && <span class="pill">Compétence{m.competences.length > 1 ? 's' : ''} {m.competences.join(', ')}</span>}
         {libre && <span class="pill pill--ok">Accès libre</span>}
       </div>
-      <ol class="rail" aria-label="Modules du parcours">
-        {tous.map((t) => (
-          <li><a href={`/modules/${t.id}/`} class={t.ordre < m.ordre ? 'is-past' : undefined} aria-current={t.id === m.id ? 'page' : undefined} title={`M${t.ordre} · ${t.titre}`}><span></span><small>M{t.ordre}</small></a></li>
-        ))}
-      </ol>
+      {contextes.length > 1 && (
+        <p class="t-small ctx-switch" data-ctx-switch hidden>Module commun aux parcours {contextes.map((c, k) => <>{k > 0 && ' et '}<a href={`?p=${c.id}`} data-goto={c.id}>« {c.titre} »</a></>)} : terminé une fois, il est acquis dans les deux.</p>
+      )}
+      {contextes.map((c, k) => (
+        <ol class="rail" aria-label={`Modules du parcours ${c.titre}`} data-ctx={c.id} hidden={k > 0}>
+          {c.seq.map((t, j) => (
+            <li><a href={`/modules/${t.id}/?p=${c.id}`} data-rail={t.id} class={j < c.seq.findIndex((x) => x.id === m.id) ? 'is-past' : undefined} aria-current={t.id === m.id ? 'page' : undefined} title={`M${t.label} · ${t.titre}`}><span></span><small>M{t.label}</small></a></li>
+          ))}
+        </ol>
+      ))}
     </div>
   </header>
 
@@ -50,7 +70,7 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
       <div id="gate" class="gate" hidden>
         <span class="eyebrow">Réservé aux inscrits</span>
         <h2 class="t-h3" style="margin-top:var(--space-3)">Créez votre compte pour suivre ce module</h2>
-        <p>La création du compte est gratuite. Elle débloque les modules 2 à 9, les quiz, le dépôt de vos exercices et le suivi de votre progression jusqu'au badge.</p>
+        <p>La création du compte est gratuite. Elle débloque tous les modules, les quiz, le dépôt de vos exercices et le suivi de votre progression jusqu'à l'attestation ou au badge.</p>
         <div class="hero__actions"><a class="btn btn--primary" href="/inscription/">Créer mon compte →</a><a class="btn btn--secondary" href={`/connexion/?suite=/modules/${m.id}/`}>J'ai déjà un compte</a></div>
       </div>
 
@@ -93,12 +113,14 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
         )}
       </div>
 
-      <nav class="pager" aria-label="Modules précédent et suivant">
-        {prev && <a href={`/modules/${prev.id}/`}><small>← Module {prev.ordre}</small><strong>{prev.titre}</strong></a>}
-        {next
-          ? <a class="pager__next" href={`/modules/${next.id}/`}><small>Module {next.ordre} →</small><strong>{next.titre}</strong></a>
-          : <a class="pager__next" href="/projet-final/"><small>Pour finir →</small><strong>Déposer mon projet final</strong></a>}
-      </nav>
+      {contextes.map((c, k) => (
+        <nav class="pager" aria-label="Modules précédent et suivant" data-ctx={c.id} hidden={k > 0}>
+          {c.prev && <a href={`/modules/${c.prev.id}/?p=${c.id}`}><small>← Module {c.prev.label}</small><strong>{c.prev.titre}</strong></a>}
+          {c.next
+            ? <a class="pager__next" data-next href={`/modules/${c.next.id}/?p=${c.id}`}><small>Module {c.next.label} →</small><strong>{c.next.titre}</strong></a>
+            : <a class="pager__next" data-next href={c.fin.href}><small>{c.fin.small}</small><strong>{c.fin.strong}</strong></a>}
+        </nav>
+      ))}
     </article>
 
     <aside class="module-aside">
@@ -123,16 +145,47 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
           <p id="status-text" class="t-small" style="margin:var(--space-3) 0"></p>
           <button class="btn btn--primary btn--sm" id="btn-done" type="button" style="width:100%;justify-content:center">Marquer comme terminé</button>
           <div id="status-msg" role="status" style="margin-top:var(--space-3)"></div>
+          <div id="attestation" hidden style="margin-top:var(--space-3)"></div>
         </div>
       </div>
     </aside>
   </div>
 
+  <script define:vars={{ contextes: contextes.map((c) => ({ id: c.id, titre: c.titre, seq: c.seq, fin: c.fin })) }}>
+    window.__CTX__ = contextes;
+  </script>
   <script>
     import { pb, user, esc, errMsg } from '../../lib/pb.js';
     import { mountWidgets } from '../../widgets/index.js';
+    import { parcoursChoisi, memoriserParcours } from '../../lib/parcours.js';
 
     mountWidgets();
+
+    // ---------- Parcours : contexte d'affichage (numéro, rail, module suivant) ----------
+    const contextes = (window as any).__CTX__ as any[];
+    const ctxId = parcoursChoisi(contextes.map((c) => c.id)) || contextes[0].id;
+    memoriserParcours(ctxId);
+    document.querySelectorAll<HTMLElement>('[data-ctx]').forEach((el) => { el.hidden = el.dataset.ctx !== ctxId; });
+    const sw = document.querySelector<HTMLElement>('[data-ctx-switch]'); if (sw) sw.hidden = false;
+    const ctx = contextes.find((c) => c.id === ctxId);
+    const titreLabel = ctx.seq.find((x: any) => x.id === document.querySelector<HTMLElement>('[data-module]')!.dataset.module)?.label;
+    if (titreLabel) document.title = document.title.replace(/^M[\d.]+ · /, `M${titreLabel} · `);
+
+    // Saute les modules déjà terminés (acquis dans un autre parcours) dans le lien « module suivant ».
+    function majSuivant(st: Record<string, string>) {
+      const ids = ctx.seq.map((x: any) => x.id);
+      const ici = ids.indexOf(moduleId);
+      document.querySelectorAll<HTMLElement>('[data-rail]').forEach((a) => a.classList.toggle('is-done', st[a.dataset.rail!] === 'termine'));
+      const suite = ctx.seq.slice(ici + 1);
+      if (!suite.length || st[suite[0].id] !== 'termine') return;
+      const prochain = suite.find((x: any) => st[x.id] !== 'termine');
+      const a = document.querySelector<HTMLAnchorElement>(`nav.pager[data-ctx="${ctxId}"] [data-next]`);
+      if (!a) return;
+      a.href = prochain ? `/modules/${prochain.id}/?p=${ctxId}` : ctx.fin.href;
+      a.innerHTML = prochain
+        ? `<small>Module ${esc(prochain.label)} → (modules acquis passés)</small><strong>${esc(prochain.titre)}</strong>`
+        : `<small>${esc(ctx.fin.small)}</small><strong>${esc(ctx.fin.strong)}</strong>`;
+    }
 
     const root = document.querySelector('[data-module]') as HTMLElement;
     const moduleId = root.dataset.module!;
@@ -166,6 +219,21 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
       }
       refreshStatus();
       loadExercices();
+      try {
+        const all = await pb.collection('progress').getFullList({ filter: pb.filter('user = {:u}', { u: u.id }) });
+        majSuivant(Object.fromEntries(all.map((p: any) => [p.module, p.statut])));
+      } catch (_) {}
+      afficherAttestation();
+    }
+
+    // Attestation « Les bases de l'IA » : émise par le serveur dès que les modules requis sont terminés.
+    async function afficherAttestation() {
+      if (!contextes.some((c) => c.id === 'bases')) return;
+      try {
+        const b = await pb.collection('badges').getFirstListItem(pb.filter('user = {:u} && code = "perfia-bases"', { u: u.id }));
+        $('attestation').innerHTML = `<div class="alert alert--ok">Votre attestation « Les bases de l'IA » est disponible. <a href="/badge/?id=${esc(b.id)}">La voir et la télécharger</a></div>`;
+        $('attestation').hidden = false;
+      } catch (_) {}
     }
 
     function refreshStatus() {
@@ -182,6 +250,7 @@ const embed = (src: string) => /youtube|vimeo|peertube|\/videos\/embed|\/embed\/
           : await pb.collection('progress').create({ user: u.id, module: moduleId, statut: 'termine' });
         $('status-msg').innerHTML = '<div class="alert alert--ok">Bravo, module terminé.</div>';
         refreshStatus();
+        afficherAttestation();
       } catch (err) { $('status-msg').innerHTML = `<div class="alert alert--error">${esc(errMsg(err))}</div>`; }
     });
 

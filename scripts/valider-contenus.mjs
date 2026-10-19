@@ -134,6 +134,26 @@ for (const file of readdirSync(modDir).filter((x) => x.endsWith('.md'))) {
   if (/src:\s*""/.test(fm)) warn.push(`${file} : vidéo(s) à tourner`);
 }
 
+// ---------- Parcours : modules existants, numéros uniques, badges définis ----------
+{
+  const P = JSON.parse(readFileSync(join(root, 'backend/parcours.json'), 'utf8'));
+  if (JSON.stringify(P).includes('—')) errors.push('backend/parcours.json : tiret cadratin interdit');
+  const ids = new Set(readdirSync(modDir).filter((x) => x.endsWith('.md')).map((x) => x.replace(/\.md$/, '')));
+  const utilises = new Set();
+  for (const p of P.parcours) {
+    const labels = new Set();
+    for (const m of p.modules) {
+      if (!ids.has(m.id)) errors.push(`parcours ${p.id} : module ${m.id} absent de web/src/content/modules`);
+      if (labels.has(m.label)) errors.push(`parcours ${p.id} : numéro ${m.label} en double`);
+      labels.add(m.label); utilises.add(m.id);
+    }
+    if (!P.badges[p.badge]) errors.push(`parcours ${p.id} : badge ${p.badge} non défini`);
+    for (const ph of p.phases || []) for (const m of ph.modules) if (!p.modules.some((x) => x.id === m)) errors.push(`parcours ${p.id} : phase « ${ph.titre} » : ${m} hors du parcours`);
+  }
+  for (const id of ids) if (!utilises.has(id)) warn.push(`module ${id} dans aucun parcours`);
+  for (const [code, b] of Object.entries(P.badges)) for (const m of b.requis || []) if (!ids.has(m)) errors.push(`badge ${code} : module requis ${m} absent`);
+}
+
 warn.forEach((w) => console.log('ATTENTION', w));
 errors.forEach((e) => console.log('ERREUR   ', e));
 console.log(`\n${errors.length} erreur(s), ${warn.length} point(s) d'attention.`);

@@ -46,30 +46,32 @@
     },
     {
       "id": "q4",
-      "enonce": "Votre entreprise prépare des fiches de production en interne avec une IA. Quel niveau de l'AI Act est en général concerné ?",
+      "enonce": "Vous mettez en place un contrôle automatique qui signale les écarts sur les accusés de réception fournisseurs. Que devez-vous décider avant de le lancer ? (plusieurs réponses)",
       "choix": [
-        "Un usage interdit",
-        "Un usage à haut risque",
-        "Un usage interne à risque minimal"
+        "Qui lit les alertes",
+        "Dans quel délai elles sont traitées",
+        "Où l'on note la suite donnée",
+        "La couleur des alertes"
       ],
       "bonnes": [
+        0,
+        1,
         2
       ],
-      "explication": "Un usage interne comme le passage du devis à la fiche relève du risque minimal. Le niveau change si l'IA touche au recrutement ou à l'évaluation des salariés."
+      "explication": "Une alerte engage : un écart signalé puis laissé sans suite fragilise l'entreprise. Décidez qui lit, dans quel délai, et où l'on note la suite."
     },
     {
       "id": "q5",
-      "enonce": "Quelles sont les cinq règles de la charte IA ? Laquelle est incorrecte ?",
+      "enonce": "Votre offre professionnelle indique que vos données ne servent pas à entraîner les modèles. Qu'en concluez-vous ?",
       "choix": [
-        "Ce que nous autorisons à faire avec l'IA",
-        "Ce que nous ne transmettons pas sans vérification",
-        "Ce qui doit toujours être contrôlé par une personne",
-        "Comment nous remplaçons les salariés par l'IA"
+        "Rien n'est conservé, je peux déposer n'importe quel document",
+        "Pas d'entraînement ne veut pas dire pas de conservation : historique et mémoire restent à vérifier, et les quatre questions restent valables",
+        "Je dois désactiver l'historique pour que l'outil fonctionne"
       ],
       "bonnes": [
-        3
+        1
       ],
-      "explication": "Les cinq règles portent sur l'autorisé, le non transmis, le contrôlé, le signalement des incertitudes et la capitalisation des usages qui fonctionnent."
+      "explication": "L'outil peut conserver l'historique et une mémoire sur votre compte. Minimisez les données envoyées et vérifiez vos réglages."
     }
   ]
 }

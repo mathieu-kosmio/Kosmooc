@@ -8,6 +8,8 @@ RUN npm ci
 COPY web/ ./
 # Le front embarque le moteur et les règles de la charte IA (imports ../../../backend/charte).
 COPY backend/charte /app/backend/charte
+# Parcours et badges, partagés entre le front et les hooks.
+COPY backend/parcours.json /app/backend/parcours.json
 RUN npx astro build --outDir /app/pb_public
 
 FROM alpine:3.20
@@ -22,6 +24,7 @@ COPY backend/pb_hooks ./pb_hooks
 COPY backend/quiz ./quiz
 # Lu par les hooks de la charte IA (__hooks/../charte).
 COPY backend/charte ./charte
+COPY backend/parcours.json ./parcours.json
 COPY --from=web /app/pb_public ./pb_public
 ENV ACADEMIE_QUIZ_DIR=/pb/quiz
 EXPOSE 8090

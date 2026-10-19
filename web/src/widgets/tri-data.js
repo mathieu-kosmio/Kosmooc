@@ -18,7 +18,7 @@ export default {
       { texte: 'Remplir un champ que le document ne mentionne pas', bonne: 'controle', explication: "L'IA comble les trous : exigez « information absente »." },
       { texte: "Valider seule la qualité d'un lot avant expédition", bonne: 'eviter', explication: 'Une décision qui engage l’entreprise reste humaine.' },
       { texte: "Accepter seule une commande et s'engager sur un délai", bonne: 'eviter', explication: 'Engagement commercial : jamais sans validation humaine.' },
-      { texte: 'Envoyer tout le fichier clients à un service non vérifié', bonne: 'eviter', explication: 'Données sensibles sans vérifier le cadre : à proscrire (module 7).' },
+      { texte: 'Envoyer tout le fichier clients à un service non vérifié', bonne: 'eviter', explication: 'Données sensibles sans vérifier le cadre : à proscrire (voir « Utiliser l’IA de façon fiable »).' },
     ],
   },
   'm3-taches': {
@@ -117,6 +117,27 @@ export default {
       { texte: 'Un contrat client avec clause de confidentialité', bonne: 'non', explication: 'La clause prime : demandez l’accord avant tout dépôt.' },
       { texte: "Les plans d'un industriel couverts par un accord de confidentialité", bonne: 'non', explication: 'Même logique : accord écrit d’abord.' },
       { texte: 'Les entretiens annuels de vos salariés', bonne: 'non', explication: 'Données personnelles et évaluation des salariés : autre niveau de règles (AI Act, RGPD).' },
+    ],
+  },
+  'm11-niveaux': {
+    eyebrow: 'Mini-jeu · 3 minutes',
+    titre: 'Quel niveau de risque ?',
+    consigne: 'Rangez chaque usage dans son niveau de l’AI Act. Cliquez une carte puis une colonne, ou glissez-la.',
+    colonnes: [
+      { id: 'minimal', label: 'Risque minimal', couleur: 'green' },
+      { id: 'transparence', label: 'Transparence', couleur: 'sage' },
+      { id: 'haut', label: 'Haut risque', couleur: 'gold' },
+      { id: 'interdit', label: 'Interdit', couleur: 'red' },
+    ],
+    cartes: [
+      { texte: 'Résumer un CCTP pour préparer une réponse à un appel d’offres', bonne: 'minimal', explication: 'Usage interne de rédaction et de synthèse : risque minimal. Le contrôle reste le vôtre.' },
+      { texte: 'Extraire les lignes d’un devis pour préparer une fiche de production', bonne: 'minimal', explication: 'Usage interne, sans décision sur une personne : risque minimal.' },
+      { texte: 'Traduire la notice d’un équipement fournisseur', bonne: 'minimal', explication: 'Risque minimal. On vérifie les valeurs techniques et les consignes de sécurité.' },
+      { texte: 'Un agent conversationnel qui répond aux clients sur le site internet', bonne: 'transparence', explication: 'Le client doit savoir qu’il échange avec une IA (article 50).' },
+      { texte: 'Publier une vidéo réaliste d’un chantier entièrement générée par l’IA', bonne: 'transparence', explication: 'Contenu réaliste généré : il doit être signalé comme tel.' },
+      { texte: 'Trier les CV reçus pour une offre d’emploi de scieur', bonne: 'haut', explication: 'Recrutement : usage à haut risque, obligations lourdes. Pas sans conseil ni cadre validé.' },
+      { texte: 'Noter la performance des salariés à partir de leurs données d’activité', bonne: 'haut', explication: 'Évaluation des salariés : haut risque, avec information préalable des salariés et de leurs représentants.' },
+      { texte: 'Analyser la voix des commerciaux au téléphone pour détecter leur stress', bonne: 'interdit', explication: 'Déduire les émotions d’un salarié au travail est interdit, sauf raison médicale ou de sécurité (article 5).' },
     ],
   },
 };

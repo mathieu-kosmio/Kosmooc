@@ -71,9 +71,17 @@ Modèle de référence : l'Académie du Numérique Responsable (parcours modulai
 - [x] Badge émis automatiquement, vérifiable publiquement par son lien, partage LinkedIn
 - [x] Indicateurs de suivi pour l'évaluateur
 
+## 8 bis. Deux parcours (octobre 2026)
+
+- `backend/parcours.json` définit les parcours `bases` et `mettre-en-place`, leurs modules (numéro affiché propre à chaque parcours), leurs phases et leurs badges.
+- La progression reste enregistrée par module : un module commun terminé est acquis dans les deux parcours.
+- L'ancien M7 est découpé en m7 (fiabilité, 7.1), m11 (AI Act en pratique, 7.2) et m12 (charte IA, 7.3). La migration `1760900000_parcours_bases.js` donne m12 aux apprenants qui avaient terminé l'ancien M7.
+- Attestation `perfia-bases` émise par un hook sur `progress` dès que m1, m2, m7 et m11 sont terminés.
+- Open Badges 2.0, vérification hébergée : émetteur, classes de badge, assertions (destinataire haché en SHA-256 salé) et image SVG cuite, pour les deux badges.
+
 ## 9. Limites connues et suite
 
 - Le contenu des modules 2 à 9 est masqué côté navigateur pour les visiteurs ; il reste dans le HTML statique. Suffisant pour un pilote gratuit ; à servir depuis l'API si le N1 devient payant.
-- Badge au format PocketBase + page de vérification ; export Open Badges 3.0 à ajouter (ou émission par Certifiko).
+- Badges au format Open Badges 2.0 (vérification hébergée). Open Badges 3.0 (justificatif vérifiable signé) demande une clé de signature asymétrique : à confier à Certifiko ou à un service de signature.
 - Paiement, comptes entreprise (un dirigeant suit ses salariés), tuteur IA et rapport « votre cas déployé chez vous » : lots S2 à S4 de la feuille de route.
 - Vidéos : 20 vidéos en motion design (voix de synthèse, personnage illustré), servies depuis `web/public/videos/` avec sous-titres VTT et vignette. Remplaçables par un avatar filmé en V2 sans changer la plateforme.

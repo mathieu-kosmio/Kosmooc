@@ -3,9 +3,13 @@ import Base from '../layouts/Base.astro';
 import Seal from '../components/Seal.astro';
 import Rondelle from '../components/Rondelle.astro';
 import { getCollection } from 'astro:content';
+import { assembler } from '../lib/parcours.js';
 
-const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => m.data);
-const total = modules.reduce((s, m) => s + m.duree, 0);
+const tousParcours = assembler(await getCollection('modules'));
+const mep = tousParcours.find((p) => p.id === 'mettre-en-place')!;
+const bases = tousParcours.find((p) => p.id === 'bases')!;
+const modules = mep.modules;
+const total = mep.duree;
 const heures = Math.floor(total / 60), minutes = total % 60;
 const dureeTotale = minutes > 0 ? `${heures} h ${String(minutes).padStart(2, '0')}` : `${heures} h`;
 const dMin = Math.min(...modules.map((m) => m.duree));
@@ -19,12 +23,7 @@ const cas = [
   'Fiche réglementaire EUDR', 'Contrôle de liste de débit', 'Synthèse hebdomadaire ERP', 'Mode opératoire vers fiche procédure',
 ];
 
-const phases = [
-  { n: '01', titre: 'Choisir votre cas', mods: 'M0', txt: "Vous faites le point sur vos usages et vous choisissez la tâche réelle que vous allez faire avancer jusqu'au bout." },
-  { n: '02', titre: 'Comprendre et demander', mods: 'M1 à M3', txt: "Ce que fait un modèle, comment formuler une demande qui tient, et comment repérer les tâches où l'IA n'apporte rien." },
-  { n: '03', titre: 'Prototyper', mods: 'M4 à M6', txt: "Votre cas devient une fiche E-T-S-C, puis un projet dans votre outil. Si vous suivez la formation en atelier ou l'accompagnement PerfIA, votre séance individuelle tombe à ce moment-là, avant de tester une procédure réutilisable sur un document inédit." },
-  { n: '04', titre: 'Fiabiliser et décider', mods: 'M7 à M9', txt: 'Contrôles, données, dépendances, mesure avant et après : vous décidez de la suite sur des faits.' },
-];
+const phases = mep.phases.map((ph, k) => ({ n: String(k + 1).padStart(2, '0'), titre: ph.titre, mods: ph.plage, txt: ph.texte }));
 
 const competences = [
   ['C1', "Expliquer le fonctionnement et les limites d'une IA générative", 'Quiz du module 1'],
@@ -32,7 +31,7 @@ const competences = [
   ['C3', "Décider si une tâche relève de l'IA", 'Grille de sobriété, module 3'],
   ['C4', "Formuler un cas d'usage", 'Fiche E-T-S-C, module 4'],
   ['C5', 'Construire et tester un prototype réutilisable', 'Prompt métier et tableau de test, modules 5 et 6'],
-  ['C6', "Utiliser l'IA de façon responsable", 'Charte et autodiagnostic, modules 7 et 8'],
+  ['C6', "Utiliser l'IA de façon responsable", 'Charte et autodiagnostic, modules 7.3 et 8'],
 ];
 
 const metiers = [
@@ -45,15 +44,17 @@ const CAL = 'https://cal.com/kosmio/perfia-academie';
 const faq = [
   ['Faut-il des compétences techniques ?', "Aucune. Le parcours s'adresse aux dirigeants et aux salariés de la filière. Si vous savez joindre un fichier à un mail, vous pouvez suivre les modules."],
   ["Quel outil d'IA faut-il ?", "Celui que vous utilisez déjà, ou un outil grand public : ChatGPT, Claude, Le Chat de Mistral, Copilot ou Gemini. Le module 8 vous aide ensuite à choisir en connaissance de cause et à limiter votre dépendance."],
-  ['Combien de temps cela prend-il ?', `Environ ${dureeTotale} au total, à répartir sur 4 à 6 semaines. Les modules durent de ${fmtDuree(dMin)} à ${fmtDuree(dMax)} et se suivent à votre rythme.`],
-  ["Puis-je essayer avant de m'inscrire ?", 'Oui. Les modules 0 et 1 sont en accès libre. La création du compte est gratuite et débloque la suite, les quiz et le suivi de votre progression.'],
-  ['Mes documents sont-ils protégés ?', "Vous travaillez sur des documents anonymisés : le module 0 explique comment faire, le module 7 vous apprend à décider de ce que vous pouvez confier à un outil. Les fichiers déposés sur la plateforme ne sont visibles que par vous et les évaluateurs."],
+  ['Quel parcours choisir ?', `« Les bases de l'IA » (environ ${bases.dureeTxt}) s'adresse à tous les salariés qui utilisent l'IA : comprendre, bien demander, protéger les données, connaître l'AI Act. « Mettre en place l'IA » (environ ${dureeTotale}) s'adresse à ceux qui veulent faire avancer une tâche réelle jusqu'à un prototype testé. Les modules communs ne se font qu'une fois : commencer par les bases ne fait pas perdre de temps.`],
+  ["Le parcours « Les bases de l'IA » répond-il à l'AI Act ?", "L'article 4 de l'AI Act demande à l'entreprise de prendre des mesures pour développer la maîtrise de l'IA des personnes qui l'utilisent. Le parcours est conçu comme l'une de ces mesures, avec une attestation Open Badges datée et vérifiable que l'entreprise peut conserver. Il complète les autres mesures : liste des outils autorisés, charte IA, personne référente. Ce sont des repères, pas un avis juridique."],
+  ['Combien de temps cela prend-il ?', `Environ ${bases.dureeTxt} pour les bases, ${dureeTotale} pour la mise en place, à répartir sur 4 à 6 semaines. Les modules durent de ${fmtDuree(dMin)} à ${fmtDuree(dMax)} et se suivent à votre rythme.`],
+  ["Puis-je essayer avant de m'inscrire ?", "Oui. Les modules d'accueil des deux parcours et le module 1 sont en accès libre. La création du compte est gratuite et débloque la suite, les quiz et le suivi de votre progression."],
+  ['Mes documents sont-ils protégés ?', "Vous travaillez sur des documents anonymisés : les modules d'accueil expliquent comment faire, le module « Utiliser l'IA de façon fiable » vous apprend à décider de ce que vous pouvez confier à un outil. Les fichiers déposés sur la plateforme ne sont visibles que par vous et les évaluateurs."],
   ['Serai-je accompagné ?', "Oui. Avec la formation en atelier ou l'accompagnement PerfIA, une séance individuelle en visio avec votre formateur est incluse : vous la réservez directement dans son agenda en ligne, au créneau qui vous convient. Nous conseillons de la placer après le module 5, quand votre projet est monté : on travaille alors sur votre cas et vos propres documents."],
-  ['Que vaut le badge Niveau 1 ?', "Il atteste votre formation à la maîtrise de l'IA sur six compétences, évaluées à partir de votre projet final. Chaque badge a une page de vérification en ligne que vous pouvez partager."],
+  ['Que valent l\'attestation et le badge ?', "L'attestation « Les bases de l'IA » est émise automatiquement quand les quiz sont réussis. Le badge Niveau 1 atteste six compétences, évaluées sur votre projet final. Les deux sont au format Open Badges : une page de vérification en ligne et un fichier à importer dans votre portefeuille de badges ou à partager."],
   ['Et après le Niveau 1 ?', "Votre projet final sert de point de départ au Niveau 2 : l'équipe PerfIA reprend vos cas réels en formation-action et les déploie sur une infrastructure que vous maîtrisez."],
 ];
 ---
-<Base title="Parcours IA filière bois" description={`Un module d'accueil et 9 modules en ligne pour prendre en main l'IA générative sur une tâche réelle de votre entreprise. Environ ${dureeTotale}, badge Niveau 1, Kosmio × Xylofutur.`}>
+<Base title="Parcours IA filière bois" description={`Deux parcours en ligne pour la filière bois : Les bases de l'IA (environ ${bases.dureeTxt}, attestation AI Act) et Mettre en place l'IA (environ ${dureeTotale}, prototype et badge Niveau 1). Kosmio × Xylofutur.`}>
   <!-- ============ Héros ============ -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="container hero__grid">
@@ -63,19 +64,46 @@ const faq = [
           <span aria-hidden="true">×</span>
           <img src="/marques/xylofutur-blanc.png" alt="Xylofutur" />
         </div>
-        <span class="eyebrow">Parcours IA filière bois · Niveau 1</span>
+        <span class="eyebrow">Académie PerfIA · filière forêt-bois</span>
         <h1 id="hero-title">Prenez en main l'IA <em>sur un vrai dossier de votre entreprise.</em></h1>
-        <p class="hero__lead">Un module d'accueil et 9 modules courts en ligne, à votre rythme. Vous partez d'une tâche réelle, un devis, un DCE, des mails, et vous repartez avec un prototype testé, une charte d'usage et un badge Niveau 1.</p>
+        <p class="hero__lead">Deux parcours en ligne, à votre rythme. « Les bases de l'IA » pour que chacun utilise l'IA dans les règles de l'AI Act. « Mettre en place l'IA » pour partir d'une tâche réelle, un devis, un DCE, des mails, et repartir avec un prototype testé, une charte d'usage et un badge Niveau 1.</p>
         <div class="hero__ctas">
           <a class="btn btn--primary btn--lg" href="/inscription/" data-auth="out">Créer mon compte →</a>
           <a class="btn btn--primary btn--lg" href="/parcours/" data-auth="in" hidden id="reprendre">Reprendre mon parcours →</a>
-          <a class="btn btn--light btn--lg" href="/modules/m0/" data-auth="out">Voir le module 0</a>
+          <a class="btn btn--light btn--lg" href="#parcours" data-auth="out">Choisir mon parcours</a>
           <a class="btn btn--light btn--lg" href="/parcours/" data-auth="in" hidden>Mon tableau de bord</a>
         </div>
-        <p class="hero__sig"><b>un module d'accueil et 9 modules</b> · environ {dureeTotale} sur 4 à 6 semaines · <b>une séance individuelle en visio</b> incluse avec la formation en atelier ou l'accompagnement</p>
+        <p class="hero__sig"><b>deux parcours</b> · environ {bases.dureeTxt} ou {dureeTotale} · modules communs faits une seule fois · <b>une séance individuelle en visio</b> incluse avec la formation en atelier ou l'accompagnement</p>
       </div>
 
-      <Rondelle modules={modules.map((m) => ({ id: m.id, ordre: m.ordre, titre: m.titre }))} />
+      <Rondelle modules={modules.map((m) => ({ id: m.id, label: m.label, titre: m.titre, etape: m.etape }))} parcours={mep.id} />
+    </div>
+  </section>
+
+  <!-- ============ Deux parcours ============ -->
+  <section class="sec" id="parcours" aria-labelledby="parcours-title">
+    <div class="container">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Deux parcours</span>
+        <h2 id="parcours-title">Commencez par les bases, <em>ou allez droit au prototype.</em></h2>
+        <p class="t-lead">Les modules communs ne se font qu'une fois : terminés dans un parcours, ils sont acquis dans l'autre.</p>
+      </div>
+      <div class="duo">
+        {[bases, mep].map((p) => (
+          <article class="duo__card reveal">
+            <span class="duo__meta">{p.nbModules} modules · environ {p.dureeTxt} · {p.badge === 'perfia-bases' ? 'attestation Open Badges' : 'badge Niveau 1'}</span>
+            <h3>{p.titre}</h3>
+            <p class="duo__sous">{p.sous_titre}</p>
+            <p>{p.promesse}</p>
+            <p class="duo__pour"><strong>Pour qui :</strong> {p.public}</p>
+            <ol class="duo__mods">{p.modules.map((m) => <li><span>M{m.label}</span>{m.titre}</li>)}</ol>
+            <div class="duo__ctas">
+              <a class="btn btn--primary" href={`/modules/${p.modules[0].id}/?p=${p.id}`}>Commencer</a>
+              <a class="btn btn--secondary" href={`/programme/#${p.id}`}>Voir le programme</a>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -220,21 +248,21 @@ const faq = [
   <section class="sec" id="programme">
     <div class="container programme">
       <div class="sec-head reveal">
-        <span class="eyebrow">Programme</span>
-        <h2>9 modules, <em>de la première demande au prototype mesuré.</em></h2>
+        <span class="eyebrow">Programme · Mettre en place l'IA</span>
+        <h2>{mep.nbModules} modules, <em>de la première demande au prototype mesuré.</em></h2>
         <p class="t-lead">Chaque module associe des vidéos courtes, une fiche mémo, un exercice sur votre cas et, souvent, un quiz.</p>
       </div>
       <ol class="mods">
         {modules.map((m) => (
           <li class="reveal">
-            <a class="mod" href={`/modules/${m.id}/`}>
-              <span class="mod__num">M{m.ordre}</span>
+            <a class="mod" href={`/modules/${m.id}/?p=${mep.id}`}>
+              <span class="mod__num">M{m.label}</span>
               <span class="mod__body">
                 <span class="mod__title">{m.titre}</span>
                 <span class="mod__resume">{m.resume}</span>
               </span>
               <span class="mod__meta">
-                {m.ordre <= 1 && <span class="pill pill--ok">Accès libre</span>}
+                {m.libre && <span class="pill pill--ok">Accès libre</span>}
                 {m.competences.length > 0 && <span class="pill">{m.competences.join(' · ')}</span>}
                 <span class="mod__duree">{fmtDuree(m.duree)}</span>
               </span>
@@ -252,7 +280,7 @@ const faq = [
       <div class="reveal">
         <span class="eyebrow">Le badge Niveau 1</span>
         <h2>Six compétences, <em>prouvées sur votre projet.</em></h2>
-        <p class="t-lead">Votre projet final rassemble ce que vous avez produit sur votre cas. Il est évalué sur six compétences ; le badge atteste votre formation à la maîtrise de l'IA et se vérifie en ligne.</p>
+        <p class="t-lead">Votre projet final rassemble ce que vous avez produit sur votre cas. Il est évalué sur six compétences ; le badge atteste votre formation à la maîtrise de l'IA et se vérifie en ligne. Le parcours « Les bases de l'IA » délivre de son côté une attestation automatique, au même format Open Badges.</p>
         <div class="badge-sec__seal"><Seal /></div>
       </div>
       <dl class="comp">
@@ -318,7 +346,7 @@ const faq = [
   document.addEventListener('rondelle:progress', (e: any) => {
     const c = e.detail?.courant; const a = document.getElementById('reprendre') as HTMLAnchorElement | null;
     if (!a) return;
-    if (c) { a.href = `/modules/${c.id}/`; a.textContent = `Reprendre : M${c.ordre} ${c.titre} →`; }
+    if (c) { a.href = `/modules/${c.id}/?p=${e.detail.parcours}`; a.textContent = `Reprendre : M${c.label} ${c.titre} →`; }
     else { a.href = '/projet-final/'; a.textContent = 'Déposer mon projet final →'; }
   });
   const sticky = document.querySelector<HTMLElement>('.sticky-cta');
@@ -329,6 +357,19 @@ const faq = [
 </script>
 
 <style>
+  /* ============ Deux parcours ============ */
+  .duo { display: grid; gap: var(--space-5); }
+  @media (min-width: 900px) { .duo { grid-template-columns: 1fr 1fr; } }
+  .duo__card { display: flex; flex-direction: column; gap: var(--space-3); background: var(--white); border: 1px solid var(--grey-300); border-radius: var(--radius-lg); padding: var(--space-6); }
+  .duo__card h3 { font-size: var(--text-h3); margin: 0; }
+  .duo__card p { margin: 0; color: var(--ink-700); }
+  .duo__meta { font-family: var(--font-mono); font-size: var(--text-micro); font-weight: 700; letter-spacing: var(--tracking-mono); text-transform: uppercase; color: var(--xf-green-600); }
+  .duo__sous { font-weight: 600; color: var(--ink-900) !important; }
+  .duo__mods { list-style: none; padding: 0; margin: var(--space-2) 0 0; display: grid; gap: 6px; border-top: 1px solid var(--grey-300); padding-top: var(--space-4); font-size: .95rem; }
+  .duo__mods li { display: flex; gap: var(--space-3); }
+  .duo__mods span { font-family: var(--font-mono); font-weight: 700; font-size: .8rem; color: var(--km-sage-600); min-width: 3.2em; padding-top: 2px; }
+  .duo__ctas { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: auto; padding-top: var(--space-4); }
+
   /* ============ Héros ============ */
   .hero {
     position: relative; overflow: hidden; color: var(--white);

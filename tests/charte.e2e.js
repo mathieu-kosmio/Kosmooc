@@ -87,9 +87,9 @@ test('charte IA : mode m7, profil prérempli, règles modifiables et enregistré
   await page.fill('#password', 'Test-12345');
   await page.check('#consentement');
   await page.getByRole('button', { name: 'Créer mon compte' }).click();
-  await page.waitForURL('**/modules/m0/');
+  await page.waitForURL('**/modules/m0/**');
 
-  await page.goto('/modules/m7/');
+  await page.goto('/modules/m12/');
   const widget = page.locator('[data-widget="charte"]');
   await widget.scrollIntoViewIfNeeded();
   await expect(page.locator('#ch-entreprise')).toHaveValue('Menuiserie des Landes');

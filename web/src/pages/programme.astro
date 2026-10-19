@@ -1,84 +1,114 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-const modules = (await getCollection('modules')).sort((a, b) => a.data.ordre - b.data.ordre).map((m) => m.data);
-const total = modules.reduce((s, m) => s + m.duree, 0);
-const dureeTotale = `${Math.floor(total / 60)} h${total % 60 ? ' ' + String(total % 60).padStart(2, '0') : ''}`;
-const fmtDuree = (d: number) => (d >= 60 ? `${Math.floor(d / 60)} h${d % 60 ? ' ' + String(d % 60).padStart(2, '0') : ''}` : `${d} min`);
-const phases = [
-  { n: '01', titre: 'Choisir votre cas', de: 0, a: 0 },
-  { n: '02', titre: 'Comprendre et demander', de: 1, a: 3 },
-  { n: '03', titre: 'Prototyper', de: 4, a: 6 },
-  { n: '04', titre: 'Fiabiliser et décider', de: 7, a: 9 },
-];
+import { assembler, fmtDuree } from '../lib/parcours.js';
+const parcours = assembler(await getCollection('modules'));
 const competences = [
   ['C1', "Expliquer le fonctionnement et les limites d'une IA générative", 'Quiz M1, au moins 80 %'],
   ['C2', 'Formuler une demande efficace', "Demande C de l'exercice M2"],
   ['C3', "Décider si une tâche relève de l'IA", 'Grille de sobriété M3'],
   ['C4', "Formuler un cas d'usage", 'Fiche E-T-S-C (M4)'],
   ['C5', 'Construire et tester un prototype réutilisable', 'Prompt métier et tableau de test (M5, M6)'],
-  ['C6', "Utiliser l'IA de façon responsable", 'Charte en 5 règles et autodiagnostic de dépendance (M7, M8)'],
+  ['C6', "Utiliser l'IA de façon responsable", 'Charte en 5 règles et autodiagnostic de dépendance (M7.3, M8)'],
 ];
 ---
-<Base title="Programme" current="programme" description={`Le programme du Niveau 1 : un module d'accueil et 9 modules, environ ${dureeTotale}, six compétences évaluées pour le badge.`}>
+<Base title="Programme" current="programme" description="Deux parcours en ligne : Les bases de l'IA, pour être conforme à l'AI Act, et Mettre en place l'IA, pour prototyper un cas d'usage. Les modules communs ne se font qu'une fois.">
   <header class="page-head">
     <div class="container">
-      <span class="eyebrow">Programme du Niveau 1</span>
-      <h1>Le parcours <em>en détail.</em></h1>
-      <p class="t-lead">Un module d'accueil et 9 modules, environ {dureeTotale} sur 4 à 6 semaines. Chaque module comprend des vidéos courtes, une fiche mémo, un exercice sur votre cas fil rouge et, souvent, un quiz.</p>
-      <div class="hero__actions"><a class="btn btn--primary" href="/inscription/" data-auth="out">Créer mon compte →</a><a class="btn btn--secondary" href="/modules/m0/">Commencer par le module 0</a></div>
+      <span class="eyebrow">Programme de l'Académie PerfIA</span>
+      <h1>Deux parcours, <em>des modules en commun.</em></h1>
+      <p class="t-lead">Commencez par les bases ou allez directement au prototype. Les modules communs ne se font qu'une fois : terminés dans un parcours, ils sont acquis dans l'autre.</p>
+      <div class="choix">
+        {parcours.map((p) => (
+          <a class="choix__card" href={`#${p.id}`}>
+            <span class="eyebrow">{p.nbModules} modules · {fmtDuree(p.duree)}</span>
+            <strong>{p.titre}</strong>
+            <span>{p.sous_titre}</span>
+          </a>
+        ))}
+      </div>
     </div>
   </header>
 
-  <div class="container prog">
-    {phases.map((p) => (
-      <section class="prog__phase" aria-labelledby={`ph-${p.n}`}>
-        <div class="prog__label">
-          <span class="prog__n">{p.n}</span>
-          <h2 id={`ph-${p.n}`}>{p.titre}</h2>
-          <span class="prog__mods">{p.de === p.a ? `M${p.de}` : `M${p.de} à M${p.a}`}</span>
-        </div>
-        <div class="prog__list">
-          {modules.filter((m) => m.ordre >= p.de && m.ordre <= p.a).map((m) => (
-            <article class="prog__mod">
-              <div class="prog__top">
-                <span class="prog__num">M{m.ordre}</span>
-                <span class="prog__pills">
-                  {m.ordre <= 1 && <span class="pill pill--ok">Accès libre</span>}
-                  {m.competences.length > 0 && <span class="pill">{m.competences.join(' · ')}</span>}
-                  <span class="prog__duree">{fmtDuree(m.duree)}</span>
-                </span>
-              </div>
-              <h3><a href={`/modules/${m.id}/`}>{m.titre}</a></h3>
-              <ul class="objectifs">{m.objectifs.map((o) => <li>{o}</li>)}</ul>
-            </article>
-          ))}
-        </div>
-      </section>
-    ))}
-
-    <section class="prog__comp" aria-labelledby="comp-title">
-      <span class="eyebrow">Badge Niveau 1</span>
-      <h2 id="comp-title">Les six compétences évaluées</h2>
-      <p class="t-lead">Le badge est délivré sur votre projet final. Chaque compétence s'appuie sur une preuve produite pendant le parcours.</p>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr><th scope="col">Code</th><th scope="col">Compétence</th><th scope="col">Preuve</th></tr></thead>
-          <tbody>{competences.map(([c, t, p]) => <tr><td><strong class="code">{c}</strong></td><td>{t}</td><td>{p}</td></tr>)}</tbody>
-        </table>
+  {parcours.map((p) => (
+    <div class="container prog" id={p.id}>
+      <div class="prog__intro">
+        <span class="eyebrow">{p.badge === 'perfia-bases' ? 'Attestation Open Badges' : 'Badge Niveau 1'} · environ {fmtDuree(p.duree)}</span>
+        <h2>{p.titre}</h2>
+        <p class="t-lead">{p.sous_titre}. {p.promesse}</p>
+        <p class="t-small"><strong>Pour qui :</strong> {p.public}</p>
+        <div class="hero__actions"><a class="btn btn--primary" href={`/modules/${p.modules[0].id}/?p=${p.id}`}>Commencer par le module {p.modules[0].label}</a><a class="btn btn--secondary" href="/inscription/" data-auth="out">Créer mon compte →</a></div>
       </div>
-    </section>
-  </div>
+      {p.phases.map((ph, k) => (
+        <section class="prog__phase" aria-labelledby={`ph-${p.id}-${k}`}>
+          <div class="prog__label">
+            <span class="prog__n">{String(k + 1).padStart(2, '0')}</span>
+            <h3 id={`ph-${p.id}-${k}`}>{ph.titre}</h3>
+            <span class="prog__mods">{ph.plage}</span>
+          </div>
+          <div class="prog__list">
+            {ph.mods.map((m) => (
+              <article class="prog__mod">
+                <div class="prog__top">
+                  <span class="prog__num">M{m.label}</span>
+                  <span class="prog__pills">
+                    {m.libre && <span class="pill pill--ok">Accès libre</span>}
+                    {m.communs.length > 0 && <span class="pill">Commun aux deux parcours</span>}
+                    {m.competences.length > 0 && p.id === 'mettre-en-place' && <span class="pill">{m.competences.join(' · ')}</span>}
+                    <span class="prog__duree">{fmtDuree(m.duree)}</span>
+                  </span>
+                </div>
+                <h4><a href={`/modules/${m.id}/?p=${p.id}`}>{m.titre}</a></h4>
+                <ul class="objectifs">{m.objectifs.map((o) => <li>{o}</li>)}</ul>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {p.badge === 'perfia-bases' ? (
+        <section class="prog__comp" aria-labelledby={`comp-${p.id}`}>
+          <span class="eyebrow">Attestation Open Badges</span>
+          <h3 id={`comp-${p.id}`}>Ce que l'attestation certifie</h3>
+          <p class="t-lead">{p.badgeDef.criteres} Elle est émise automatiquement, au format Open Badges, vérifiable en ligne et valable 24 mois.</p>
+          <ul class="objectifs">{p.badgeDef.competences.map((c) => <li>{c}</li>)}</ul>
+          <p class="t-small">Le parcours est conçu comme une mesure de maîtrise de l'IA au sens de l'article 4 de l'AI Act. Il complète les autres mesures de l'entreprise : liste des outils autorisés, charte IA, personne référente. Repères, pas un avis juridique.</p>
+        </section>
+      ) : (
+        <section class="prog__comp" aria-labelledby={`comp-${p.id}`}>
+          <span class="eyebrow">Badge Niveau 1</span>
+          <h3 id={`comp-${p.id}`}>Les six compétences évaluées</h3>
+          <p class="t-lead">Le badge est délivré sur votre projet final. Chaque compétence s'appuie sur une preuve produite pendant le parcours. Une fois les modules 1, 2, 7.1 et 7.2 terminés, vous recevez aussi l'attestation « Les bases de l'IA ».</p>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th scope="col">Code</th><th scope="col">Compétence</th><th scope="col">Preuve</th></tr></thead>
+              <tbody>{competences.map(([c, t, pr]) => <tr><td><strong class="code">{c}</strong></td><td>{t}</td><td>{pr}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </section>
+      )}
+    </div>
+  ))}
 </Base>
 
 <style>
+  .choix { display: grid; gap: var(--space-3); margin-top: var(--space-6); }
+  @media (min-width: 760px) { .choix { grid-template-columns: 1fr 1fr; } }
+  .choix__card { display: grid; align-content: start; gap: 6px; padding: var(--space-5); border: 1px solid var(--grey-300); border-radius: var(--radius-lg); background: var(--white); color: var(--ink-900); text-decoration: none; transition: border-color .2s var(--ease-out), box-shadow .2s var(--ease-out); }
+  .choix__card:hover { border-color: var(--xf-green-500); box-shadow: var(--shadow-md); }
+  .choix__card strong { font-size: 1.25rem; }
+  .choix__card span:last-child { color: var(--ink-700); }
+  .prog + .prog { border-top: 1px solid var(--grey-300); }
+  .prog__intro h2 { font-size: var(--text-h2); margin: var(--space-3) 0 var(--space-3); }
+  .prog__intro .t-lead { max-width: 65ch; }
+  .prog__comp .objectifs { margin-bottom: var(--space-4); }
   .prog { padding-block: var(--space-8) var(--space-9); display: grid; gap: var(--space-8); }
   .prog__phase { display: grid; gap: var(--space-5); }
   @media (min-width: 1024px) { .prog__phase { grid-template-columns: 260px minmax(0, 1fr); gap: var(--space-7); } }
   .prog__label { align-self: start; }
   @media (min-width: 1024px) { .prog__label { position: sticky; top: 96px; } }
   .prog__n { font-family: var(--font-display); font-weight: 700; font-size: 3rem; line-height: 1; letter-spacing: -0.03em; color: var(--xf-green-500); }
-  .prog__label h2 { font-size: var(--text-h3); margin: var(--space-3) 0 var(--space-2); }
+  .prog__label h3 { font-size: var(--text-h3); margin: var(--space-3) 0 var(--space-2); }
   .prog__mods { font-family: var(--font-mono); font-size: var(--text-micro); font-weight: 700; letter-spacing: var(--tracking-mono); text-transform: uppercase; color: var(--grey-600); }
   .prog__list { display: grid; gap: var(--space-4); min-width: 0; }
   .prog__mod { background: var(--white); border: 1px solid var(--grey-300); border-radius: var(--radius-lg); padding: var(--space-6); transition: border-color .25s var(--ease-out), box-shadow .25s var(--ease-out); }
@@ -87,13 +117,13 @@ const competences = [
   .prog__num { font-family: var(--font-mono); font-weight: 700; font-size: .85rem; color: var(--km-sage-600); letter-spacing: .06em; }
   .prog__pills { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
   .prog__duree { font-family: var(--font-mono); font-size: .78rem; font-weight: 700; color: var(--ink-700); }
-  .prog__mod h3 { font-size: 1.35rem; margin: var(--space-3) 0 var(--space-4); }
-  .prog__mod h3 a { color: var(--ink-900); text-decoration: none; }
-  .prog__mod h3 a:hover { color: var(--xf-green-600); }
-  .prog__mod h3 a::after { content: " →"; color: var(--xf-green-500); }
+  .prog__mod h4 { font-size: 1.35rem; margin: var(--space-3) 0 var(--space-4); }
+  .prog__mod h4 a { color: var(--ink-900); text-decoration: none; }
+  .prog__mod h4 a:hover { color: var(--xf-green-600); }
+  .prog__mod h4 a::after { content: " →"; color: var(--xf-green-500); }
   .prog__mod .objectifs { font-size: .95rem; color: var(--ink-700); }
   .prog__comp { border-top: 1px solid var(--grey-300); padding-top: var(--space-8); }
-  .prog__comp h2 { font-size: var(--text-h2); margin: var(--space-4) 0 var(--space-4); }
+  .prog__comp h3 { font-size: var(--text-h2); margin: var(--space-4) 0 var(--space-4); }
   .prog__comp .t-lead { max-width: 60ch; margin-bottom: var(--space-6); }
   .code { font-family: var(--font-mono); color: var(--xf-gold-600); }
 </style>

@@ -45,6 +45,56 @@ onRecordUpdateRequest((e) => {
   e.next()
 }, "progress")
 
+// ---------- Attestation « Les bases de l'IA » : émise dès que les modules requis sont terminés ----------
+onRecordAfterCreateSuccess((e) => {
+  if (e.record.get("statut") === "termine") {
+    const A = require(`${__hooks}/lib/academie.js`)
+    try { A.issueBasesIfEligible(e.app, e.record.get("user")) } catch (err) { e.app.logger().error("Académie : attestation bases", "error", String(err)) }
+  }
+  e.next()
+}, "progress")
+onRecordAfterUpdateSuccess((e) => {
+  if (e.record.get("statut") === "termine") {
+    const A = require(`${__hooks}/lib/academie.js`)
+    try { A.issueBasesIfEligible(e.app, e.record.get("user")) } catch (err) { e.app.logger().error("Académie : attestation bases", "error", String(err)) }
+  }
+  e.next()
+}, "progress")
+
+// ---------- Open Badges 2.0 (vérification hébergée) ----------
+routerAdd("GET", "/api/academie/ob/issuer", (e) => {
+  const A = require(`${__hooks}/lib/academie.js`)
+  return e.json(200, A.obIssuer($app))
+})
+routerAdd("GET", "/api/academie/ob/badges/{code}", (e) => {
+  const A = require(`${__hooks}/lib/academie.js`)
+  const bc = A.obBadgeClass($app, e.request.pathValue("code"))
+  return bc ? e.json(200, bc) : e.json(404, { message: "Badge inconnu." })
+})
+routerAdd("GET", "/api/academie/ob/badges/{code}/image", (e) => {
+  const A = require(`${__hooks}/lib/academie.js`)
+  const code = e.request.pathValue("code")
+  if (!A.obBadgeClass($app, code)) return e.json(404, { message: "Badge inconnu." })
+  e.response.header().set("Content-Type", "image/svg+xml; charset=utf-8")
+  e.response.header().set("Cache-Control", "public, max-age=86400")
+  return e.string(200, A.obSvg(code, null))
+})
+routerAdd("GET", "/api/academie/ob/assertions/{id}", (e) => {
+  const A = require(`${__hooks}/lib/academie.js`)
+  let badge
+  try { badge = $app.findRecordById("badges", e.request.pathValue("id")) } catch (_) { return e.json(404, { message: "Assertion introuvable." }) }
+  return e.json(200, A.obAssertion($app, badge))
+})
+// Image « cuite » : l'assertion est intégrée au SVG (spécification Open Badges 2.0, baking SVG).
+routerAdd("GET", "/api/academie/ob/assertions/{id}/image", (e) => {
+  const A = require(`${__hooks}/lib/academie.js`)
+  let badge
+  try { badge = $app.findRecordById("badges", e.request.pathValue("id")) } catch (_) { return e.json(404, { message: "Assertion introuvable." }) }
+  e.response.header().set("Content-Type", "image/svg+xml; charset=utf-8")
+  if (e.request.url.query().get("download") === "1") e.response.header().set("Content-Disposition", 'attachment; filename="openbadge-' + badge.get("code") + '-' + badge.id + '.svg"')
+  return e.string(200, A.obSvg(badge.get("code"), A.obAssertion($app, badge)))
+})
+
 // ---------- Comptes : rôle apprenant par défaut, mail de bienvenue ----------
 onRecordCreateRequest((e) => {
   if (!e.record.get("role")) e.record.set("role", "apprenant")
@@ -53,8 +103,8 @@ onRecordCreateRequest((e) => {
 
 onRecordAfterCreateSuccess((e) => {
   const A = require(`${__hooks}/lib/academie.js`)
-  A.sendMail(e.app, e.record.get("email"), "Bienvenue dans le Parcours IA filière bois",
-    "<p>Bonjour,</p><p>Votre compte est créé. Commencez par le module 0 : 15 minutes pour situer votre usage de l'IA et choisir votre cas fil rouge.</p>" +
+  A.sendMail(e.app, e.record.get("email"), "Bienvenue dans l'Académie PerfIA",
+    "<p>Bonjour,</p><p>Votre compte est créé. Deux parcours vous attendent : « Les bases de l'IA », environ deux heures et demie pour utiliser l'IA dans les règles de l'AI Act, et « Mettre en place l'IA », pour faire avancer une tâche réelle de votre entreprise jusqu'à un prototype testé. Les modules communs ne se font qu'une fois.</p>" +
     "<p>" + A.appUrl(e.app) + "/parcours/</p><p>L'équipe PerfIA, Kosmio et Xylofutur</p>")
   e.next()
 }, "users")

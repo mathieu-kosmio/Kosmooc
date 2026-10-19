@@ -2,9 +2,20 @@
 
 Tout le contenu pédagogique vit dans le dépôt, en fichiers texte. La plateforme ne stocke que les données vivantes (comptes, progression, tentatives, dépôts, évaluations, badges).
 
+## 0. Parcours : `backend/parcours.json`
+
+L'Académie propose deux parcours construits sur une bibliothèque de modules commune :
+
+- **Les bases de l'IA** (`bases`) : m10, m1, m2, m7, m11, numérotés 0 à 4. Attestation `perfia-bases` émise automatiquement par le serveur quand les modules requis (m1, m2, m7, m11) sont terminés, quel que soit le parcours suivi.
+- **Mettre en place l'IA** (`mettre-en-place`) : m0 à m6, puis m7 (7.1), m11 (7.2), m12 (7.3), m8, m9. Badge `perfia-n1` sur projet final évalué.
+
+Chaque parcours liste ses modules avec un numéro affiché (`label`), propre au parcours. La progression est enregistrée par module : un module commun terminé dans un parcours est acquis dans l'autre, et le lien « module suivant » saute les modules déjà terminés. Le même fichier sert au front (`web/src/lib/parcours.js`) et aux hooks. Dans un module commun (m1, m2, m7, m11), ne renvoyez jamais à un numéro de module d'un seul parcours : nommez le module ou le parcours.
+
+Les badges sont publiés au format **Open Badges 2.0** (vérification hébergée) : `/api/academie/ob/issuer`, `/api/academie/ob/badges/{code}`, `/api/academie/ob/assertions/{id}` et l'image cuite `/api/academie/ob/assertions/{id}/image`. Les URL sont construites depuis `ACADEMIE_URL` : elle doit être l'adresse publique définitive.
+
 ## 1. Module : `web/src/content/modules/<id>.md`
 
-Nom de fichier : `m0.md` à `m9.md`.
+Nom de fichier : `m0.md` à `m12.md`. Un nouveau module doit être ajouté à au moins un parcours dans `backend/parcours.json`.
 
 ```yaml
 ---
@@ -85,4 +96,4 @@ Tableau en deux colonnes « Ce qu'on voit » / « Ce qu'on dit », 130 mots par 
 | C3 | Décider si une tâche relève de l'IA | Grille M3 |
 | C4 | Formuler un cas d'usage | Fiche E-T-S-C (M4) |
 | C5 | Construire et tester un prototype réutilisable | Prompt métier et tableau de test (M5, M6) |
-| C6 | Utiliser l'IA de façon responsable | Charte 5 règles et autodiagnostic dépendance (M7, M8) |
+| C6 | Utiliser l'IA de façon responsable | Charte 5 règles et autodiagnostic dépendance (M7.3, M8) |

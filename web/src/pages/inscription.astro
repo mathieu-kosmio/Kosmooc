@@ -1,17 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
+import { PARCOURS, PARCOURS_DEFAUT } from '../lib/parcours.js';
 ---
 <Base title="Inscription">
   <div class="auth">
     <aside class="auth__aside">
-      <span class="eyebrow">Parcours IA filière bois · Niveau 1</span>
-      <h2>Votre cas réel, <em>du module 0 au badge.</em></h2>
-      <p>Un compte gratuit pour suivre le module d'accueil et les 9 modules, enregistrer votre progression et déposer votre projet final.</p>
+      <span class="eyebrow">Académie PerfIA · filière forêt-bois</span>
+      <h2>Deux parcours, <em>un seul compte.</em></h2>
+      <p>Un compte gratuit pour suivre « Les bases de l'IA » et « Mettre en place l'IA », enregistrer votre progression, obtenir votre attestation et déposer votre projet final. Les modules communs ne se font qu'une fois.</p>
       <ul>
         <li>Modules courts, à votre rythme</li>
         <li>Quiz, exercices et suivi de progression</li>
         <li>Une séance individuelle en visio avec votre formateur, incluse avec la formation en atelier ou l'accompagnement PerfIA</li>
-        <li>Badge Niveau 1 vérifiable en ligne</li>
+        <li>Attestation et badge au format Open Badges, vérifiables en ligne</li>
       </ul>
     </aside>
     <div class="auth__main">
@@ -39,6 +40,13 @@ import Base from '../layouts/Base.astro';
             <option value="autre">Autre</option>
           </select>
         </div>
+        <fieldset class="field">
+          <legend>Par quel parcours commencez-vous ?</legend>
+          {PARCOURS.map((p) => (
+            <label class="check"><input type="radio" name="parcours" value={p.id} checked={p.id === PARCOURS_DEFAUT} /> <span><strong>{p.titre}</strong> : {p.sous_titre.charAt(0).toLowerCase() + p.sous_titre.slice(1)}</span></label>
+          ))}
+          <small>Vous pourrez suivre l'autre parcours ensuite, sans refaire les modules communs.</small>
+        </fieldset>
         <div class="field"><label for="password">Mot de passe</label><input id="password" name="password" type="password" minlength="8" required autocomplete="new-password" /><small>8 caractères minimum.</small></div>
         <label class="check"><input type="checkbox" id="consentement" required /> <span>J'accepte que mes données servent au suivi de ma formation et à la délivrance du badge, selon la <a href="/confidentialite/">politique de données</a>.</span></label>
         <div id="msg" role="alert"></div>
@@ -51,7 +59,10 @@ import Base from '../layouts/Base.astro';
   <script>
     import { pb, errMsg, esc } from '../lib/pb.js';
     import { renderSso } from '../lib/sso.js';
+    import { PARCOURS, parcoursChoisi, memoriserParcours } from '../lib/parcours.js';
     renderSso(document.getElementById('sso'));
+    const deja = parcoursChoisi(PARCOURS.map((p) => p.id));
+    if (deja) { const r = document.querySelector<HTMLInputElement>(`input[name="parcours"][value="${deja}"]`); if (r) r.checked = true; }
     // Préremplissage depuis la synthèse de charte IA : ?email=&entreprise=&maillon=&source=charte
     const qs = new URLSearchParams(window.location.search);
     const pre = (id: string, v: string | null) => { const f = document.getElementById(id) as HTMLInputElement | null; if (f && v) f.value = v; };
@@ -76,7 +87,9 @@ import Base from '../layouts/Base.astro';
           maillon: get('maillon'), password: get('password'), passwordConfirm: get('password'), consentement: true,
         });
         await pb.collection('users').authWithPassword(get('email'), get('password'));
-        window.location.href = '/modules/m0/';
+        const choix = PARCOURS.find((p) => p.id === get('parcours')) || PARCOURS[0];
+        memoriserParcours(choix.id);
+        window.location.href = `/modules/${choix.modules[0].id}/?p=${choix.id}`;
       } catch (err) {
         msg.innerHTML = `<div class="alert alert--error">${esc(errMsg(err))}</div>`;
       }

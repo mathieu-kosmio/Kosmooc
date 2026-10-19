@@ -134,7 +134,10 @@ a.module-row:hover { border-color: var(--xf-green-500); box-shadow: var(--shadow
 .module-meta .pill { font-size: .78rem; padding: 4px 12px; background: var(--white); border: 1px solid rgba(201,191,177,.8); color: var(--ink-700); }
 .module-meta .pill--ok { background: var(--xf-green-50); border-color: transparent; color: var(--xf-green-600); }
 
-.rail { list-style: none; padding: 0; margin: var(--space-6) 0 0; display: grid; grid-template-columns: repeat(10, minmax(0,1fr)); gap: 6px; max-width: 640px; }
+.rail { list-style: none; padding: 0; margin: var(--space-6) 0 0; display: flex; gap: 6px; max-width: 720px; }
+.rail li { flex: 1 1 0; min-width: 0; }
+.rail .is-done span { background: var(--km-sage-500); }
+.ctx-switch { margin-top: var(--space-4); max-width: 70ch; }
 .rail a { display: block; text-decoration: none; }
 .rail span { display: block; height: 6px; border-radius: var(--radius-pill); background: rgba(124,158,152,.28); transition: background var(--duration-base) var(--ease-out); }
 .rail small { display: block; margin-top: 6px; font-family: var(--font-mono); font-size: .66rem; font-weight: 700; letter-spacing: .06em; color: var(--grey-600); }
@@ -219,6 +222,7 @@ a.module-row:hover { border-color: var(--xf-green-500); box-shadow: var(--shadow
 .form--wide { max-width: none; }
 .field { display: grid; gap: var(--space-1); }
 .field label, .field legend { font-weight: var(--fw-semibold); font-size: var(--text-small); }
+fieldset.field { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: var(--space-2); }
 .field small { color: var(--grey-600); }
 input[type="text"], input[type="email"], input[type="password"], input[type="url"], select, textarea {
   font: inherit; font-size: 1rem; padding: 11px 14px; border: 1px solid var(--grey-300); border-radius: var(--radius-sm);

@@ -40,6 +40,24 @@ check "badge vérifiable sans compte" "$(curl -s $B/api/collections/badges/recor
 check "liste des badges fermée au public" "$(curl -s $B/api/collections/badges/records | j 'd["totalItems"]')" 0
 check "statistiques réservées" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/stats -H "Authorization: $TOK")" 403
 check "statistiques évaluateur" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/stats -H "Authorization: $ETOK")" 200
+# ---------- Parcours « Les bases de l'IA » : attestation automatique et Open Badges ----------
+ans(){ python3 -c "import json;q=json.load(open('$(dirname $0)/../backend/quiz/$1.json'));print(json.dumps({'reponses':{x['id']:x['bonnes'] for x in q['questions']}}))"; }
+for M in m2 m7; do post /api/academie/quiz/$M "$(ans $M)" $TOK >/dev/null; post /api/collections/progress/records "{\"user\":\"$U\",\"module\":\"$M\",\"statut\":\"termine\"}" $TOK >/dev/null; done
+check "attestation bases pas encore émise" "$(curl -s "$B/api/collections/badges/records?filter=code='perfia-bases'" -H "Authorization: $TOK" | j 'd["totalItems"]')" 0
+check "m11 terminé refusé sans quiz" "$(post /api/collections/progress/records "{\"user\":\"$U\",\"module\":\"m11\",\"statut\":\"termine\"}" $TOK)" 400
+post /api/academie/quiz/m11 "$(ans m11)" $TOK >/dev/null
+check "m11 terminé après quiz" "$(post /api/collections/progress/records "{\"user\":\"$U\",\"module\":\"m11\",\"statut\":\"termine\"}" $TOK)" 200
+curl -s "$B/api/collections/badges/records?filter=code='perfia-bases'" -H "Authorization: $TOK" > /tmp/bb.json
+check "attestation bases émise" "$(j 'd["totalItems"]' < /tmp/bb.json)" 1
+AB=$(j 'd["items"][0]["id"]' < /tmp/bb.json)
+check "OB émetteur" "$(curl -s $B/api/academie/ob/issuer | j 'd["type"]')" Issuer
+check "OB classe de badge" "$(curl -s $B/api/academie/ob/badges/perfia-bases | j 'd["type"]')" BadgeClass
+check "OB classe inconnue" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/ob/badges/inconnu)" 404
+check "OB assertion hébergée" "$(curl -s $B/api/academie/ob/assertions/$AB | j 'd["verification"]["type"]')" hosted
+check "OB destinataire haché" "$(curl -s $B/api/academie/ob/assertions/$AB | j 'd["recipient"]["identity"].startswith("sha256$") and "@t.fr" not in str(d)')" True
+check "OB image cuite" "$(curl -s $B/api/academie/ob/assertions/$AB/image | grep -c 'openbadges:assertion verify')" 1
+check "OB assertion inconnue" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/ob/assertions/inconnu123456789)" 404
+check "badge N1 aussi en Open Badges" "$(curl -s $B/api/academie/ob/assertions/$BID | j 'd["badge"].endswith("/perfia-n1")')" True
 # ---------- Générateur de charte IA ----------
 REP='{"entreprise":"Test charte SARL","maillon":"bureau_etudes","effectif":"10-49","pilote":"dirigeant","referent":"Lea Martin","outils":["chatgpt","copilot"],"payes":[],"usages":["devis","plans"],"formation":"aucun","donnees":["plans"],"confidentialite":"souvent","souverainete":"exigence","ton":"prudent"}'
 LIBRE(){ echo "{\"prenom\":\"Lea\",\"email\":\"$1\",\"fonction\":\"Gérante\",\"referent\":\"Lea Martin\",\"newsletter\":false,\"niveau\":\"public\",\"score\":100,\"palier\":\"pilotage\",\"reponses\":$REP}"; }

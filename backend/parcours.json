@@ -1,0 +1,82 @@
+{
+  "_doc": "Bibliothèque de modules et parcours. Un module a un identifiant stable (m0, m1...) ; chaque parcours est une liste ordonnée de modules avec un numéro affiché propre au parcours. La progression est enregistrée par module : un module commun terminé dans un parcours est acquis dans l'autre.",
+  "acces_libre": ["m0", "m1", "m10"],
+  "parcours": [
+    {
+      "id": "bases",
+      "titre": "Les bases de l'IA",
+      "sous_titre": "Les éléments fondamentaux pour être conforme à l'AI Act",
+      "public": "Tous les salariés qui utilisent, ou vont utiliser, un outil d'IA au travail.",
+      "promesse": "Comprendre ce que fait l'IA, savoir lui demander, l'utiliser sans risque pour les données et connaître les règles de l'AI Act. Une attestation Open Badges à la clé.",
+      "badge": "perfia-bases",
+      "modules": [
+        { "id": "m10", "label": "0" },
+        { "id": "m1", "label": "1" },
+        { "id": "m2", "label": "2" },
+        { "id": "m7", "label": "3" },
+        { "id": "m11", "label": "4" }
+      ],
+      "etapes": ["m10", "m11"],
+      "phases": [
+        { "titre": "Les repères", "modules": ["m10"], "texte": "Pourquoi votre entreprise vous forme, ce que vous allez savoir faire et où vous en êtes." },
+        { "titre": "Comprendre et demander", "modules": ["m1", "m2"], "texte": "Ce que fait un modèle, où il se trompe, et comment formuler une demande qui donne un résultat contrôlable." },
+        { "titre": "Utiliser l'IA dans les règles", "modules": ["m7", "m11"], "texte": "Contrôler selon le risque, protéger les données, connaître les niveaux de risque et vos réflexes au quotidien." }
+      ]
+    },
+    {
+      "id": "mettre-en-place",
+      "titre": "Mettre en place l'IA",
+      "sous_titre": "Le parcours pour ceux qui veulent prototyper des cas d'usage dans leur entreprise",
+      "public": "Dirigeants, responsables et salariés qui veulent faire avancer une tâche réelle de leur entreprise jusqu'à un prototype testé.",
+      "promesse": "Vous partez d'une tâche réelle, un devis, un DCE, des mails, et vous repartez avec un prototype testé, une charte d'usage et un badge Niveau 1.",
+      "badge": "perfia-n1",
+      "defaut": true,
+      "modules": [
+        { "id": "m0", "label": "0" },
+        { "id": "m1", "label": "1" },
+        { "id": "m2", "label": "2" },
+        { "id": "m3", "label": "3" },
+        { "id": "m4", "label": "4" },
+        { "id": "m5", "label": "5" },
+        { "id": "m6", "label": "6" },
+        { "id": "m7", "label": "7.1" },
+        { "id": "m11", "label": "7.2" },
+        { "id": "m12", "label": "7.3" },
+        { "id": "m8", "label": "8" },
+        { "id": "m9", "label": "9" }
+      ],
+      "etapes": ["m0", "m3", "m6", "m9"],
+      "phases": [
+        { "titre": "Choisir votre cas", "modules": ["m0"], "texte": "Vous faites le point sur vos usages et vous choisissez la tâche réelle que vous allez faire avancer jusqu'au bout." },
+        { "titre": "Comprendre et demander", "modules": ["m1", "m2", "m3"], "texte": "Ce que fait un modèle, comment formuler une demande qui tient, et comment repérer les tâches où l'IA n'apporte rien." },
+        { "titre": "Prototyper", "modules": ["m4", "m5", "m6"], "texte": "Votre cas devient une fiche E-T-S-C, puis un projet dans votre outil. Si vous suivez la formation en atelier ou l'accompagnement PerfIA, votre séance individuelle tombe à ce moment-là, avant de tester une procédure réutilisable sur un document inédit." },
+        { "titre": "Fiabiliser et décider", "modules": ["m7", "m11", "m12", "m8", "m9"], "texte": "Contrôles, données, AI Act, charte, dépendances, mesure avant et après : vous décidez de la suite sur des faits." }
+      ]
+    }
+  ],
+  "badges": {
+    "perfia-bases": {
+      "intitule": "Les bases de l'IA : maîtrise de l'IA en entreprise",
+      "sceau": "BASES IA",
+      "parcours": "bases",
+      "requis": ["m1", "m2", "m7", "m11"],
+      "validite_mois": 24,
+      "evaluation": "automatique",
+      "description": "Atteste le suivi du parcours en ligne « Les bases de l'IA » de l'Académie PerfIA et la réussite de ses quiz : fonctionnement et limites de l'IA générative, formulation des demandes, contrôle proportionné au risque, protection des données, niveaux de risque et règles de l'AI Act. Formation conçue comme une mesure de maîtrise de l'IA au sens de l'article 4 du règlement (UE) 2024/1689.",
+      "criteres": "Quatre modules terminés, chacun validé par un quiz corrigé côté serveur : Comprendre l'IA générative (seuil 80 %), Savoir demander, Utiliser l'IA de façon fiable, L'AI Act en pratique (seuil 60 %).",
+      "competences": ["Expliquer le fonctionnement et les limites d'une IA générative", "Formuler une demande efficace", "Proportionner le contrôle au risque et protéger les données", "Situer un usage dans les niveaux de risque de l'AI Act"],
+      "tags": ["IA générative", "AI Act", "article 4", "maîtrise de l'IA", "filière forêt-bois"]
+    },
+    "perfia-n1": {
+      "intitule": "IA générative en entreprise, filière bois, Niveau 1",
+      "sceau": "NIVEAU 1",
+      "parcours": "mettre-en-place",
+      "validite_mois": 24,
+      "evaluation": "projet final évalué",
+      "description": "Atteste six compétences de mise en place de l'IA générative en entreprise, évaluées par un évaluateur PerfIA sur un projet final : un cas réel cadré, prototypé, testé, encadré par une charte et mesuré.",
+      "criteres": "Parcours « Mettre en place l'IA » suivi, quiz du module 1 réussi (80 %) et projet final validé sur les six compétences C1 à C6 du référentiel.",
+      "competences": ["C1 Expliquer le fonctionnement et les limites d'une IA générative", "C2 Formuler une demande efficace", "C3 Décider si une tâche relève de l'IA", "C4 Formuler un cas d'usage", "C5 Construire et tester un prototype réutilisable", "C6 Utiliser l'IA de façon responsable"],
+      "tags": ["IA générative", "filière forêt-bois", "prototype", "cas d'usage"]
+    }
+  }
+}
