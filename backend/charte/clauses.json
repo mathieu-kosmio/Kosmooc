@@ -1,13 +1,24 @@
 {
-  "version": "1",
+  "version": "2",
   "clauses": [
+    {
+      "id": "regle1-suspendu",
+      "section": "regle1",
+      "condition": {
+        "outils_insuffisants": true
+      },
+      "texte": "Nous utilisons l'IA pour {{usages_liste}}, sur des informations publiques uniquement, tant que l'entreprise n'a pas souscrit d'offre professionnelle."
+    },
     {
       "id": "regle1-base",
       "section": "regle1",
       "texte": {
-        "encourageant": "Nous encourageons l'usage de l'IA pour {{usages_liste}}, avec les outils validés par {{referent}}.",
-        "prudent": "Nous autorisons l'IA pour {{usages_liste}}, avec les outils validés par {{referent}}, et pour ces seuls usages.",
-        "strict": "L'IA est autorisée pour {{usages_liste}} uniquement, avec les outils validés par {{referent}}. Tout autre usage demande un accord préalable."
+        "encourageant": "Nous utilisons l'IA pour {{usages_liste}}, avec les outils validés par {{referent}}.",
+        "prudent": "Nous utilisons l'IA pour {{usages_liste}}, avec les seuls outils validés par {{referent}}.",
+        "strict": "L'IA sert uniquement pour {{usages_liste}}, avec les outils validés par {{referent}}. Tout autre usage demande son accord."
+      },
+      "condition": {
+        "outils_insuffisants": false
       }
     },
     {
@@ -16,7 +27,7 @@
       "condition": {
         "maillon": "sylviculture"
       },
-      "texte": "Exemple dans votre activité : relire et résumer un plan de gestion ou un cahier de prescriptions, puis vérifier chaque chiffre à la source."
+      "texte": "Exemple : résumer un plan de gestion, chaque chiffre vérifié à la source."
     },
     {
       "id": "regle1-cas-exploitation",
@@ -24,7 +35,7 @@
       "condition": {
         "maillon": "exploitation"
       },
-      "texte": "Exemple dans votre activité : préparer un compte rendu de chantier ou une planification de coupes à partir de vos notes, relus avant diffusion."
+      "texte": "Exemple : préparer un compte rendu de chantier à partir de vos notes."
     },
     {
       "id": "regle1-cas-scierie",
@@ -32,7 +43,7 @@
       "condition": {
         "maillon": "scierie"
       },
-      "texte": "Exemple dans votre activité : rédiger une réponse client sur des délais ou des sections de sciage à partir de votre carnet de commandes, relue avant envoi."
+      "texte": "Exemple : répondre à un client sur un délai, à partir du carnet de commandes."
     },
     {
       "id": "regle1-cas-seconde_transformation",
@@ -40,7 +51,7 @@
       "condition": {
         "maillon": "seconde_transformation"
       },
-      "texte": "Exemple dans votre activité : transformer une demande client en liste de pièces, relue par le chef de production avant lancement."
+      "texte": "Exemple : transformer une demande client en liste de pièces."
     },
     {
       "id": "regle1-cas-construction",
@@ -48,7 +59,7 @@
       "condition": {
         "maillon": "construction"
       },
-      "texte": "Exemple dans votre activité : résumer un CCTP ou un compte rendu de chantier, relu par le conducteur de travaux avant diffusion."
+      "texte": "Exemple : résumer un CCTP ou un compte rendu de chantier."
     },
     {
       "id": "regle1-cas-bureau_etudes",
@@ -56,7 +67,7 @@
       "condition": {
         "maillon": "bureau_etudes"
       },
-      "texte": "Exemple dans votre activité : rédiger une note de synthèse ou une trame de rapport, jamais un calcul ni un dimensionnement."
+      "texte": "Exemple : rédiger une note de synthèse, jamais un calcul."
     },
     {
       "id": "regle1-cas-negoce",
@@ -64,7 +75,7 @@
       "condition": {
         "maillon": "negoce"
       },
-      "texte": "Exemple dans votre activité : rédiger une relance de devis ou une fiche produit, relue avant envoi."
+      "texte": "Exemple : rédiger une relance de devis ou une fiche produit."
     },
     {
       "id": "regle1-cas-ameublement",
@@ -72,7 +83,7 @@
       "condition": {
         "maillon": "ameublement"
       },
-      "texte": "Exemple dans votre activité : décrire un projet d'agencement pour établir un devis, relu avec les cotes d'origine."
+      "texte": "Exemple : décrire un projet d'agencement pour établir un devis."
     },
     {
       "id": "regle1-cas-autre",
@@ -80,39 +91,23 @@
       "condition": {
         "maillon": "autre"
       },
-      "texte": "Exemple dans votre activité : résumer un document long ou préparer un mail, relu avant envoi."
-    },
-    {
-      "id": "regle2-base",
-      "section": "regle2",
-      "texte": {
-        "encourageant": "Règle de base : ce que vous ne publieriez pas sur LinkedIn ne se dépose pas dans un outil grand public.",
-        "prudent": "Règle de base : ce que vous ne publieriez pas sur LinkedIn ne se dépose pas dans un outil grand public. En cas de doute, demandez à {{referent}}.",
-        "strict": "Règle de base : ce que vous ne publieriez pas sur LinkedIn ne se dépose pas dans un outil grand public. En cas de doute, la réponse est non, puis demandez à {{referent}}."
-      }
-    },
-    {
-      "id": "regle2-confidentiel",
-      "section": "regle2",
-      "condition": {
-        "donnees": [
-          "plans",
-          "devis",
-          "clients"
-        ]
-      },
-      "texte": "Nous ne transmettons {{donnees_conf_liste}} qu'après anonymisation (noms, montants précis et références retirés), et seulement à un outil professionnel payé par l'entreprise."
+      "texte": "Exemple : résumer un document long ou préparer un mail."
     },
     {
       "id": "regle2-secret",
       "section": "regle2",
       "condition": {
-        "donnees": [
-          "rh",
-          "procedes"
-        ]
+        "donnees_secret": true
       },
-      "texte": "Nous ne transmettons jamais {{donnees_secret_liste}} à un outil d'IA, sauf IA privée validée par {{referent}}."
+      "texte": "{{donnees_secret_liste}} ne vont dans aucun outil d'IA grand public, même payé."
+    },
+    {
+      "id": "regle2-confidentiel",
+      "section": "regle2",
+      "condition": {
+        "donnees_confidentiel": true
+      },
+      "texte": "{{donnees_conf_liste}} : anonymisés, et seulement dans un outil payé par l'entreprise."
     },
     {
       "id": "regle2-hebergement",
@@ -124,7 +119,7 @@
           "secret"
         ]
       },
-      "texte": "Les données confidentielles ou secrètes ne passent que par des outils hébergés en France ou dans l'Union européenne."
+      "texte": "Les données sensibles restent sur des outils hébergés en France ou en Europe."
     },
     {
       "id": "regle2-confidentialite",
@@ -132,63 +127,13 @@
       "condition": {
         "confidentialite": "souvent"
       },
-      "texte": "Un document soumis à une clause de confidentialité client n'est jamais déposé sans l'accord écrit du client."
+      "texte": "Un document sous clause de confidentialité n'y va jamais sans l'accord écrit du client."
     },
     {
-      "id": "regle3-devis",
-      "section": "regle3",
-      "condition": {
-        "usages": "devis"
-      },
-      "texte": "Tout devis ou chiffrage produit avec l'IA est relu par la personne qui le signe, avec les prix d'origine sous les yeux."
-    },
-    {
-      "id": "regle3-plans",
-      "section": "regle3",
-      "condition": {
-        "usages": "plans"
-      },
-      "texte": "Toute information tirée d'un plan ou d'un document technique est vérifiée sur le document d'origine avant d'être utilisée."
-    },
-    {
-      "id": "regle3-ao",
-      "section": "regle3",
-      "condition": {
-        "usages": "ao"
-      },
-      "texte": "Tout mémoire technique ou réponse à un appel d'offres est relu et assumé par son signataire : références, moyens et engagements doivent être réels."
-    },
-    {
-      "id": "regle3-commercial",
-      "section": "regle3",
-      "condition": {
-        "usages": "commercial"
-      },
-      "texte": "Tout message adressé à un client ou publié est relu avant envoi. Aucun envoi automatique sans relecture."
-    },
-    {
-      "id": "regle3-rh",
-      "section": "regle3",
-      "condition": {
-        "usages": "rh"
-      },
-      "texte": "Aucune décision concernant une personne (recrutement, évaluation, sanction) n'est prise sur la seule base d'un résultat de l'IA."
-    },
-    {
-      "id": "regle3-donnees",
-      "section": "regle3",
-      "condition": {
-        "usages": "donnees"
-      },
-      "texte": "Toute analyse chiffrée est recoupée avec une source ou un calcul indépendant avant de servir à une décision."
-    },
-    {
-      "id": "regle3-redaction",
-      "section": "regle3",
-      "condition": {
-        "usages": "redaction"
-      },
-      "texte": "Tout texte qui part à l'extérieur est relu par son auteur."
+      "id": "regle2-defaut",
+      "section": "regle2",
+      "defaut": true,
+      "texte": "Nous ne confions à l'IA que ce que nous publierions sans crainte. En cas de doute, on demande à {{referent}}."
     },
     {
       "id": "regle3-calcul",
@@ -199,27 +144,83 @@
           "construction"
         ]
       },
-      "texte": "Tout calcul, dimensionnement ou vérification réglementaire est refait et relu par un ingénieur ou un technicien compétent. L'IA ne produit jamais un résultat de calcul qui fait foi."
+      "texte": "Tout calcul ou dimensionnement est refait par une personne compétente ; l'IA ne produit jamais un résultat qui fait foi."
+    },
+    {
+      "id": "regle3-devis",
+      "section": "regle3",
+      "condition": {
+        "usages": "devis"
+      },
+      "texte": "Tout devis préparé avec l'IA est relu par son signataire, prix d'origine sous les yeux."
+    },
+    {
+      "id": "regle3-ao",
+      "section": "regle3",
+      "condition": {
+        "usages": "ao"
+      },
+      "texte": "Toute réponse à un appel d'offres est relue et assumée par son signataire."
+    },
+    {
+      "id": "regle3-rh",
+      "section": "regle3",
+      "condition": {
+        "usages": "rh"
+      },
+      "texte": "Aucune décision sur une personne ne repose sur un résultat de l'IA."
+    },
+    {
+      "id": "regle3-plans",
+      "section": "regle3",
+      "condition": {
+        "usages": "plans"
+      },
+      "texte": "Toute information tirée d'un plan est vérifiée sur le document d'origine."
+    },
+    {
+      "id": "regle3-donnees",
+      "section": "regle3",
+      "condition": {
+        "usages": "donnees"
+      },
+      "texte": "Toute analyse chiffrée est recoupée avant de servir à une décision."
+    },
+    {
+      "id": "regle3-commercial",
+      "section": "regle3",
+      "condition": {
+        "usages": "commercial"
+      },
+      "texte": "Tout message à un client est relu avant envoi."
+    },
+    {
+      "id": "regle3-redaction",
+      "section": "regle3",
+      "condition": {
+        "usages": "redaction"
+      },
+      "texte": "Tout texte qui part à l'extérieur est relu par son auteur."
     },
     {
       "id": "regle3-defaut",
       "section": "regle3",
       "defaut": true,
-      "texte": "Tout résultat de l'IA est une ébauche : une personne le relit et en reste responsable."
+      "texte": "Tout résultat de l'IA est une ébauche : une personne le relit et en répond."
     },
     {
       "id": "regle4-base",
       "section": "regle4",
       "texte": {
-        "encourageant": "Quand l'IA est incertaine ou ne trouve pas l'information, nous le disons : tout élément incertain est marqué « à vérifier » et confirmé auprès d'un collègue ou de la source. Poser la question n'est jamais mal vu.",
-        "prudent": "Tout élément incertain, manquant ou que l'IA semble avoir deviné est marqué « à vérifier » et n'est pas utilisé tant qu'une source ne l'a pas confirmé.",
-        "strict": "Tout élément incertain est marqué « à vérifier » et bloqué : il ne sort pas de l'entreprise tant qu'une source n'est pas citée. Une information inventée par l'IA est signalée à {{referent}} sous 48 heures."
+        "encourageant": "Ce qui est incertain est marqué « à vérifier » et confirmé à la source. Poser la question n'est jamais mal vu.",
+        "prudent": "Ce qui est incertain est marqué « à vérifier » et n'est pas utilisé avant d'être confirmé à la source.",
+        "strict": "Ce qui est incertain est marqué « à vérifier » et ne sort pas de l'entreprise sans source. Une information inventée est signalée à {{referent}}."
       }
     },
     {
       "id": "regle5-base",
       "section": "regle5",
-      "texte": "{{referent}} tient le registre des usages qui fonctionnent, recueille les incidents et les idées, et réunit l'équipe pour revoir cette charte au plus tard en {{date_revue}}."
+      "texte": "{{referent}} tient le registre des usages et des incidents, et revoit la charte avec l'équipe avant {{date_revue}}."
     },
     {
       "id": "regle5-formation",
@@ -227,7 +228,7 @@
       "condition": {
         "formation": "aucun"
       },
-      "texte": "Chaque personne qui utilise l'IA suit une formation de prise en main avant son premier usage."
+      "texte": "Chacun suit une prise en main avant son premier usage."
     },
     {
       "id": "s1-entree",
@@ -262,6 +263,14 @@
       "id": "s2-principes",
       "section": "2",
       "texte": "- Finalité : un objectif métier clair, pas l'usage pour l'usage.\n- Proportionnalité : un outil adapté à l'enjeu.\n- Humain dans la boucle : une personne reste responsable de chaque livrable et relit avant envoi.\n- Transparence : on informe le destinataire quand un contenu a été produit pour l'essentiel par l'IA et que cela peut l'influencer.\n- Confidentialité : les données sont classées (section 6) et filtrées selon leur sensibilité.\n- Vérification : tout résultat de l'IA est une ébauche à contrôler."
+    },
+    {
+      "id": "s3-suspendu",
+      "section": "3",
+      "condition": {
+        "outils_insuffisants": true
+      },
+      "texte": "Aucun des outils utilisés aujourd'hui ne peut recevoir des données de niveau {{niveau_libelle}}. Tant qu'une offre professionnelle n'est pas souscrite, les usages ci-dessous se limitent aux informations publiques : pas de devis, de prix, de plans ni de données clients."
     },
     {
       "id": "s3-intro",
@@ -478,7 +487,7 @@
     {
       "id": "s7-regles",
       "section": "7",
-      "texte": "### Règles communes\n- Offre professionnelle payée par l'entreprise, jamais un compte personnel.\n- Option « ne pas utiliser mes données pour l'entraînement » activée quand elle existe.\n- Compte nominatif avec authentification à deux facteurs.\n- Toute demande d'ajout d'un outil passe par {{referent}} : éditeur, pays d'hébergement, conditions d'entraînement, offre souscrite, usage prévu."
+      "texte": "### Règles communes\n- Toute information non publique passe par une offre payée par l'entreprise.\n- Option « ne pas utiliser mes données pour l'entraînement » activée quand elle existe.\n- Compte nominatif, avec authentification à deux facteurs quand elle est proposée.\n- Toute demande d'ajout d'un outil passe par {{referent}} : éditeur, pays d'hébergement, conditions d'entraînement, offre souscrite, usage prévu."
     },
     {
       "id": "s7-personnel",
@@ -486,7 +495,7 @@
       "condition": {
         "categories": "personnel"
       },
-      "texte": "Des outils sont aujourd'hui utilisés avec des comptes personnels ou gratuits. {{entreprise}} les encadre : ils ne reçoivent que des informations publiques tant qu'une offre professionnelle n'est pas souscrite."
+      "texte": "Outils utilisés sans abonnement de l'entreprise ({{outils_personnels}}) : réservés aux informations publiques, le temps de souscrire une offre professionnelle."
     },
     {
       "id": "s7-integre",
@@ -533,7 +542,7 @@
       "condition": {
         "formation": "aucun"
       },
-      "texte": "Aucun salarié n'est formé à ce jour. Avant son premier usage, chaque personne suit une formation de prise en main d'une à deux heures : principes de la charte, outils du catalogue, règles de données, signalement d'un incident."
+      "texte": "Aucun salarié n'est formé à ce jour. Chaque personne suit une prise en main avant son premier usage : règles de la charte, outils autorisés, données à protéger, signalement d'un incident."
     },
     {
       "id": "s9-quelques",
@@ -554,7 +563,24 @@
     {
       "id": "s9-continu",
       "section": "9",
-      "texte": "### Accompagnement\n- Un canal interne est dédié aux questions sur l'IA.\n- Un retour d'expérience est partagé au moins chaque trimestre.\n- Les usages qui fonctionnent remontent à {{referent}}, qui les ajoute au catalogue."
+      "texte": "### Accompagnement\n- Un canal interne est dédié aux questions sur l'IA.\n- Un retour d'expérience est partagé au moins chaque trimestre.\n- Les usages qui fonctionnent remontent à {{referent}}, qui les ajoute au catalogue.",
+      "condition": {
+        "effectif": [
+          "50-249",
+          "250+"
+        ]
+      }
+    },
+    {
+      "id": "s9-simple",
+      "section": "9",
+      "condition": {
+        "effectif": [
+          "1-9",
+          "10-49"
+        ]
+      },
+      "texte": "Les questions et les bonnes pratiques passent par {{referent}}, qui les partage à l'équipe lors d'un point régulier."
     },
     {
       "id": "s9-perfia",
@@ -564,7 +590,7 @@
     {
       "id": "s10-referent",
       "section": "10",
-      "texte": "{{referent}} est le point d'entrée unique pour toute question sur l'IA. Il tient le catalogue, valide les cas à cadre particulier, traite les incidents, anime la formation et porte la revue annuelle de la charte."
+      "texte": "{{referent}} est le point d'entrée pour toute question sur l'IA : tenue du catalogue, validation des cas à cadre particulier, traitement des incidents, formation et revue annuelle de la charte."
     },
     {
       "id": "s10-pilotage",
@@ -614,12 +640,23 @@
     {
       "id": "sB-perso",
       "section": "B",
-      "texte": "### Puis-je utiliser mon compte personnel pour le travail ?\nNon. Seuls les comptes professionnels payés par l'entreprise sont autorisés, au-delà de l'information publique."
+      "texte": "### Puis-je utiliser mon compte personnel pour le travail ?\nSeulement pour des informations publiques. Tout le reste passe par un outil payé par l'entreprise."
     },
     {
       "id": "sB-devis",
       "section": "B",
-      "texte": "### Puis-je déposer un devis client pour le reformuler ?\nOui, après anonymisation des noms, des montants précis et des références, dans un outil du catalogue."
+      "texte": "### Puis-je déposer un devis client pour le reformuler ?\nOui, après anonymisation des noms, des montants précis et des références, dans un outil du catalogue.",
+      "condition": {
+        "outils_insuffisants": false
+      }
+    },
+    {
+      "id": "sB-devis-suspendu",
+      "section": "B",
+      "condition": {
+        "outils_insuffisants": true
+      },
+      "texte": "### Puis-je déposer un devis client pour le reformuler ?\nPas encore : aucun outil de l'entreprise ne peut recevoir de devis aujourd'hui, même anonymisé. Ce sera possible dès qu'une offre professionnelle sera souscrite."
     },
     {
       "id": "sB-erreur",

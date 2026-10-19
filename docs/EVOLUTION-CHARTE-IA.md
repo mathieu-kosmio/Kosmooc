@@ -278,3 +278,14 @@ Livré : générateur (mode libre et mode `m7`), capture de lead, intégration a
 | Variables d'environnement | `CHARTE_NOTIF_TO` (défaut mathieu@kosm.io), `BREVO_LIST_ID` (défaut 17), `ACADEMIE_URL` (liens des mails). |
 
 Reste à votre main : attributs et séquence de relance Brevo, choix de la licence de la bibliothèque de clauses (`backend/charte/clauses.json`), relecture des libellés et des clauses, mise en ligne.
+
+## 15. Version 2 après la critique du 19 octobre 2026
+
+| Sujet | Changement |
+|---|---|
+| Q6 | « Ces outils sont-ils payés ? » devient « Lesquels sont payés par l'entreprise ? », outil par outil. Copilot Microsoft 365 n'est jamais classé en compte personnel (`toujours_pro`). Score d'encadrement proportionnel aux outils payés. |
+| Référent | Demandé à l'écran 1 (champ `referent` des réponses), pour que l'aperçu le cite. |
+| Cohérence | Quand aucun outil déclaré ne peut recevoir de données Confidentielles, la charte suspend les usages concernés (règle 1, section 3, FAQ) au lieu de les autoriser. Les plans escaladés en Secret ne sont plus traités comme Confidentiels dans la règle 2. `npm run valider` simule 200 profils et refuse toute contradiction. |
+| Cinq règles | Une à trois phrases, 40 mots environ, contrôles limités aux deux plus importants (`limites` dans `regles.json`). |
+| Livrable | Page 1 à afficher et à signer : cinq règles, outils autorisés, validation par la direction et le référent. Charte détaillée en annexe. Plus de score ni de palier dans le document. Engagements lourds (canal interne, retour trimestriel) réservés aux effectifs de 50 et plus. |
+| Écrans | Plus de titre en double, maillon en liste déroulante, cibles de 48 px, référent et aides par question, aperçu avec constat et tableau des outils, prochaines étapes numérotées en fin de synthèse. En M7, les règles ne sont plus préremplies : la proposition s'affiche au-dessus d'une zone vide, avec un bouton « Reprendre ». |

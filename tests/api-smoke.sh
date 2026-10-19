@@ -41,7 +41,7 @@ check "liste des badges fermée au public" "$(curl -s $B/api/collections/badges/
 check "statistiques réservées" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/stats -H "Authorization: $TOK")" 403
 check "statistiques évaluateur" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/stats -H "Authorization: $ETOK")" 200
 # ---------- Générateur de charte IA ----------
-REP='{"entreprise":"Test charte SARL","maillon":"bureau_etudes","effectif":"10-49","pilote":"dirigeant","outils":["chatgpt"],"cadre":"non","usages":["devis","plans"],"formation":"aucun","donnees":["plans"],"confidentialite":"souvent","souverainete":"exigence","ton":"prudent"}'
+REP='{"entreprise":"Test charte SARL","maillon":"bureau_etudes","effectif":"10-49","pilote":"dirigeant","referent":"Lea Martin","outils":["chatgpt","copilot"],"payes":[],"usages":["devis","plans"],"formation":"aucun","donnees":["plans"],"confidentialite":"souvent","souverainete":"exigence","ton":"prudent"}'
 LIBRE(){ echo "{\"prenom\":\"Lea\",\"email\":\"$1\",\"fonction\":\"Gérante\",\"referent\":\"Lea Martin\",\"newsletter\":false,\"niveau\":\"public\",\"score\":100,\"palier\":\"pilotage\",\"reponses\":$REP}"; }
 sup(){ curl -s -o /tmp/r.json -w "%{http_code}" "$B$1" -H "Authorization: $STOK" ${2:+-XDELETE}; }
 # Nettoyage des chartes d'un essai précédent (la limite d'envois compte les 10 dernières minutes).
@@ -54,6 +54,8 @@ check "charte libre enregistrée" "$(post /api/academie/charte "$(LIBRE l$R@t.fr
 check "charte : niveau recalculé côté serveur" "$(j 'd["niveau"]' < /tmp/r.json)" secret
 check "charte : score falsifié ignoré" "$(j 'd["score"] < 50' < /tmp/r.json)" True
 JET=$(j 'd["jeton"]' < /tmp/r.json)
+check "charte : Copilot M365 reste professionnel" "$(curl -s $B/api/academie/charte/$JET | j '[o["categorie"] for o in d["catalogue"] if o["outil"]=="copilot"][0]')" pro_ue
+check "charte : référent repris des réponses" "$(curl -s $B/api/academie/charte/$JET | j 'd["referent"]')" "Lea Martin"
 check "synthèse par jeton" "$(curl -s $B/api/academie/charte/$JET | j 'd["entreprise"]')" "Test charte SARL"
 check "synthèse sans email" "$(curl -s $B/api/academie/charte/$JET | grep -c '@')" 0
 check "synthèse : jeton inconnu" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/charte/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)" 404

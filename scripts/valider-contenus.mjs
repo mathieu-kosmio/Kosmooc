@@ -2,6 +2,7 @@
 // Usage : node scripts/valider-contenus.mjs
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { createRequire } from 'node:module';
 
 const root = new URL('..', import.meta.url).pathname;
 const errors = [];
@@ -28,7 +29,7 @@ for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'con
     for (const n of ['questions', 'regles', 'clauses']) if (/imprim/i.test(readFileSync(join(dir, n + '.json'), 'utf8'))) errors.push(`backend/charte/${n}.json : ne jamais parler d'imprimer, toujours de télécharger en PDF`);
     const q = Object.fromEntries(Q.questions.map((x) => [x.cle, x]));
     const vals = (cle) => (q[cle].options || []).map((o) => o.v);
-    for (const cle of ['entreprise', 'maillon', 'effectif', 'pilote', 'outils', 'cadre', 'usages', 'formation', 'donnees', 'confidentialite', 'souverainete', 'ton']) if (!q[cle]) errors.push(`questions.json : question « ${cle} » absente`);
+    for (const cle of ['entreprise', 'maillon', 'effectif', 'pilote', 'referent', 'outils', 'payes', 'usages', 'formation', 'donnees', 'confidentialite', 'souverainete', 'ton']) if (!q[cle]) errors.push(`questions.json : question « ${cle} » absente`);
     if (Q.ecrans.flatMap((e) => e.questions).sort().join() !== Object.keys(q).sort().join()) errors.push('questions.json : chaque question doit figurer dans exactement un écran');
     // Chaque réponse doit avoir son effet dans les règles
     for (const d of vals('donnees')) if (!R.niveau_par_donnee[d]) errors.push(`regles.json : niveau_par_donnee sans « ${d} »`);
@@ -36,7 +37,7 @@ for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'con
       if (!R.outils[o]) errors.push(`regles.json : outil « ${o} » sans catégorie`);
       if (!R.libelles_outils[o]) errors.push(`regles.json : outil « ${o} » sans libellé`);
     }
-    for (const u of vals('usages')) if (!R.libelles_usages[u]) errors.push(`regles.json : usage « ${u} » sans libellé`);
+    for (const u of vals('usages')) if (!R.libelles_usages[u] || !R.libelles_usages_courts[u]) errors.push(`regles.json : usage « ${u} » sans libellé (long et court)`);
     for (const d of vals('donnees')) if (!R.libelles_donnees[d]) errors.push(`regles.json : donnée « ${d} » sans libellé`);
     for (const m of vals('maillon')) if (!R.libelles_maillons[m]) errors.push(`regles.json : maillon « ${m} » sans libellé`);
     for (const c of Object.values(R.outils)) if (!R.matrice[c]) errors.push(`regles.json : catégorie « ${c} » absente de la matrice`);
@@ -44,8 +45,8 @@ for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'con
     for (const id of ['former', 'sortir_comptes', 'garder_donnees', 'cas_processotheque', 'deployer']) if (!R.recommandations[id]) errors.push(`regles.json : recommandation « ${id} » absente`);
     // Clauses : sections connues, conditions valides, variables connues, trois tons si variantes
     const sections = new Set([...R.titres_regles.map((_, i) => 'regle' + (i + 1)), ...Object.keys(R.titres_sections)]);
-    const cles = new Set([...Object.keys(q), 'niveau', 'categories']);
-    const variables = new Set(['entreprise', 'referent', 'date_entree', 'date_revue', 'niveau_libelle', 'maillon_libelle', 'usages_liste', 'donnees_conf_liste', 'donnees_secret_liste']);
+    const cles = new Set([...Object.keys(q), 'niveau', 'categories', 'outils_insuffisants', 'donnees_secret', 'donnees_confidentiel']);
+    const variables = new Set(['entreprise', 'referent', 'date_entree', 'date_revue', 'niveau_libelle', 'maillon_libelle', 'usages_liste', 'donnees_conf_liste', 'donnees_secret_liste', 'outils_personnels']);
     const ids = new Set();
     for (const c of C.clauses) {
       if (ids.has(c.id)) errors.push(`clauses.json : identifiant « ${c.id} » en double`); ids.add(c.id);
@@ -58,6 +59,34 @@ for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'con
       for (const t of textes) for (const m of t.matchAll(/\{\{(\w+)\}\}/g)) if (!variables.has(m[1])) errors.push(`clauses.json : ${c.id} : variable {{${m[1]}}} inconnue`);
     }
     for (let i = 1; i <= 5; i++) if (!C.clauses.some((c) => c.section === 'regle' + i)) errors.push(`clauses.json : aucune clause pour la règle ${i}`);
+    // Cohérence de la charte produite, sur des profils représentatifs : la charte ne doit jamais autoriser
+    // ce que son propre catalogue interdit, ni laisser une variable non remplie.
+    const M = createRequire(import.meta.url)(join(dir, 'moteur.js'));
+    const choix = (cle) => vals(cle).filter((v) => !(q[cle].exclusives || []).includes(v));
+    const profils = [];
+    for (const outils of [['aucun'], ['chatgpt'], ['chatgpt', 'copilot'], ['mistral', 'logiciel_metier'], ['claude', 'gemini']])
+      for (const payes of [[], outils.slice(0, 1)])
+        for (const donnees of [['aucune'], ['fournisseurs'], ['devis', 'clients'], ['plans'], ['rh', 'procedes']])
+          for (const confidentialite of ['souvent', 'non'])
+            for (const effectif of ['1-9', '50-249'])
+              profils.push({ entreprise: 'Test', maillon: 'bureau_etudes', effectif, pilote: 'personne', referent: '', outils, payes, usages: choix('usages').slice(0, 4), formation: 'aucun', donnees, confidentialite, souverainete: 'exigence', ton: 'strict' });
+    const incoherences = new Set();
+    for (const brut of profils) {
+      const v = M.valider(brut, Q);
+      if (!v.ok) { incoherences.add(`profil invalide (${v.erreurs.join(', ')})`); continue; }
+      const s = M.synthese(v.reponses, R, C, {});
+      const sections = M.chartesComplete(v.reponses, R, C, s.niveau, {});
+      const texte = [...s.regles.map((r) => r.texte), ...sections.flatMap((x) => x.clauses.map((c) => c.texte))].join('\n');
+      const ids = new Set(sections.flatMap((x) => x.clauses.map((c) => c.id)));
+      const recoitConfidentiel = s.catalogue.some((o) => o.niveaux.confidentiel !== 'non');
+      if (/\{\{/.test(texte)) incoherences.add('variable non remplie dans la charte');
+      if (ids.has('sB-devis') && s.catalogue.length && !recoitConfidentiel && ['confidentiel', 'secret'].includes(s.niveau)) incoherences.add('la FAQ autorise les devis alors qu\'aucun outil ne peut les recevoir');
+      if (s.outils_insuffisants && !ids.has('s3-suspendu')) incoherences.add('usages autorisés sans suspension alors qu\'aucun outil ne peut recevoir les données');
+      if (s.catalogue.some((o) => o.categorie === 'personnel') && !ids.has('s7-personnel')) incoherences.add('comptes personnels au catalogue sans clause qui les encadre');
+      if (s.catalogue.some((o) => o.outil === 'copilot' && o.categorie === 'personnel')) incoherences.add('Copilot Microsoft 365 classé en compte personnel');
+      if (s.regles.some((r) => r.texte.split(/\s+/).length > 55)) incoherences.add('une des cinq règles dépasse 55 mots');
+    }
+    for (const x of incoherences) errors.push(`charte générée : ${x}`);
     for (const sec of Object.keys(R.titres_sections)) if (!['6', '7'].includes(sec) && !C.clauses.some((c) => c.section === sec)) errors.push(`clauses.json : aucune clause pour la section ${sec}`);
   }
 }

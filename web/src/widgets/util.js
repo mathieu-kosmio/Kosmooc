@@ -17,12 +17,13 @@ export function shuffle(a) {
 export function shell(el, { eyebrow = 'Activité', titre, consigne = '', type = '' }) {
   el.classList.add('wg');
   if (type) el.classList.add('wg--' + type);
+  // Sans titre, pas d'en-tête : la page porte déjà le titre (ex. : générateur de charte en accès libre).
   el.innerHTML = `
-    <div class="wg__head">
+    ${titre ? `<div class="wg__head">
       <span class="wg__eyebrow">${esc(eyebrow)}</span>
       <h3 class="wg__title">${esc(titre)}</h3>
       ${consigne ? `<p class="wg__consigne">${consigne}</p>` : ''}
-    </div>
+    </div>` : ''}
     <div class="wg__body"></div>`;
   return el.querySelector('.wg__body');
 }

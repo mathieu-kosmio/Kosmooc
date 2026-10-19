@@ -38,7 +38,7 @@ const bord = (c) => `<w:top w:val="single" w:sz="4" w:color="${c}"/><w:left w:va
 function tableau({ entetes, lignes }) {
   const n = entetes.length;
   const w = Math.floor(LARGEUR / n);
-  const cellule = (t, o = {}) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.fond ? `<w:shd w:val="clear" w:color="auto" w:fill="${o.fond}"/>` : ''}</w:tcPr>${para(run(t, { b: o.b, s: 19, c: o.c }), 40)}</w:tc>`;
+  const cellule = (t, o = {}) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.fond ? `<w:shd w:val="clear" w:color="auto" w:fill="${o.fond}"/>` : ''}</w:tcPr>${String(t).split('\n').map((l) => para(run(l, { b: o.b, s: 19, c: o.c }), 40)).join('')}</w:tc>`;
   const tete = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${entetes.map((h) => cellule(h, { b: true, fond: '009982', c: 'FFFFFF' })).join('')}</w:tr>`;
   const corps = lignes.map((l, i) => `<w:tr><w:trPr><w:cantSplit/></w:trPr>${l.map((c, j) => cellule(c, { b: j === 0, fond: i % 2 ? 'F5F8F7' : '' })).join('')}</w:tr>`).join('');
   return `<w:tbl><w:tblPr><w:tblW w:w="${LARGEUR}" w:type="dxa"/><w:tblBorders>${bord('C9BFB1')}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${entetes.map(() => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${tete}${corps}</w:tbl>${para('', 120)}`;

@@ -1,88 +1,389 @@
 {
-  "version": "1",
+  "version": "2",
   "ecrans": [
-    { "id": "organisation", "titre": "Votre organisation", "questions": ["entreprise", "maillon", "effectif", "pilote"] },
-    { "id": "outils", "titre": "Vos outils et vos usages", "questions": ["outils", "cadre", "usages", "formation"] },
-    { "id": "donnees", "titre": "Vos données", "questions": ["donnees", "confidentialite", "souverainete", "ton"] }
+    {
+      "id": "organisation",
+      "titre": "Votre organisation",
+      "questions": [
+        "entreprise",
+        "maillon",
+        "effectif",
+        "pilote",
+        "referent"
+      ]
+    },
+    {
+      "id": "outils",
+      "titre": "Vos outils et vos usages",
+      "questions": [
+        "outils",
+        "payes",
+        "usages",
+        "formation"
+      ]
+    },
+    {
+      "id": "donnees",
+      "titre": "Vos données",
+      "questions": [
+        "donnees",
+        "confidentialite",
+        "souverainete",
+        "ton"
+      ]
+    }
   ],
   "questions": [
-    { "id": "Q1", "cle": "entreprise", "libelle": "Nom de l'entreprise", "type": "texte", "max": 120, "requis": true },
-    { "id": "Q2", "cle": "maillon", "libelle": "Votre maillon de la filière", "type": "choix", "requis": true, "options": [
-      { "v": "sylviculture", "l": "Sylviculture" },
-      { "v": "exploitation", "l": "Exploitation forestière" },
-      { "v": "scierie", "l": "Scierie" },
-      { "v": "seconde_transformation", "l": "Seconde transformation (menuiserie, charpente, emballage…)" },
-      { "v": "construction", "l": "Construction bois" },
-      { "v": "bureau_etudes", "l": "Bureau d'études" },
-      { "v": "negoce", "l": "Négoce" },
-      { "v": "ameublement", "l": "Ameublement, agencement" },
-      { "v": "autre", "l": "Autre" }
-    ] },
-    { "id": "Q3", "cle": "effectif", "libelle": "Effectif", "type": "choix", "requis": true, "options": [
-      { "v": "1-9", "l": "1 à 9 personnes" },
-      { "v": "10-49", "l": "10 à 49 personnes" },
-      { "v": "50-249", "l": "50 à 249 personnes" },
-      { "v": "250+", "l": "250 personnes et plus" }
-    ] },
-    { "id": "Q4", "cle": "pilote", "libelle": "Qui pilote le numérique ?", "type": "choix", "requis": true, "options": [
-      { "v": "dirigeant", "l": "Le dirigeant" },
-      { "v": "responsable", "l": "Un responsable interne" },
-      { "v": "prestataire", "l": "Un prestataire" },
-      { "v": "personne", "l": "Personne" }
-    ] },
-    { "id": "Q5", "cle": "outils", "libelle": "Outils d'IA utilisés aujourd'hui", "type": "multiple", "requis": true, "exclusives": ["aucun", "nsp"], "options": [
-      { "v": "chatgpt", "l": "ChatGPT" },
-      { "v": "copilot", "l": "Copilot Microsoft 365" },
-      { "v": "gemini", "l": "Gemini" },
-      { "v": "claude", "l": "Claude" },
-      { "v": "mistral", "l": "Mistral Le Chat" },
-      { "v": "logiciel_metier", "l": "IA intégrée à un logiciel métier" },
-      { "v": "aucun", "l": "Aucun" },
-      { "v": "nsp", "l": "Je ne sais pas" }
-    ] },
-    { "id": "Q6", "cle": "cadre", "libelle": "Ces outils sont-ils payés par l'entreprise ?", "type": "choix", "requis": true, "options": [
-      { "v": "oui", "l": "Oui, tous" },
-      { "v": "partie", "l": "En partie" },
-      { "v": "non", "l": "Non, ce sont des comptes personnels" },
-      { "v": "nsp", "l": "Je ne sais pas" }
-    ] },
-    { "id": "Q7", "cle": "usages", "libelle": "Pour quoi faire ?", "type": "multiple", "options": [
-      { "v": "redaction", "l": "Rédaction et mails" },
-      { "v": "devis", "l": "Devis et chiffrage" },
-      { "v": "plans", "l": "Lecture de plans et documents techniques" },
-      { "v": "ao", "l": "Appels d'offres" },
-      { "v": "commercial", "l": "Commercial et marketing" },
-      { "v": "rh", "l": "RH et recrutement" },
-      { "v": "donnees", "l": "Analyse de données" }
-    ] },
-    { "id": "Q8", "cle": "formation", "libelle": "Combien de salariés sont formés à l'IA ?", "type": "choix", "requis": true, "options": [
-      { "v": "aucun", "l": "Aucun" },
-      { "v": "quelques", "l": "Quelques-uns" },
-      { "v": "moitie", "l": "La moitié ou plus" }
-    ] },
-    { "id": "Q9", "cle": "donnees", "libelle": "Quelles données pourraient passer dans un outil d'IA ?", "type": "multiple", "requis": true, "exclusives": ["aucune"], "options": [
-      { "v": "plans", "l": "Plans et notes de calcul" },
-      { "v": "devis", "l": "Devis et prix" },
-      { "v": "clients", "l": "Données clients" },
-      { "v": "rh", "l": "Données RH" },
-      { "v": "fournisseurs", "l": "Données fournisseurs et traçabilité" },
-      { "v": "procedes", "l": "Procédés et savoir-faire" },
-      { "v": "aucune", "l": "Aucune donnée sensible" }
-    ] },
-    { "id": "Q10", "cle": "confidentialite", "libelle": "Vos clients imposent-ils une confidentialité contractuelle ?", "type": "choix", "requis": true, "options": [
-      { "v": "souvent", "l": "Oui, souvent" },
-      { "v": "parfois", "l": "Parfois" },
-      { "v": "non", "l": "Non" }
-    ] },
-    { "id": "Q11", "cle": "souverainete", "libelle": "Vos données doivent-elles rester hébergées en France ou en Europe ?", "type": "choix", "requis": true, "options": [
-      { "v": "exigence", "l": "Oui, c'est une exigence" },
-      { "v": "prefere", "l": "Ce serait préférable" },
-      { "v": "indifferent", "l": "Indifférent" }
-    ] },
-    { "id": "Q12", "cle": "ton", "libelle": "Quel ton pour la charte ?", "type": "choix", "requis": true, "options": [
-      { "v": "encourageant", "l": "Encourageant" },
-      { "v": "prudent", "l": "Prudent" },
-      { "v": "strict", "l": "Strict" }
-    ] }
+    {
+      "id": "Q1",
+      "cle": "entreprise",
+      "libelle": "Nom de l'entreprise",
+      "type": "texte",
+      "max": 120,
+      "requis": true
+    },
+    {
+      "id": "Q2",
+      "cle": "maillon",
+      "libelle": "Votre maillon de la filière",
+      "type": "choix",
+      "requis": true,
+      "options": [
+        {
+          "v": "sylviculture",
+          "l": "Sylviculture"
+        },
+        {
+          "v": "exploitation",
+          "l": "Exploitation forestière"
+        },
+        {
+          "v": "scierie",
+          "l": "Scierie"
+        },
+        {
+          "v": "seconde_transformation",
+          "l": "Seconde transformation (menuiserie, charpente, emballage…)"
+        },
+        {
+          "v": "construction",
+          "l": "Construction bois"
+        },
+        {
+          "v": "bureau_etudes",
+          "l": "Bureau d'études"
+        },
+        {
+          "v": "negoce",
+          "l": "Négoce"
+        },
+        {
+          "v": "ameublement",
+          "l": "Ameublement, agencement"
+        },
+        {
+          "v": "autre",
+          "l": "Autre"
+        }
+      ],
+      "affichage": "liste"
+    },
+    {
+      "id": "Q3",
+      "cle": "effectif",
+      "libelle": "Effectif (personnes)",
+      "type": "choix",
+      "requis": true,
+      "options": [
+        {
+          "v": "1-9",
+          "l": "1 à 9"
+        },
+        {
+          "v": "10-49",
+          "l": "10 à 49"
+        },
+        {
+          "v": "50-249",
+          "l": "50 à 249"
+        },
+        {
+          "v": "250+",
+          "l": "250 et plus"
+        }
+      ]
+    },
+    {
+      "id": "Q4",
+      "cle": "pilote",
+      "libelle": "Qui pilote le numérique ?",
+      "type": "choix",
+      "requis": true,
+      "options": [
+        {
+          "v": "dirigeant",
+          "l": "Le dirigeant"
+        },
+        {
+          "v": "responsable",
+          "l": "Un responsable interne"
+        },
+        {
+          "v": "prestataire",
+          "l": "Un prestataire"
+        },
+        {
+          "v": "personne",
+          "l": "Personne"
+        }
+      ]
+    },
+    {
+      "id": "Q4b",
+      "cle": "referent",
+      "libelle": "Qui sera le référent IA ?",
+      "type": "texte",
+      "max": 200,
+      "aide": "Facultatif. Son nom apparaît dans les règles ; à défaut, la charte parle de « la personne désignée par la direction »."
+    },
+    {
+      "id": "Q5",
+      "cle": "outils",
+      "libelle": "Outils d'IA utilisés aujourd'hui",
+      "type": "multiple",
+      "requis": true,
+      "exclusives": [
+        "aucun",
+        "nsp"
+      ],
+      "options": [
+        {
+          "v": "chatgpt",
+          "l": "ChatGPT"
+        },
+        {
+          "v": "copilot",
+          "l": "Copilot Microsoft 365"
+        },
+        {
+          "v": "gemini",
+          "l": "Gemini"
+        },
+        {
+          "v": "claude",
+          "l": "Claude"
+        },
+        {
+          "v": "mistral",
+          "l": "Mistral Le Chat"
+        },
+        {
+          "v": "logiciel_metier",
+          "l": "IA intégrée à un logiciel métier"
+        },
+        {
+          "v": "aucun",
+          "l": "Aucun"
+        },
+        {
+          "v": "nsp",
+          "l": "Je ne sais pas"
+        }
+      ]
+    },
+    {
+      "id": "Q6",
+      "cle": "payes",
+      "libelle": "Lesquels sont payés par l'entreprise ?",
+      "type": "multiple",
+      "options_depuis": "outils",
+      "aide": "Un outil non coché est considéré comme un compte personnel ou gratuit.",
+      "options": [
+        {
+          "v": "chatgpt",
+          "l": "ChatGPT"
+        },
+        {
+          "v": "copilot",
+          "l": "Copilot Microsoft 365"
+        },
+        {
+          "v": "gemini",
+          "l": "Gemini"
+        },
+        {
+          "v": "claude",
+          "l": "Claude"
+        },
+        {
+          "v": "mistral",
+          "l": "Mistral Le Chat"
+        }
+      ]
+    },
+    {
+      "id": "Q7",
+      "cle": "usages",
+      "libelle": "Pour quoi faire ?",
+      "type": "multiple",
+      "options": [
+        {
+          "v": "redaction",
+          "l": "Rédaction et mails"
+        },
+        {
+          "v": "devis",
+          "l": "Devis et chiffrage"
+        },
+        {
+          "v": "plans",
+          "l": "Lecture de plans et documents techniques"
+        },
+        {
+          "v": "ao",
+          "l": "Appels d'offres"
+        },
+        {
+          "v": "commercial",
+          "l": "Commercial et marketing"
+        },
+        {
+          "v": "rh",
+          "l": "RH et recrutement"
+        },
+        {
+          "v": "donnees",
+          "l": "Analyse de données"
+        }
+      ],
+      "aide": "Ce que vous faites déjà ou voulez faire."
+    },
+    {
+      "id": "Q8",
+      "cle": "formation",
+      "libelle": "Combien de salariés sont formés à l'IA ?",
+      "type": "choix",
+      "requis": true,
+      "options": [
+        {
+          "v": "aucun",
+          "l": "Aucun"
+        },
+        {
+          "v": "quelques",
+          "l": "Quelques-uns"
+        },
+        {
+          "v": "moitie",
+          "l": "La moitié ou plus"
+        }
+      ]
+    },
+    {
+      "id": "Q9",
+      "cle": "donnees",
+      "libelle": "Quelles données pourraient passer dans un outil d'IA ?",
+      "type": "multiple",
+      "requis": true,
+      "exclusives": [
+        "aucune"
+      ],
+      "options": [
+        {
+          "v": "plans",
+          "l": "Plans et notes de calcul"
+        },
+        {
+          "v": "devis",
+          "l": "Devis et prix"
+        },
+        {
+          "v": "clients",
+          "l": "Données clients"
+        },
+        {
+          "v": "rh",
+          "l": "Données RH"
+        },
+        {
+          "v": "fournisseurs",
+          "l": "Données fournisseurs et traçabilité"
+        },
+        {
+          "v": "procedes",
+          "l": "Procédés et savoir-faire"
+        },
+        {
+          "v": "aucune",
+          "l": "Aucune donnée sensible"
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "cle": "confidentialite",
+      "libelle": "Vos clients imposent-ils une confidentialité contractuelle ?",
+      "type": "choix",
+      "requis": true,
+      "options": [
+        {
+          "v": "souvent",
+          "l": "Oui, souvent"
+        },
+        {
+          "v": "parfois",
+          "l": "Parfois"
+        },
+        {
+          "v": "non",
+          "l": "Non"
+        }
+      ],
+      "aide": "Clause de confidentialité dans un contrat, un marché ou un cahier des charges."
+    },
+    {
+      "id": "Q11",
+      "cle": "souverainete",
+      "libelle": "Vos données doivent-elles rester hébergées en France ou en Europe ?",
+      "type": "choix",
+      "requis": true,
+      "options": [
+        {
+          "v": "exigence",
+          "l": "Oui, c'est une exigence"
+        },
+        {
+          "v": "prefere",
+          "l": "Ce serait préférable"
+        },
+        {
+          "v": "indifferent",
+          "l": "Indifférent"
+        }
+      ],
+      "aide": "Exigence d'un client, d'un marché public ou de votre direction."
+    },
+    {
+      "id": "Q12",
+      "cle": "ton",
+      "libelle": "Quel ton pour la charte ?",
+      "type": "choix",
+      "requis": true,
+      "options": [
+        {
+          "v": "encourageant",
+          "l": "Encourageant"
+        },
+        {
+          "v": "prudent",
+          "l": "Prudent"
+        },
+        {
+          "v": "strict",
+          "l": "Strict"
+        }
+      ],
+      "aide": "Le ton change la formulation des règles, pas leur contenu."
+    }
   ]
 }

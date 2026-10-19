@@ -27,21 +27,39 @@ function blocsClause(texte) {
 }
 
 /**
- * Blocs du .docx : couverture, charte en cinq règles (celles de l'apprenant en mode m7), puis sections 1 à 11 et annexes.
- * `reglesTexte` remplace les cinq règles générées.
+ * Blocs du .docx.
+ * Page 1, la charte qu'on affiche et qu'on signe : cinq règles (celles de l'apprenant en mode m7), outils autorisés,
+ * validation par la direction. Puis, en annexe, la charte détaillée (sections 1 à 11, annexes A et B).
+ * Aucun score ni palier : ce document s'adresse aux salariés, pas au prospect.
  */
 export function blocsDocx(rep, extras = {}, reglesTexte = null) {
   const date = extras.date || new Date();
   const s = synthese(rep, { ...extras, date });
   const cinq = reglesTexte || s.regles;
+  const revue = new Date(date.getTime()); revue.setFullYear(revue.getFullYear() + 1);
+  const mois = (d) => d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const referent = String(rep.referent || extras.referent || '').trim();
   const blocs = [
-    { titre: `Charte IA : ${rep.entreprise}` },
-    { note: `Charte générée avec PerfIA, Kosmio × Xylofutur · niveau de données ${s.niveau_libelle} · maturité ${s.palier_libelle} (${s.score} sur 100)` },
-    { h2: 'La charte en cinq règles' },
+    { titre: `Charte IA de ${rep.entreprise}` },
+    { note: `Version 1.0 · en vigueur le ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} · prochaine revue avant ${mois(revue)}` },
   ];
   cinq.forEach((r, i) => { blocs.push({ h3: `${i + 1}. ${r.titre}` }, { p: r.texte }); });
+  blocs.push({ h3: 'Nos outils et ce qu\'ils peuvent recevoir' });
+  if (s.catalogue.length) {
+    blocs.push({ tableau: {
+      entetes: ['Outil', ...regles.niveaux.map((n) => regles.libelles_niveaux[n])],
+      lignes: s.catalogue.map((o) => [o.libelle, ...regles.niveaux.map((n) => regles.libelles_autorisation[o.niveaux[n]])]),
+    } });
+  } else {
+    blocs.push({ p: 'Aucun outil d\'IA n\'est utilisé à ce jour. Tout nouvel outil est validé par le référent IA avant usage (annexe, section 7).' });
+  }
+  blocs.push({ tableau: {
+    entetes: ['Validée par la direction', 'Référent IA'],
+    lignes: [['Nom : ', `Nom : ${referent}`], ['Fonction : ', 'Fonction : '], ['Date : ', 'Date : '], ['Signature :\n\n', 'Signature :\n\n']],
+  } });
   blocs.push({ saut: true });
-  blocs.push({ h2: 'La charte complète' });
+  blocs.push({ titre: 'Annexe : charte détaillée' });
+  blocs.push({ note: 'Le détail des règles ci-dessus : usages autorisés, données, outils, traçabilité, formation et gouvernance.' });
   for (const sec of M.chartesComplete(rep, regles, clauses, s.niveau, { ...extras, date })) {
     if (!sec.clauses.length && !sec.tableau) continue;
     blocs.push({ h2: sec.titre });

@@ -23,10 +23,11 @@ routerAdd("POST", "/api/academie/charte", (e) => {
     return e.json(429, { message: "Trop d'envois depuis cette adresse. Réessayez dans quelques minutes." })
   }
 
-  const referent = Ch.texteCourt(body.referent, 200)
-  const calcul = Ch.calculer(body.reponses, { referent: referent })
+  // Le référent fait partie des réponses depuis la v2 du questionnaire ; body.referent reste accepté.
+  const calcul = Ch.calculer(body.reponses, { referent: Ch.texteCourt(body.referent, 200) })
   if (!calcul.ok) return e.json(400, { message: "Certaines réponses sont manquantes ou invalides.", champs: calcul.erreurs })
   const s = calcul.synthese
+  const referent = Ch.texteCourt(calcul.reponses.referent, 200) || Ch.texteCourt(body.referent, 200)
 
   const rec = new Record(e.app.findCollectionByNameOrId("chartes"))
   rec.set("source", "libre")
@@ -76,7 +77,7 @@ routerAdd("POST", "/api/academie/charte/m7", (e) => {
   rec.set("email", String(e.auth.get("email") || "").toLowerCase())
   rec.set("prenom", Ch.texteCourt(e.auth.get("name"), 120))
   rec.set("fonction", Ch.texteCourt(e.auth.get("fonction"), 200))
-  rec.set("referent", Ch.texteCourt(body.referent, 200))
+  rec.set("referent", Ch.texteCourt(calcul.reponses.referent, 200) || Ch.texteCourt(body.referent, 200))
   Ch.appliquerSynthese(rec, calcul.reponses, s, regles)
   e.app.save(rec)
   return e.json(200, { id: rec.id, niveau: s.niveau, score: s.score, palier: s.palier, recommandations: s.recommandations, regles: regles })
@@ -101,7 +102,8 @@ routerAdd("GET", "/api/academie/charte/{jeton}", (e) => {
   return e.json(200, {
     prenom: rec.get("prenom"), entreprise: rec.get("entreprise"), maillon: rec.get("maillon"), effectif: rec.get("effectif"),
     referent: rec.get("referent"), created: rec.get("created"), reponses: calcul.reponses,
-    niveau: s.niveau, niveau_libelle: s.niveau_libelle, score: s.score, detail: s.detail, palier: s.palier, palier_libelle: s.palier_libelle,
+    niveau: s.niveau, niveau_libelle: s.niveau_libelle, niveau_explication: s.niveau_explication,
+    outils_insuffisants: s.outils_insuffisants, faiblesses: s.faiblesses, score: s.score, detail: s.detail, palier: s.palier, palier_libelle: s.palier_libelle,
     catalogue: s.catalogue, recommandations: s.recommandations_detail, regles: Ch.champJson(rec, "regles"),
   })
 })

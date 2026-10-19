@@ -38,6 +38,8 @@
         return
       }
       var choisies = liste(v).filter(function (x, i, a) { return valeurs.indexOf(x) !== -1 && a.indexOf(x) === i })
+      // Options filtrées par une réponse précédente (ex. : « payés » parmi les outils déclarés).
+      if (q.options_depuis) choisies = choisies.filter(function (x) { return liste(rep[q.options_depuis]).indexOf(x) !== -1 })
       var excl = q.exclusives || []
       var exclusive = choisies.filter(function (x) { return excl.indexOf(x) !== -1 })
       if (exclusive.length) choisies = [exclusive[0]]
@@ -48,28 +50,36 @@
   }
 
   // ---------- Niveau de données (section 5.1) ----------
+  // Niveau d'une catégorie de données, escalade comprise (plans sous confidentialité client fréquente : Secret).
+  function niveauDonnee(d, rep, R) {
+    var l = idx(R, R.niveau_par_donnee[d])
+    R.escalade.forEach(function (e) {
+      if (e.si.donnees === d && rep.confidentialite === e.si.confidentialite) l = Math.max(l, idx(R, e.niveau))
+    })
+    return l
+  }
+
   function niveau(rep, R) {
     var n = 0
-    liste(rep.donnees).forEach(function (d) {
-      var l = idx(R, R.niveau_par_donnee[d])
-      if (l > n) n = l
-    })
-    R.escalade.forEach(function (e) {
-      if (liste(rep.donnees).indexOf(e.si.donnees) !== -1 && rep.confidentialite === e.si.confidentialite) {
-        n = Math.max(n, idx(R, e.niveau))
-      }
-    })
+    liste(rep.donnees).forEach(function (d) { n = Math.max(n, niveauDonnee(d, rep, R)) })
     return R.niveaux[n]
   }
 
+  function donneesDeNiveau(rep, R, niveauCible) {
+    return liste(rep.donnees).filter(function (d) { return niveauDonnee(d, rep, R) === idx(R, niveauCible) })
+  }
+
   // ---------- Catalogue d'outils (section 5.2) ----------
+  // Un outil professionnel non payé par l'entreprise est traité comme un compte personnel,
+  // sauf ceux qui n'existent qu'en offre entreprise (Copilot Microsoft 365).
   function outilsDeclares(rep, R) {
-    var nonEncadre = R.cadre_non_encadre.indexOf(rep.cadre) !== -1
+    var payes = liste(rep.payes)
     return liste(rep.outils)
       .filter(function (o) { return R.outils[o] })
       .map(function (o) {
         var cat = R.outils[o]
-        if ((cat === 'pro_hors_ue' || cat === 'pro_ue') && nonEncadre) cat = 'personnel'
+        var pro = cat === 'pro_hors_ue' || cat === 'pro_ue'
+        if (pro && payes.indexOf(o) === -1 && R.toujours_pro.indexOf(o) === -1) cat = 'personnel'
         return { outil: o, libelle: R.libelles_outils[o], categorie: cat }
       })
   }
@@ -99,7 +109,11 @@
     var aucun = liste(rep.outils).indexOf('aucun') !== -1
     var detail = {}
     detail.pilotage = S.pilotage[rep.pilote] || 0
-    detail.encadrement = decl.length ? (S.encadrement[rep.cadre] || 0) : (aucun ? S.encadrement_aucun_outil : 0)
+    var abonnables = decl.filter(function (o) { return o.categorie !== 'integre' })
+    if (abonnables.length) {
+      var encadres = abonnables.filter(function (o) { return o.categorie !== 'personnel' }).length
+      detail.encadrement = Math.round(S.encadrement_max * encadres / abonnables.length)
+    } else detail.encadrement = decl.length ? S.encadrement_max : (aucun ? S.encadrement_aucun_outil : 0)
     detail.formation = S.formation[rep.formation] || 0
     if (decl.length) {
       var pts = decl.map(function (o) { return S.adequation[autorisation(o.categorie, lvl, R)] || 0 })
@@ -121,7 +135,7 @@
     var decl = outilsDeclares(rep, R)
     var ids = []
     if (rep.formation === 'aucun') ids.push('former')
-    if (R.cadre_non_encadre.indexOf(rep.cadre) !== -1 && decl.length) ids.push('sortir_comptes')
+    if (decl.some(function (o) { return o.categorie === 'personnel' })) ids.push('sortir_comptes')
     if (idx(R, lvl) >= idx(R, 'confidentiel') && decl.some(function (o) { return o.categorie === 'pro_hors_ue' })) ids.push('garder_donnees')
     if (inter(rep.usages, ['devis', 'ao'])) ids.push('cas_processotheque')
     if (sc.palier === 'pilotage') ids.push('deployer')
@@ -150,7 +164,14 @@
     var ctx = {}
     Object.keys(rep).forEach(function (k) { ctx[k] = rep[k] })
     ctx.niveau = lvl
-    ctx.categories = outilsDeclares(rep, R).map(function (o) { return o.categorie })
+    var decl = outilsDeclares(rep, R)
+    ctx.categories = decl.map(function (o) { return o.categorie })
+    // Données Confidentielles ou plus, et aucun outil déclaré ne peut les recevoir, même anonymisées :
+    // la charte suspend alors les usages qui en ont besoin au lieu de les autoriser.
+    ctx.donnees_secret = donneesDeNiveau(rep, R, 'secret').length > 0
+    ctx.donnees_confidentiel = donneesDeNiveau(rep, R, 'confidentiel').length > 0
+    ctx.outils_insuffisants = decl.length > 0 && idx(R, lvl) >= idx(R, 'confidentiel') &&
+      !decl.some(function (o) { return R.matrice[o.categorie].confidentiel !== 'non' })
     return ctx
   }
 
@@ -159,10 +180,11 @@
     return Object.keys(cond).every(function (k) { return inter(ctx[k], cond[k]) })
   }
 
-  function enListe(items) {
+  // Libellés courts : « a, b et c ». Libellés qui contiennent déjà « et » : « a, b ainsi que c ».
+  function enListe(items, liaison) {
     if (!items.length) return ''
     if (items.length === 1) return items[0]
-    return items.slice(0, -1).join(', ') + ' ainsi que ' + items[items.length - 1]
+    return items.slice(0, -1).join(', ') + (liaison || ' ainsi que ') + items[items.length - 1]
   }
 
   var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
@@ -173,19 +195,20 @@
     var now = extras && extras.date ? new Date(extras.date.getTime()) : new Date()
     var revue = new Date(now.getTime())
     revue.setFullYear(revue.getFullYear() + 1)
-    var referent = extras && extras.referent ? String(extras.referent).trim() : ''
+    var referent = String(rep.referent || (extras && extras.referent) || '').trim()
     var usages = liste(rep.usages)
-    var conf = liste(rep.donnees).filter(function (d) { return ['plans', 'devis', 'clients'].indexOf(d) !== -1 })
-    var secret = liste(rep.donnees).filter(function (d) { return ['rh', 'procedes'].indexOf(d) !== -1 })
+    var conf = donneesDeNiveau(rep, R, 'confidentiel')
+    var secret = donneesDeNiveau(rep, R, 'secret')
     var ref = referent || 'la personne désignée par la direction'
     return {
       entreprise: rep.entreprise || 'l\'entreprise',
       referent: ref,
       date_entree: dateLongue(now),
       date_revue: moisAnnee(revue),
+      outils_personnels: enListe(outilsDeclares(rep, R).filter(function (o) { return o.categorie === 'personnel' }).map(function (o) { return o.libelle }), ' et '),
       niveau_libelle: R.libelles_niveaux[lvl],
       maillon_libelle: R.libelles_maillons[rep.maillon] || '',
-      usages_liste: usages.length ? enListe(usages.slice(0, 4).map(function (u) { return R.libelles_usages[u] })) : 'les usages que ' + ref + ' aura validés',
+      usages_liste: usages.length ? enListe(usages.slice(0, 4).map(function (u) { return R.libelles_usages_courts[u] }), ' et ') : 'les usages que ' + ref + ' aura validés',
       donnees_conf_liste: enListe(conf.map(function (d) { return R.libelles_donnees[d] })),
       donnees_secret_liste: enListe(secret.map(function (d) { return R.libelles_donnees[d] })),
     }
@@ -209,9 +232,11 @@
 
   // Clauses retenues pour une section : celles dont la condition est remplie ; les clauses « defaut »
   // ne servent que si aucune autre n'est retenue.
-  function clausesSection(section, C, ctx, ton, vars) {
+  // `limite` borne le nombre de clauses retenues (dans l'ordre du fichier, donc par priorité) pour garder les règles courtes.
+  function clausesSection(section, C, ctx, ton, vars, limite) {
     var toutes = C.clauses.filter(function (c) { return c.section === section })
     var normales = toutes.filter(function (c) { return !c.defaut && correspond(c.condition, ctx) })
+    if (limite) normales = normales.slice(0, limite)
     var retenues = normales.length ? normales : toutes.filter(function (c) { return c.defaut })
     return retenues.map(function (c) { return { id: c.id, texte: remplir(texteClause(c, ton), vars) } })
   }
@@ -221,7 +246,8 @@
     var vars = variables(rep, R, lvl, extras)
     var ton = rep.ton || 'prudent'
     return R.titres_regles.map(function (titre, i) {
-      var cl = clausesSection('regle' + (i + 1), C, ctx, ton, vars)
+      var id = 'regle' + (i + 1)
+      var cl = clausesSection(id, C, ctx, ton, vars, (R.limites || {})[id])
       return { id: 'regle' + (i + 1), titre: titre, texte: cl.map(function (c) { return c.texte }).join(' ') }
     })
   }
@@ -269,7 +295,13 @@
     var lvl = niveau(rep, R)
     var sc = score(rep, R, lvl)
     var ids = recommandations(rep, R, lvl, sc)
+    var faiblesses = R.score.criteres
+      .filter(function (c) { return sc.detail[c.id] < c.max / 2 && R.score.explications[c.id] })
+      .map(function (c) { return { id: c.id, libelle: c.libelle, texte: R.score.explications[c.id] } })
     return {
+      niveau_explication: R.explications_niveaux[lvl],
+      faiblesses: faiblesses,
+      outils_insuffisants: contexte(rep, R, lvl).outils_insuffisants,
       niveau: lvl,
       niveau_libelle: R.libelles_niveaux[lvl],
       score: sc.total,
