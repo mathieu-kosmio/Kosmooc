@@ -1,58 +1,113 @@
 WEBVTT
 
-00:00:06.500 --> 00:00:10.809
+1
+00:00:06.200 --> 00:00:09.800
 Qu'est-ce qui change vraiment le résultat quand on précise sa demande ?
 
-00:00:10.809 --> 00:00:18.760
-Pour le voir, nous allons mener une expérience simple sur un même devis, celui de la Menuiserie des Landes, une entreprise fictive.
+2
+00:00:10.120 --> 00:00:14.120
+Pour le voir, nous allons mener une expérience simple sur un même devis,
 
-00:00:19.460 --> 00:00:26.619
-Demande A, la demande brute, telle qu'on l'écrit spontanément : « Fais-moi une fiche de production avec ce devis. »
+3
+00:00:14.200 --> 00:00:17.160
+celui de la Menuiserie des Landes, une entreprise fictive.
 
-00:00:26.619 --> 00:00:29.027
+4
+00:00:17.948 --> 00:00:22.228
+Demande A, la demande brute, telle qu'on l'écrit spontanément :
+
+5
+00:00:22.268 --> 00:00:24.988
+Fais-moi une fiche de production avec ce devis.
+
+6
+00:00:25.028 --> 00:00:27.228
 Voilà ce que beaucoup font au début.
 
-00:00:29.727 --> 00:00:34.356
+7
+00:00:28.023 --> 00:00:32.343
 Demande B : on ajoute la source et l'interdiction d'inventer.
 
-00:00:34.356 --> 00:00:40.199
-« À partir de ce devis, extrais les informations nécessaires à la production.
+8
+00:00:32.423 --> 00:00:37.063
+À partir de ce devis, extrais les informations nécessaires à la production.
 
-00:00:40.199 --> 00:00:41.337
-N'invente rien. »
+9
+00:00:37.116 --> 00:00:38.543
+N'invente rien.
 
-00:00:41.337 --> 00:00:44.448
+10
+00:00:38.583 --> 00:00:41.143
 Deux ajouts, trois secondes d'écriture.
 
-00:00:45.148 --> 00:01:00.055
-Demande C : on ajoute un rôle, le contexte de l'entreprise, les champs attendus dans un ordre fixé, les règles de contrôle, la gestion des données manquantes, et le format final avec une liste de points à vérifier avant lancement.
+11
+00:00:41.861 --> 00:00:46.581
+Demande C : on ajoute un rôle, le contexte de l'entreprise,
 
-00:01:00.755 --> 00:01:02.195
+12
+00:00:46.661 --> 00:00:50.821
+les champs attendus dans un ordre fixé, les règles de contrôle,
+
+13
+00:00:50.901 --> 00:00:52.981
+la gestion des données manquantes,
+
+14
+00:00:53.021 --> 00:00:57.141
+et le format final avec une liste de points à vérifier avant lancement.
+
+15
+00:00:57.918 --> 00:00:59.758
 Attention à la méthode.
 
-00:01:02.195 --> 00:01:07.953
+16
+00:00:59.798 --> 00:01:05.785
 Ouvrez une conversation neuve pour chaque demande, sinon l'historique fausse la comparaison.
 
-00:01:07.953 --> 00:01:09.393
+17
+00:01:05.891 --> 00:01:07.811
 Utilisez le même devis.
 
-00:01:09.393 --> 00:01:13.712
+18
+00:01:07.865 --> 00:01:12.318
 Et n'améliorez pas les réponses pendant le test : on observe l'écart.
 
-00:01:14.412 --> 00:01:21.553
-Comparez selon cinq critères : exactitude, omissions, inventions, lisibilité, facilité de contrôle.
+19
+00:01:13.036 --> 00:01:19.676
+Comparez selon cinq critères : exactitude, omissions, inventions, lisibilité,
 
-00:01:21.553 --> 00:01:31.363
-Regardez par exemple si la remise commerciale est recopiée sur la fiche, si les abréviations sont devinées, si les unités sont changées.
+20
+00:01:19.796 --> 00:01:21.316
+facilité de contrôle.
 
-00:01:32.063 --> 00:01:38.029
-La question utile : qu'est-ce qui a réellement amélioré le résultat, plus que la beauté de la réponse ?
+21
+00:01:21.756 --> 00:01:26.156
+Regardez par exemple si la remise commerciale est recopiée sur la fiche,
 
-00:01:38.029 --> 00:01:42.605
+22
+00:01:26.236 --> 00:01:30.156
+si les abréviations sont devinées, si les unités sont changées.
+
+23
+00:01:30.948 --> 00:01:35.348
+La question utile : qu'est-ce qui a réellement amélioré le résultat,
+
+24
+00:01:35.508 --> 00:01:37.721
+plus que la beauté de la réponse ?
+
+25
+00:01:37.775 --> 00:01:41.988
 Souvent, ce sont les contraintes et le signalement des informations manquantes.
 
-00:01:43.305 --> 00:01:53.127
-Téléchargez le devis et le gabarit dans les ressources du module, lancez A, B puis C, remplissez la grille, et gardez la demande C.
+26
+00:01:42.696 --> 00:01:48.736
+Téléchargez le devis et le gabarit dans les ressources du module, lancez A, B puis C,
 
-00:01:53.127 --> 00:01:55.751
-Elle deviendra votre prompt métier.
+27
+00:01:48.776 --> 00:01:51.789
+remplissez la grille, et gardez la demande C :
+
+28
+00:01:51.816 --> 00:01:54.776
+elle vous resservira pour toutes vos demandes importantes.
