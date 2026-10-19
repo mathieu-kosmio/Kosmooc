@@ -14,6 +14,7 @@ const loaders = {
   radar: () => import('./radar.js'),
   cout: () => import('./cout.js'),
   pointdepart: () => import('./pointdepart.js'),
+  charte: () => import('./charte.js'),
 };
 
 export function mountWidgets(root = document) {

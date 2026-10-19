@@ -121,7 +121,20 @@ routerAdd("GET", "/api/academie/stats", (e) => {
   $app.db().newQuery("SELECT module, statut, COUNT(*) AS n FROM progress GROUP BY module, statut").all(rows)
   const quiz = arrayOf(new DynamicModel({ module: "", tentatives: 0, reussies: 0 }))
   $app.db().newQuery("SELECT module, COUNT(*) AS tentatives, SUM(CASE WHEN reussi THEN 1 ELSE 0 END) AS reussies FROM quiz_attempts GROUP BY module").all(quiz)
+  const par = (col) => {
+    const r = arrayOf(new DynamicModel({ cle: "", n: 0 }))
+    $app.db().newQuery("SELECT COALESCE(" + col + ", '') AS cle, COUNT(*) AS n FROM chartes GROUP BY " + col).all(r)
+    return r
+  }
+  const chartesLibres = count("SELECT COUNT(*) AS n FROM chartes WHERE source = 'libre'")
+  const chartesSuivies = count("SELECT COUNT(*) AS n FROM chartes WHERE source = 'libre' AND user != ''")
   return e.json(200, {
+    chartes: {
+      total: count("SELECT COUNT(*) AS n FROM chartes"),
+      par_source: par("source"), par_palier: par("palier"), par_niveau: par("niveau_donnees"),
+      libres_suivies_d_une_inscription: chartesSuivies,
+      taux_inscription: chartesLibres ? chartesSuivies / chartesLibres : 0,
+    },
     inscrits: count("SELECT COUNT(*) AS n FROM users WHERE role = 'apprenant' OR role = ''"),
     projets_deposes: count("SELECT COUNT(*) AS n FROM submissions WHERE type = 'projet_final'"),
     a_evaluer: count("SELECT COUNT(*) AS n FROM submissions WHERE statut IN ('depose', 'en_evaluation')"),

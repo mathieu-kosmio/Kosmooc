@@ -9,4 +9,6 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory' },
   site: process.env.ACADEMIE_URL || 'http://localhost:8090',
+  // Le moteur et les règles de la charte IA vivent dans backend/charte et sont importés par le front.
+  vite: { server: { fs: { allow: ['..'] } } },
 });

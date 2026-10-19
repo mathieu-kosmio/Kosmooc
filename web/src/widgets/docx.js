@@ -27,23 +27,60 @@ function zip(files) {
 
 const x = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const run = (t, o = {}) => `<w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>${o.b ? '<w:b/>' : ''}${o.i ? '<w:i/>' : ''}<w:color w:val="${o.c || '1F2D3D'}"/><w:sz w:val="${o.s || 22}"/></w:rPr><w:t xml:space="preserve">${x(t)}</w:t></w:r>`;
-const para = (runs, after = 120) => `<w:p><w:pPr><w:spacing w:after="${after}"/></w:pPr>${runs}</w:p>`;
+// Ordre des éléments de w:pPr imposé par le schéma : keepNext avant spacing, ind après.
+const para = (runs, after = 120, extra = '') => `<w:p><w:pPr>${extra.includes('keepNext') ? extra : ''}<w:spacing w:after="${after}"/>${extra.includes('keepNext') ? '' : extra}</w:pPr>${runs}</w:p>`;
 
-export function docx(blocs) {
+// Largeur utile de la page A4 avec les marges ci-dessous (en vingtièmes de point).
+const LARGEUR = 9638;
+const bord = (c) => `<w:top w:val="single" w:sz="4" w:color="${c}"/><w:left w:val="single" w:sz="4" w:color="${c}"/><w:bottom w:val="single" w:sz="4" w:color="${c}"/><w:right w:val="single" w:sz="4" w:color="${c}"/><w:insideH w:val="single" w:sz="4" w:color="${c}"/><w:insideV w:val="single" w:sz="4" w:color="${c}"/>`;
+
+// Tableau Word : { entetes: [...], lignes: [[...], ...] }
+function tableau({ entetes, lignes }) {
+  const n = entetes.length;
+  const w = Math.floor(LARGEUR / n);
+  const cellule = (t, o = {}) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.fond ? `<w:shd w:val="clear" w:color="auto" w:fill="${o.fond}"/>` : ''}</w:tcPr>${para(run(t, { b: o.b, s: 19, c: o.c }), 40)}</w:tc>`;
+  const tete = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${entetes.map((h) => cellule(h, { b: true, fond: '009982', c: 'FFFFFF' })).join('')}</w:tr>`;
+  const corps = lignes.map((l, i) => `<w:tr><w:trPr><w:cantSplit/></w:trPr>${l.map((c, j) => cellule(c, { b: j === 0, fond: i % 2 ? 'F5F8F7' : '' })).join('')}</w:tr>`).join('');
+  return `<w:tbl><w:tblPr><w:tblW w:w="${LARGEUR}" w:type="dxa"/><w:tblBorders>${bord('C9BFB1')}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${entetes.map(() => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${tete}${corps}</w:tbl>${para('', 120)}`;
+}
+
+/**
+ * Génère le .docx. Blocs :
+ *   { titre } · { note } · { sous, texte, aide }            (fiches existantes)
+ *   { h2 } · { h3 } · { p } · { puce } · { tableau: {entetes, lignes} } · { saut: true }
+ * options.pied : texte du pied de page, répété sur chaque page.
+ */
+export function docx(blocs, options = {}) {
   const body = blocs.map((b) => {
     if (b.titre) return para(run(b.titre, { b: true, s: 36 }), 240);
     if (b.note) return para(run(b.note, { i: true, s: 18, c: '5D6C73' }), 240);
+    if (b.h2) return para(run(b.h2, { b: true, s: 28, c: '009982' }), 120, '<w:keepNext/>');
+    if (b.h3) return para(run(b.h3, { b: true, s: 23 }), 60, '<w:keepNext/>');
+    if (b.p) return para(run(b.p), 120);
+    if (b.puce) return para(run('•  ' + b.puce), 60, '<w:ind w:left="360" w:hanging="260"/>');
+    if (b.tableau) return tableau(b.tableau);
+    if (b.saut) return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
     const lignes = String(b.texte || '').split(/\n/);
     return para(run(b.sous, { b: true, s: 24, c: '009982' }), 40)
       + (b.aide ? para(run(b.aide, { i: true, s: 19, c: '5D6C73' }), 60) : '')
       + lignes.map((l, i) => para(run(l || ' '), i === lignes.length - 1 ? 220 : 40)).join('');
   }).join('');
-  const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
-  return zip([
-    ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'],
+  const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+  const pied = options.pied ? '<w:footerReference w:type="default" r:id="rId1"/>' : '';
+  const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${body}<w:sectPr>${pied}<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  const footer = options.pied ? `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr ${NS}>${para(run(options.pied, { i: true, s: 16, c: '5D6C73' }), 0)}</w:ftr>` : '';
+  const ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+    + (options.pied ? '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>' : '') + '</Types>';
+  const fichiers = [
+    ['[Content_Types].xml', ct],
     ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'],
     ['word/document.xml', doc],
-  ]);
+  ];
+  if (options.pied) {
+    fichiers.push(['word/_rels/document.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>']);
+    fichiers.push(['word/footer1.xml', footer]);
+  }
+  return zip(fichiers);
 }
 
 export function downloadBlob(name, blob) {

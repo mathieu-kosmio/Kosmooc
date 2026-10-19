@@ -165,6 +165,20 @@ const faq = [
     </div>
   </section>
 
+  <!-- ============ Outil gratuit : charte IA ============ -->
+  <section class="sec" aria-labelledby="charte-title">
+    <div class="container">
+      <div class="card card--sand outil-charte reveal">
+        <div>
+          <span class="eyebrow">Outil gratuit</span>
+          <h2 id="charte-title" style="margin-top:var(--space-2)">Votre charte IA en 5 minutes</h2>
+          <p style="margin:0">Douze questions, et vous obtenez vos cinq règles, le niveau de protection de vos données, le classement de vos outils et une charte complète à télécharger.</p>
+        </div>
+        <a class="btn btn--primary" href="/charte/?utm_source=academie&utm_medium=accueil">Générer ma charte →</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ Pour qui ============ -->
   <section class="sec">
     <div class="container pourqui">
@@ -503,4 +517,6 @@ const faq = [
   .sticky-cta.visible { transform: none; }
   .sticky-cta .btn { width: 100%; max-width: 420px; justify-content: center; }
   @media (min-width: 1024px) { .sticky-cta { display: none; } }
+  .outil-charte { display: flex; gap: var(--space-6); align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .outil-charte > div { max-width: 60ch; }
 </style>

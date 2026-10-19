@@ -15,7 +15,7 @@ Plateforme de formation du Parcours IA filière bois (Kosmio × Xylofutur), Nive
 | `npm run valider` | Contrôle des contenus (format, quiz, ressources, règles d'écriture) |
 | `npm run build` | Construit le site dans `backend/pb_public` |
 | `npm run dev:api` / `npm run dev:web` | PocketBase local / front en direct |
-| `npm run test:api` | 23 contrôles d'API et de droits (PocketBase lancé, superuser `admin@kosm.io` ou `SUPW`) |
+| `npm run test:api` | 45 contrôles d'API et de droits (dont la charte IA) (PocketBase lancé, superuser `admin@kosm.io` ou `SUPW`) |
 | `npm run test:e2e` | Parcours navigateur complet : inscription, quiz, dépôts, évaluation, badge |
 
 ## Règles

@@ -1,0 +1,155 @@
+{
+  "version": "1",
+  "niveaux": ["public", "interne", "confidentiel", "secret"],
+  "libelles_niveaux": { "public": "Public", "interne": "Interne", "confidentiel": "Confidentiel", "secret": "Secret" },
+  "niveau_par_donnee": {
+    "rh": "secret",
+    "procedes": "secret",
+    "plans": "confidentiel",
+    "devis": "confidentiel",
+    "clients": "confidentiel",
+    "fournisseurs": "interne",
+    "aucune": "public"
+  },
+  "escalade": [
+    { "si": { "donnees": "plans", "confidentialite": "souvent" }, "niveau": "secret" }
+  ],
+  "outils": {
+    "chatgpt": "pro_hors_ue",
+    "claude": "pro_hors_ue",
+    "gemini": "pro_hors_ue",
+    "copilot": "pro_ue",
+    "mistral": "pro_ue",
+    "logiciel_metier": "integre"
+  },
+  "libelles_outils": {
+    "chatgpt": "ChatGPT", "claude": "Claude", "gemini": "Gemini", "copilot": "Copilot Microsoft 365",
+    "mistral": "Mistral Le Chat", "logiciel_metier": "IA intégrée à un logiciel métier"
+  },
+  "categories": {
+    "personnel": "Compte personnel ou offre gratuite",
+    "pro_hors_ue": "Offre professionnelle hors UE (sans entraînement sur les données)",
+    "pro_ue": "Offre professionnelle hébergée en UE",
+    "prive": "IA privée hébergée (harnais souverain)",
+    "integre": "IA intégrée à un logiciel métier"
+  },
+  "matrice": {
+    "personnel": { "public": "oui", "interne": "non", "confidentiel": "non", "secret": "non" },
+    "pro_hors_ue": { "public": "oui", "interne": "oui", "confidentiel": "anonymisation", "secret": "non" },
+    "pro_ue": { "public": "oui", "interne": "oui", "confidentiel": "anonymisation", "secret": "non" },
+    "prive": { "public": "oui", "interne": "oui", "confidentiel": "oui", "secret": "validation" },
+    "integre": { "public": "verifier", "interne": "verifier", "confidentiel": "verifier", "secret": "verifier" }
+  },
+  "libelles_autorisation": {
+    "oui": "Oui",
+    "non": "Non",
+    "anonymisation": "Après anonymisation",
+    "validation": "Après validation du référent",
+    "verifier": "À vérifier dans le contrat de l'éditeur"
+  },
+  "cadre_non_encadre": ["non", "partie"],
+  "score": {
+    "pilotage": { "responsable": 15, "dirigeant": 10, "prestataire": 10, "personne": 0 },
+    "encadrement": { "oui": 25, "partie": 12, "nsp": 5, "non": 0 },
+    "encadrement_aucun_outil": 10,
+    "formation": { "aucun": 0, "quelques": 12, "moitie": 25 },
+    "adequation": { "oui": 25, "validation": 20, "anonymisation": 15, "verifier": 12, "non": 0 },
+    "adequation_aucun_outil": 10,
+    "penalite_souverainete": 10,
+    "diversite": [0, 3, 5, 7, 10],
+    "paliers": [
+      { "id": "decouverte", "libelle": "Découverte", "min": 0 },
+      { "id": "structuration", "libelle": "Structuration", "min": 40 },
+      { "id": "pilotage", "libelle": "Pilotage", "min": 70 }
+    ],
+    "criteres": [
+      { "id": "pilotage", "libelle": "Pilotage identifié", "max": 15 },
+      { "id": "encadrement", "libelle": "Outils payés et encadrés", "max": 25 },
+      { "id": "formation", "libelle": "Salariés formés", "max": 25 },
+      { "id": "adequation", "libelle": "Outils adaptés au niveau de données", "max": 25 },
+      { "id": "diversite", "libelle": "Diversité des usages", "max": 10 }
+    ]
+  },
+  "recommandations": {
+    "former": {
+      "titre": "Former votre équipe",
+      "texte": "Aucun salarié n'est formé à l'IA. L'Académie PerfIA donne en 8 à 10 heures les bases d'un usage fiable, et répond à l'obligation de maîtrise de l'IA (article 4 de l'AI Act).",
+      "lien": "/inscription/", "type": "inscription", "action": "Rejoindre l'Académie PerfIA"
+    },
+    "sortir_comptes": {
+      "titre": "Sortir des comptes personnels",
+      "texte": "Des outils sont utilisés avec des comptes personnels ou gratuits. Passez à des offres professionnelles payées par l'entreprise, avec l'entraînement sur vos données désactivé.",
+      "lien": "https://perfia.kosm.io/choix-ia.html", "type": "externe", "action": "Choisir vos outils"
+    },
+    "garder_donnees": {
+      "titre": "Garder vos données sensibles chez vous",
+      "texte": "Vos données sont confidentielles ou secrètes et un outil hébergé hors de l'Union européenne est utilisé. Une IA hébergée sous votre contrôle évite de les exposer.",
+      "lien": "https://perfia.kosm.io/souverainete.html", "type": "externe", "action": "Comprendre les niveaux de protection"
+    },
+    "cas_processotheque": {
+      "titre": "Partir d'un cas déjà éprouvé",
+      "texte": "Devis, chiffrage et appels d'offres sont les usages où l'IA fait gagner le plus de temps, à condition d'un contrôle humain. La processothèque en décrit des cas de la filière.",
+      "lien": "https://processotheque.kosmio.dev/referentiel?source=charte", "type": "externe", "action": "Voir les cas de la processothèque"
+    },
+    "deployer": {
+      "titre": "Passer au déploiement",
+      "texte": "Votre cadre est en place. L'étape suivante est de déployer un outil adapté à vos données, avec un accompagnement.",
+      "lien": "https://cal.com/kosmio/ia-automatisation", "type": "externe", "action": "Échanger 30 minutes"
+    }
+  },
+  "libelles_usages": {
+    "redaction": "la rédaction et les mails",
+    "devis": "les devis et le chiffrage",
+    "plans": "la lecture de plans et de documents techniques",
+    "ao": "la réponse aux appels d'offres",
+    "commercial": "le commercial et le marketing",
+    "rh": "les RH et le recrutement",
+    "donnees": "l'analyse de données"
+  },
+  "libelles_donnees": {
+    "plans": "les plans et notes de calcul",
+    "devis": "les devis et les prix",
+    "clients": "les données clients",
+    "rh": "les données RH",
+    "fournisseurs": "les données fournisseurs et de traçabilité",
+    "procedes": "les procédés et savoir-faire",
+    "aucune": "aucune donnée sensible"
+  },
+  "libelles_maillons": {
+    "sylviculture": "la sylviculture", "exploitation": "l'exploitation forestière", "scierie": "la scierie",
+    "seconde_transformation": "la seconde transformation", "construction": "la construction bois",
+    "bureau_etudes": "le bureau d'études", "negoce": "le négoce", "ameublement": "l'ameublement et l'agencement", "autre": "la filière bois"
+  },
+  "titres_regles": [
+    "Ce que nous autorisons",
+    "Ce que nous ne transmettons pas",
+    "Ce qui est toujours contrôlé par une personne",
+    "Comment nous signalons une information incertaine",
+    "Comment nous conservons et améliorons les usages"
+  ],
+  "titres_sections": {
+    "1": "Objet et périmètre",
+    "2": "Principes directeurs",
+    "3": "Cas d'usage autorisés",
+    "4": "Cas d'usage à cadre particulier",
+    "5": "Cas d'usage interdits",
+    "6": "Classification et règles des données",
+    "7": "Outils autorisés",
+    "8": "Traçabilité et journalisation",
+    "9": "Formation et accompagnement",
+    "10": "Référent IA et gouvernance",
+    "11": "Engagement du collaborateur",
+    "A": "Annexe A : matrice classification et outils",
+    "B": "Annexe B : questions fréquentes"
+  },
+  "classification": [
+    ["Public", "Plaquette commerciale, prix catalogue, communiqué", "Envoi libre à tout outil autorisé"],
+    ["Interne", "Procédures internes, comptes rendus non confidentiels, documentation technique générique", "Outils professionnels uniquement"],
+    ["Confidentiel", "Tarifs négociés, données commerciales individuelles, devis signés, plans de clients", "Après anonymisation, sur outils professionnels"],
+    ["Secret", "Données RH identifiantes, procédés, secrets industriels, comptes analytiques", "Interdit, sauf IA privée validée par le référent"]
+  ],
+  "commerce": {
+    "chaud": "Niveau Confidentiel ou Secret, effectif de 10 ou plus, outil hors UE ou compte personnel déclaré",
+    "froid": "Effectif de 1 à 9 et niveau Public ou Interne"
+  }
+}

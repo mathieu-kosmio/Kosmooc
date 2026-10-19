@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/widgets.css';
+---
+<Base title="Synthèse de votre charte IA">
+  <div class="container container--prose" style="padding-block: var(--space-7)">
+    <div id="synthese" aria-live="polite"><p class="t-small">Chargement de votre synthèse…</p></div>
+    <p class="no-print" style="margin-top:var(--space-6);display:flex;gap:var(--space-3);flex-wrap:wrap">
+      <button class="btn btn--primary btn--sm" type="button" id="pdf" hidden onclick="window.print()">Télécharger en PDF</button>
+      <a class="btn btn--ghost btn--sm" href="/charte/">Refaire ma charte</a>
+    </p>
+  </div>
+  <script>
+    import { pb, errMsg } from '../../lib/pb.js';
+    import { syntheseHtml } from '../../lib/charte-synthese.js';
+    const zone = document.getElementById('synthese')!;
+    const jeton = new URLSearchParams(window.location.search).get('j') || '';
+    (async () => {
+      try {
+        if (!/^[A-Za-z0-9]{32}$/.test(jeton)) throw new Error('Lien de synthèse incomplet.');
+        const data = await pb.send('/api/academie/charte/' + jeton, { method: 'GET' });
+        zone.innerHTML = syntheseHtml(data);
+        document.getElementById('pdf')!.hidden = false;
+      } catch (err) {
+        zone.innerHTML = `<div class="alert alert--error">${errMsg(err)} Cette synthèse n'existe pas ou le lien est incomplet.</div>`;
+      }
+    })();
+  </script>
+</Base>

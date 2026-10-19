@@ -9,7 +9,7 @@ const warn = [];
 const modDir = join(root, 'web/src/content/modules');
 const walk = (d) => readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]));
 
-for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'contenus')), ...walk(join(root, 'backend/quiz')), ...walk(join(root, 'web/public/ressources')).filter((x) => /\.(md|txt)$/.test(x))]) {
+for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'contenus')), ...walk(join(root, 'backend/quiz')), ...walk(join(root, 'backend/charte')).filter((x) => x.endsWith('.json')), ...walk(join(root, 'web/public/ressources')).filter((x) => /\.(md|txt)$/.test(x))]) {
   const t = readFileSync(f, 'utf8');
   if (t.includes('—')) errors.push(`${f} : tiret cadratin interdit`);
   if (/socamex/i.test(t)) errors.push(`${f} : nom de client réel`);
@@ -17,6 +17,49 @@ for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'con
   if (/ia-bois\.kosm\.io|ia-bois point kosm/i.test(t)) errors.push(`${f} : ancienne adresse ia-bois.kosm.io, utiliser perfia.kosm.io`);
   if (/ch[êe]ne[^\n]{0,40}\bC(14|16|18|20|22|24|27|30)\b/i.test(t)) errors.push(`${f} : classe de résistance résineux (C..) associée au chêne, les feuillus sont en classe D`);
   if (/(?<!« )\bskill\b|\bbaseline\b/i.test(t)) warn.push(`${f} : anglicisme (skill, baseline) à traduire pour le public filière`);
+}
+
+// ---------- Générateur de charte IA : cohérence des questions, règles et clauses ----------
+{
+  const dir = join(root, 'backend/charte');
+  const lire = (n) => { try { return JSON.parse(readFileSync(join(dir, n + '.json'), 'utf8')); } catch (e) { errors.push(`backend/charte/${n}.json : JSON invalide (${e.message})`); return null; } };
+  const Q = lire('questions'), R = lire('regles'), C = lire('clauses');
+  if (Q && R && C) {
+    for (const n of ['questions', 'regles', 'clauses']) if (/imprim/i.test(readFileSync(join(dir, n + '.json'), 'utf8'))) errors.push(`backend/charte/${n}.json : ne jamais parler d'imprimer, toujours de télécharger en PDF`);
+    const q = Object.fromEntries(Q.questions.map((x) => [x.cle, x]));
+    const vals = (cle) => (q[cle].options || []).map((o) => o.v);
+    for (const cle of ['entreprise', 'maillon', 'effectif', 'pilote', 'outils', 'cadre', 'usages', 'formation', 'donnees', 'confidentialite', 'souverainete', 'ton']) if (!q[cle]) errors.push(`questions.json : question « ${cle} » absente`);
+    if (Q.ecrans.flatMap((e) => e.questions).sort().join() !== Object.keys(q).sort().join()) errors.push('questions.json : chaque question doit figurer dans exactement un écran');
+    // Chaque réponse doit avoir son effet dans les règles
+    for (const d of vals('donnees')) if (!R.niveau_par_donnee[d]) errors.push(`regles.json : niveau_par_donnee sans « ${d} »`);
+    for (const o of vals('outils').filter((x) => !(q.outils.exclusives || []).includes(x))) {
+      if (!R.outils[o]) errors.push(`regles.json : outil « ${o} » sans catégorie`);
+      if (!R.libelles_outils[o]) errors.push(`regles.json : outil « ${o} » sans libellé`);
+    }
+    for (const u of vals('usages')) if (!R.libelles_usages[u]) errors.push(`regles.json : usage « ${u} » sans libellé`);
+    for (const d of vals('donnees')) if (!R.libelles_donnees[d]) errors.push(`regles.json : donnée « ${d} » sans libellé`);
+    for (const m of vals('maillon')) if (!R.libelles_maillons[m]) errors.push(`regles.json : maillon « ${m} » sans libellé`);
+    for (const c of Object.values(R.outils)) if (!R.matrice[c]) errors.push(`regles.json : catégorie « ${c} » absente de la matrice`);
+    for (const [c, m] of Object.entries(R.matrice)) for (const n of R.niveaux) if (!R.libelles_autorisation[m[n]]) errors.push(`regles.json : matrice ${c}/${n} : valeur « ${m[n]} » inconnue`);
+    for (const id of ['former', 'sortir_comptes', 'garder_donnees', 'cas_processotheque', 'deployer']) if (!R.recommandations[id]) errors.push(`regles.json : recommandation « ${id} » absente`);
+    // Clauses : sections connues, conditions valides, variables connues, trois tons si variantes
+    const sections = new Set([...R.titres_regles.map((_, i) => 'regle' + (i + 1)), ...Object.keys(R.titres_sections)]);
+    const cles = new Set([...Object.keys(q), 'niveau', 'categories']);
+    const variables = new Set(['entreprise', 'referent', 'date_entree', 'date_revue', 'niveau_libelle', 'maillon_libelle', 'usages_liste', 'donnees_conf_liste', 'donnees_secret_liste']);
+    const ids = new Set();
+    for (const c of C.clauses) {
+      if (ids.has(c.id)) errors.push(`clauses.json : identifiant « ${c.id} » en double`); ids.add(c.id);
+      if (!sections.has(c.section)) errors.push(`clauses.json : ${c.id} : section « ${c.section} » inconnue`);
+      for (const [k, v] of Object.entries(c.condition || {})) {
+        if (!cles.has(k)) errors.push(`clauses.json : ${c.id} : condition sur « ${k} » inconnue`);
+        else if (q[k]?.options) for (const x of [].concat(v)) if (!vals(k).includes(x)) errors.push(`clauses.json : ${c.id} : valeur « ${x} » inconnue pour ${k}`);
+      }
+      const textes = typeof c.texte === 'string' ? [c.texte] : ['encourageant', 'prudent', 'strict'].map((t) => c.texte[t] ?? (errors.push(`clauses.json : ${c.id} : ton « ${t} » manquant`), ''));
+      for (const t of textes) for (const m of t.matchAll(/\{\{(\w+)\}\}/g)) if (!variables.has(m[1])) errors.push(`clauses.json : ${c.id} : variable {{${m[1]}}} inconnue`);
+    }
+    for (let i = 1; i <= 5; i++) if (!C.clauses.some((c) => c.section === 'regle' + i)) errors.push(`clauses.json : aucune clause pour la règle ${i}`);
+    for (const sec of Object.keys(R.titres_sections)) if (!['6', '7'].includes(sec) && !C.clauses.some((c) => c.section === sec)) errors.push(`clauses.json : aucune clause pour la section ${sec}`);
+  }
 }
 
 for (const file of readdirSync(modDir).filter((x) => x.endsWith('.md'))) {

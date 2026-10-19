@@ -52,6 +52,12 @@ import Base from '../layouts/Base.astro';
     import { pb, errMsg, esc } from '../lib/pb.js';
     import { renderSso } from '../lib/sso.js';
     renderSso(document.getElementById('sso'));
+    // Préremplissage depuis la synthèse de charte IA : ?email=&entreprise=&maillon=&source=charte
+    const qs = new URLSearchParams(window.location.search);
+    const pre = (id: string, v: string | null) => { const f = document.getElementById(id) as HTMLInputElement | null; if (f && v) f.value = v; };
+    pre('email', qs.get('email')); pre('entreprise', qs.get('entreprise'));
+    const maillon = qs.get('maillon') as string;
+    if (maillon && [...(document.getElementById('maillon') as HTMLSelectElement).options].some((o) => o.value === maillon)) pre('maillon', maillon);
     const form = document.getElementById('form') as HTMLFormElement;
     const msg = document.getElementById('msg')!;
     form.addEventListener('submit', async (e) => {

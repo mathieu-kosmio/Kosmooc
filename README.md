@@ -12,6 +12,7 @@ Parcours de formation en ligne « IA générative en entreprise, filière bois, 
 | `docs/FORMAT-CONTENU.md` | Format des modules, quiz, fiches, scripts |
 | `docs/DEPLOIEMENT.md` | Lancer en local, déployer sur Coolify, mettre une vidéo en ligne |
 | `docs/INTEGRATION-CERTIFIKO.md` | SSO OIDC et évaluation par Certifiko |
+| `docs/EVOLUTION-CHARTE-IA.md` | Évolution : générateur de charte IA (outil d'acquisition, module 7) |
 | `CLAUDE.md` | Consignes et commandes pour les agents |
 
 Démarrage rapide : voir `docs/DEPLOIEMENT.md`, section « En local ».

@@ -40,4 +40,39 @@ check "badge vérifiable sans compte" "$(curl -s $B/api/collections/badges/recor
 check "liste des badges fermée au public" "$(curl -s $B/api/collections/badges/records | j 'd["totalItems"]')" 0
 check "statistiques réservées" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/stats -H "Authorization: $TOK")" 403
 check "statistiques évaluateur" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/stats -H "Authorization: $ETOK")" 200
+# ---------- Générateur de charte IA ----------
+REP='{"entreprise":"Test charte SARL","maillon":"bureau_etudes","effectif":"10-49","pilote":"dirigeant","outils":["chatgpt"],"cadre":"non","usages":["devis","plans"],"formation":"aucun","donnees":["plans"],"confidentialite":"souvent","souverainete":"exigence","ton":"prudent"}'
+LIBRE(){ echo "{\"prenom\":\"Lea\",\"email\":\"$1\",\"fonction\":\"Gérante\",\"referent\":\"Lea Martin\",\"newsletter\":false,\"niveau\":\"public\",\"score\":100,\"palier\":\"pilotage\",\"reponses\":$REP}"; }
+sup(){ curl -s -o /tmp/r.json -w "%{http_code}" "$B$1" -H "Authorization: $STOK" ${2:+-XDELETE}; }
+# Nettoyage des chartes d'un essai précédent (la limite d'envois compte les 10 dernières minutes).
+curl -s -G "$B/api/collections/chartes/records" --data-urlencode "perPage=200" --data-urlencode "filter=entreprise ~ 'Test charte'" -H "Authorization: $STOK" > /tmp/c.json
+for id in $(python3 -c "import json;[print(x['id']) for x in json.load(open('/tmp/c.json'))['items']]"); do sup /api/collections/chartes/records/$id del >/dev/null; done
+check "règles de la charte publiques" "$(curl -s $B/api/academie/charte/regles | grep -c '"questions"')" 1
+check "charte : email invalide refusé" "$(post /api/academie/charte "$(LIBRE pas-un-email)")" 400
+check "charte : réponses manquantes refusées" "$(post /api/academie/charte "{\"prenom\":\"Lea\",\"email\":\"l$R@t.fr\",\"reponses\":{}}")" 400
+check "charte libre enregistrée" "$(post /api/academie/charte "$(LIBRE l$R@t.fr)")" 200
+check "charte : niveau recalculé côté serveur" "$(j 'd["niveau"]' < /tmp/r.json)" secret
+check "charte : score falsifié ignoré" "$(j 'd["score"] < 50' < /tmp/r.json)" True
+JET=$(j 'd["jeton"]' < /tmp/r.json)
+check "synthèse par jeton" "$(curl -s $B/api/academie/charte/$JET | j 'd["entreprise"]')" "Test charte SARL"
+check "synthèse sans email" "$(curl -s $B/api/academie/charte/$JET | grep -c '@')" 0
+check "synthèse : jeton inconnu" "$(curl -s -o /dev/null -w '%{http_code}' $B/api/academie/charte/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)" 404
+check "chartes fermées au public" "$(curl -s $B/api/collections/chartes/records | j 'd["totalItems"]')" 0
+check "chartes : écriture directe refusée" "$(post /api/collections/chartes/records '{"source":"libre","jeton":"x"}' $TOK)" 403
+check "charte m7 refusée sans compte" "$(post /api/academie/charte/m7 "{\"reponses\":$REP}")" 401
+check "charte m7 enregistrée" "$(post /api/academie/charte/m7 "{\"reponses\":$REP,\"referent\":\"Alice\"}" $TOK)" 200
+M7=$(j 'd["id"]' < /tmp/r.json)
+check "charte m7 : cinq règles" "$(j 'len(d["regles"])' < /tmp/r.json)" 5
+check "charte m7 : règles modifiées conservées" "$(post /api/academie/charte/m7 "{\"reponses\":$REP,\"regles\":[{\"texte\":\"R1 modifiée\"},{\"texte\":\"R2\"},{\"texte\":\"R3\"},{\"texte\":\"R4\"},{\"texte\":\"R5\"}]}" $TOK >/dev/null; j 'd["regles"][0]["texte"]' < /tmp/r.json)" "R1 modifiée"
+check "charte m7 : mise à jour sans doublon" "$(j 'd["id"]' < /tmp/r.json)" "$M7"
+check "charte m7 visible de son auteur" "$(curl -s "$B/api/collections/chartes/records?filter=source='m7'" -H "Authorization: $TOK" | j 'd["totalItems"]')" 1
+check "charte libre d'un autre invisible" "$(curl -s "$B/api/collections/chartes/records?filter=source='libre'" -H "Authorization: $TOK" | j 'd["totalItems"]')" 0
+check "charte m7 visible de l'évaluateur" "$(curl -s "$B/api/collections/chartes/records?filter=id='$M7'" -H "Authorization: $ETOK" | j 'd["totalItems"]')" 1
+post /api/collections/users/records "{\"email\":\"l$R@t.fr\",\"password\":\"Test-12345\",\"passwordConfirm\":\"Test-12345\",\"name\":\"Lea\"}" >/dev/null
+post /api/collections/users/auth-with-password "{\"identity\":\"l$R@t.fr\",\"password\":\"Test-12345\"}" >/dev/null; LTOK=$(j 'd["token"]' < /tmp/r.json)
+check "inscription : charte libre rattachée au compte" "$(curl -s "$B/api/collections/chartes/records?filter=source='libre'" -H "Authorization: $LTOK" | j 'd["totalItems"]')" 1
+check "statistiques : chartes" "$(curl -s $B/api/academie/stats -H "Authorization: $ETOK" | j 'd["chartes"]["total"] >= 2')" True
+CODE=200; N=0
+while [ "$CODE" = 200 ] && [ $N -lt 12 ]; do CODE=$(post /api/academie/charte "$(LIBRE r$N$R@t.fr)"); N=$((N+1)); done
+check "limite de 10 envois par IP" "$CODE" 429
 exit $FAIL

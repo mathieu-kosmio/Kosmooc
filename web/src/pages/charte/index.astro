@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/widgets.css';
+---
+<Base title="Générateur de charte IA" description="Générez en 5 minutes la charte IA de votre entreprise : cinq règles, niveau de données, catalogue d'outils et charte complète à télécharger.">
+  <div class="container container--prose" style="padding-block: var(--space-7)">
+    <span class="eyebrow">Outil gratuit · Parcours IA filière bois</span>
+    <h1 class="t-h2" style="margin-top:var(--space-3)">Générez la charte IA de votre entreprise</h1>
+    <p class="t-lead">Douze questions, cinq minutes. Vous obtenez vos cinq règles, le niveau de protection de vos données, le classement de vos outils et une charte complète à télécharger, à adapter et à faire valider.</p>
+    <p class="t-small">Une entreprise qui utilise l'IA doit développer la maîtrise de l'IA de ses équipes (article 4 du règlement européen). Une charte écrite, connue et appliquée en fait partie.</p>
+    <div data-widget="charte" data-mode="libre"><p class="wg-fallback">Le générateur s’affiche avec JavaScript activé.</p></div>
+  </div>
+  <script>
+    import { mountWidgets } from '../../widgets/index.js';
+    mountWidgets();
+  </script>
+</Base>

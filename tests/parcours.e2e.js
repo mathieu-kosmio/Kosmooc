@@ -22,7 +22,7 @@ async function answerQuiz(page, moduleId) {
 test('parcours apprenant puis évaluation et badge', async ({ page, request, browser }) => {
   // Accueil et accès libre au module 0
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('IA générative');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText("Prenez en main l'IA");
   await page.goto('/modules/m3/');
   await expect(page.locator('#gate')).toBeVisible();
 
