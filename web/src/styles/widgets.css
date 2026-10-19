@@ -289,3 +289,11 @@
   .wg--charte { padding: var(--space-4); }
 }
 @media print { .ch-table th, .ch-table td { border-color: #999; } .wg { box-shadow: none; border-top-width: 1px; } }
+
+/* Charte IA : installer la charte dans les assistants */
+.ch-install__liste { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.ch-install__liste > li { padding: var(--space-3) var(--space-4); border: 1px solid var(--grey-300); border-radius: var(--radius-md); background: var(--white); }
+.ch-install__tete { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; }
+.ch-install__etapes { margin: var(--space-2) 0 0; padding-left: 1.4em; font-size: var(--text-small); display: grid; gap: var(--space-1); }
+.ch-install__texte { margin-top: var(--space-2); font-size: var(--text-small); }
+.ch-install__texte textarea { width: 100%; margin-top: var(--space-2); font-family: inherit; font-size: var(--text-small); }

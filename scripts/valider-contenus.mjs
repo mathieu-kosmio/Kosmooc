@@ -71,6 +71,8 @@ for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'con
             for (const effectif of ['1-9', '50-249'])
               profils.push({ entreprise: 'Test', maillon: 'bureau_etudes', effectif, pilote: 'personne', referent: '', outils, payes, usages: choix('usages').slice(0, 4), formation: 'aucun', donnees, confidentialite, souverainete: 'exigence', ton: 'strict' });
     const incoherences = new Set();
+    // Export vers les assistants (web/src/lib/charte-skill.js) : sous la limite, nom de skill valide, pas de tiret cadratin.
+    const X = await import(join(root, 'web/src/lib/charte-skill.js'));
     for (const brut of profils) {
       const v = M.valider(brut, Q);
       if (!v.ok) { incoherences.add(`profil invalide (${v.erreurs.join(', ')})`); continue; }
@@ -85,6 +87,20 @@ for (const f of [...walk(join(root, 'web/src/content')), ...walk(join(root, 'con
       if (s.catalogue.some((o) => o.categorie === 'personnel') && !ids.has('s7-personnel')) incoherences.add('comptes personnels au catalogue sans clause qui les encadre');
       if (s.catalogue.some((o) => o.outil === 'copilot' && o.categorie === 'personnel')) incoherences.add('Copilot Microsoft 365 classé en compte personnel');
       if (s.regles.some((r) => r.texte.split(/\s+/).length > 55)) incoherences.add('une des cinq règles dépasse 55 mots');
+      for (const e of X.exportsOutils({ ...s, entreprise: brut.entreprise }, v.reponses, R)) {
+        try {
+          const t = e.texte ? e.texte() : '';
+          const f = e.fichiers ? e.fichiers() : [];
+          if ([t, ...f.map((x) => x[1])].some((x) => x.includes('—'))) incoherences.add(`export ${e.outil} : tiret cadratin`);
+          if (f.length) {
+            const [chemin, md] = f[0];
+            const nom = (md.match(/^name: (.+)$/m) || [])[1] || '';
+            const desc = JSON.parse((md.match(/^description: (.+)$/m) || [])[1] || '""');
+            if (!/^[a-z0-9-]{1,64}$/.test(nom) || /claude|anthropic/.test(nom) || chemin !== nom + '/SKILL.md') incoherences.add(`skill ${e.outil} : nom « ${nom} » invalide ou différent du dossier`);
+            if (!desc || desc.length > 1024 || /[<>]/.test(desc)) incoherences.add(`skill ${e.outil} : description vide, trop longue ou avec < >`);
+          }
+        } catch (err) { incoherences.add(`export ${e.outil} : ${err.message}`); }
+      }
     }
     for (const x of incoherences) errors.push(`charte générée : ${x}`);
     for (const sec of Object.keys(R.titres_sections)) if (!['6', '7'].includes(sec) && !C.clauses.some((c) => c.section === sec)) errors.push(`clauses.json : aucune clause pour la section ${sec}`);

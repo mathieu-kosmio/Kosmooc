@@ -2,6 +2,9 @@
 // Ordre voulu : le constat, les règles, les outils, ce qui pèse sur le score, puis les prochaines étapes (fin du parcours).
 import { regles } from './charte-moteur.js';
 import { esc } from './pb.js';
+import { exportsOutils, nomZip } from './charte-skill.js';
+import { zip, downloadBlob } from '../widgets/docx.js';
+import { copy, flash } from '../widgets/util.js';
 
 const URL_CHOIX_IA = 'https://perfia.kosm.io/choix-ia.html?utm_source=charte&utm_medium=synthese';
 const URL_RDV = 'https://cal.com/kosmio/ia-automatisation';
@@ -29,9 +32,43 @@ export function constatHtml(data) {
     ${data.outils_insuffisants ? '<p class="ch-alerte">Aucun de vos outils actuels ne peut recevoir ces données, même anonymisées. Votre charte limite donc l’IA aux informations publiques jusqu’à la souscription d’une offre professionnelle.</p>' : ''}`;
 }
 
+// « Installer la charte dans vos assistants » : par outil déclaré, le paquet Claude (.zip) ou le texte à copier.
+// data.reponses vient du serveur (GET par jeton) ou du calcul local.
+const exportsDe = (data) => (data.reponses && data.catalogue.length ? exportsOutils(data, data.reponses, regles) : []);
+
+export function installationHtml(data) {
+  const ex = exportsDe(data);
+  if (!ex.length) return '';
+  const carte = (e) => {
+    let action = '';
+    if (e.format === 'skill') action = `<button type="button" class="btn btn--secondary btn--sm" data-charte-export="zip" data-outil="${esc(e.outil)}">Télécharger le paquet Claude (.zip)</button>`;
+    if (e.format === 'texte') action = `<button type="button" class="btn btn--secondary btn--sm" data-charte-export="copier" data-outil="${esc(e.outil)}">Copier les instructions</button>`;
+    const texte = e.texte ? `<details class="ch-install__texte"><summary>Voir le texte${e.format === 'skill' ? ' (pour un projet Claude)' : ''}</summary><textarea readonly rows="10" aria-label="Instructions pour ${esc(e.libelle)}">${esc(e.texte())}</textarea>${e.format === 'skill' ? `<button type="button" class="wg-link" data-charte-export="copier" data-outil="${esc(e.outil)}">Copier le texte</button>` : ''}</details>` : '';
+    return `<li><div class="ch-install__tete"><strong>${esc(e.libelle)}</strong>${action}</div>
+      <ol class="ch-install__etapes">${e.etapes.map((t) => `<li>${esc(t)}</li>`).join('')}</ol>${texte}</li>`;
+  };
+  return `<section class="ch-install no-print" aria-labelledby="ch-t-install">
+      <h3 id="ch-t-install">Installer la charte dans vos assistants</h3>
+      <p class="t-small">Pour chaque outil, des consignes qui font classer à l’assistant ce que vous déposez et vous préviennent en une phrase quand un document dépasse ce que l’outil peut recevoir. L’avertissement arrive après l’envoi : c’est un rappel pour l’équipe, pas une protection. La protection passe par les réglages d’administration de l’outil et le contrat de l’éditeur.</p>
+      <ul class="ch-install__liste">${ex.map(carte).join('')}</ul>
+    </section>`;
+}
+
+// À appeler une fois la synthèse insérée dans la page.
+export function brancherInstallation(racine, data) {
+  const ex = Object.fromEntries(exportsDe(data).map((e) => [e.outil, e]));
+  racine.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-charte-export]');
+    const e = b && ex[b.dataset.outil];
+    if (!e) return;
+    if (b.dataset.charteExport === 'zip') { downloadBlob(nomZip(data, data.reponses), zip(e.fichiers(), 'application/zip')); flash(b, 'Téléchargé'); }
+    if (b.dataset.charteExport === 'copier') copy(e.texte(), b);
+  });
+}
+
 /**
  * data : { entreprise, maillon, niveau_libelle, niveau_explication, outils_insuffisants, score, detail, palier_libelle,
- *          faiblesses, catalogue, recommandations: [{ id, titre, texte, lien, type, action }], regles: [{ titre, texte }] }
+ *          faiblesses, catalogue, reponses, recommandations: [{ id, titre, texte, lien, type, action }], regles: [{ titre, texte }] }
  */
 export function syntheseHtml(data, ctx = {}) {
   const inscription = lienInscription({ ...ctx, entreprise: data.entreprise, maillon: data.maillon });
@@ -68,6 +105,7 @@ export function syntheseHtml(data, ctx = {}) {
         <ul class="ch-criteres">${criteres}</ul>
         ${faiblesses ? `<ul class="ch-faiblesses">${faiblesses}</ul>` : ''}
       </section>
+      ${installationHtml(data)}
       <section class="ch-etapes no-print" aria-labelledby="ch-t-etapes">
         <h3 id="ch-t-etapes">Vos prochaines étapes</h3>
         <ol class="ch-etapes__liste">${etapes.map((e) => `<li><div><strong>${esc(e.titre)}</strong><p>${esc(e.texte)}</p></div><a class="btn btn--secondary btn--sm" href="${esc(e.href)}"${e.externe ? ' target="_blank" rel="noopener"' : ''}>${esc(e.action)}${e.externe ? ' ↗' : ' →'}</a></li>`).join('')}</ol>

@@ -5,7 +5,7 @@ import { shell, esc, flash } from './util.js';
 import { docx, downloadBlob } from './docx.js';
 import { pb, user, errMsg } from '../lib/pb.js';
 import { questions, valider, synthese, blocsDocx, nomFichier, PIED } from '../lib/charte-moteur.js';
-import { syntheseHtml, tableauOutils, constatHtml } from '../lib/charte-synthese.js';
+import { syntheseHtml, tableauOutils, constatHtml, brancherInstallation } from '../lib/charte-synthese.js';
 
 const parCle = Object.fromEntries(questions.questions.map((q) => [q.cle, q]));
 const NB_ECRANS = questions.ecrans.length;
@@ -189,7 +189,7 @@ export default async function charte(el, ds) {
       data = await pb.send('/api/academie/charte/' + st.resultat.jeton, { method: 'GET' });
     } catch (_) {
       const s = synthese(rep);
-      data = { ...s, entreprise: rep.entreprise, maillon: rep.maillon, recommandations: s.recommandations_detail };
+      data = { ...s, entreprise: rep.entreprise, maillon: rep.maillon, referent: rep.referent, reponses: rep, recommandations: s.recommandations_detail };
     }
     document.querySelector('.charte-intro')?.setAttribute('hidden', '');
     body.innerHTML = `
@@ -203,6 +203,7 @@ export default async function charte(el, ds) {
         <p class="t-small no-print">Lien permanent de votre synthèse : <a href="/charte/synthese/?j=${esc(st.resultat.jeton)}">à garder ou à transmettre</a>.</p>
       </div>
       ${syntheseHtml(data, { email: st.resultat.email })}`;
+    brancherInstallation(body, data);
     remonter(el);
     try { telecharger(rep); } catch (err) { console.error(err); }
   }

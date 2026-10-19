@@ -12,7 +12,7 @@ import '../../styles/widgets.css';
   </div>
   <script>
     import { pb, errMsg } from '../../lib/pb.js';
-    import { syntheseHtml } from '../../lib/charte-synthese.js';
+    import { syntheseHtml, brancherInstallation } from '../../lib/charte-synthese.js';
     const zone = document.getElementById('synthese')!;
     const jeton = new URLSearchParams(window.location.search).get('j') || '';
     (async () => {
@@ -20,6 +20,7 @@ import '../../styles/widgets.css';
         if (!/^[A-Za-z0-9]{32}$/.test(jeton)) throw new Error('Lien de synthèse incomplet.');
         const data = await pb.send('/api/academie/charte/' + jeton, { method: 'GET' });
         zone.innerHTML = syntheseHtml(data);
+        brancherInstallation(zone, data);
         document.getElementById('pdf')!.hidden = false;
       } catch (err) {
         zone.innerHTML = `<div class="alert alert--error">${errMsg(err)} Cette synthèse n'existe pas ou le lien est incomplet.</div>`;

@@ -289,3 +289,69 @@ Reste à votre main : attributs et séquence de relance Brevo, choix de la licen
 | Cinq règles | Une à trois phrases, 40 mots environ, contrôles limités aux deux plus importants (`limites` dans `regles.json`). |
 | Livrable | Page 1 à afficher et à signer : cinq règles, outils autorisés, validation par la direction et le référent. Charte détaillée en annexe. Plus de score ni de palier dans le document. Engagements lourds (canal interne, retour trimestriel) réservés aux effectifs de 50 et plus. |
 | Écrans | Plus de titre en double, maillon en liste déroulante, cibles de 48 px, référent et aides par question, aperçu avec constat et tableau des outils, prochaines étapes numérotées en fin de synthèse. En M7, les règles ne sont plus préremplies : la proposition s'affiche au-dessus d'une zone vide, avec un bouton « Reprendre ». |
+
+## 16. Prototype : la charte installée dans les assistants (19 octobre 2026)
+
+Objectif : décider si l'on industrialise un export de la charte vers les assistants d'IA du prospect. L'assistant classe ce que l'utilisateur dépose selon les quatre niveaux, compare au niveau autorisé pour cet outil et prévient en une phrase (règle concernée, marche à suivre, référent nommé), sans refuser ni moraliser. Il rappelle la relecture (règle 3) sur les devis, calculs et messages clients, et marque « à vérifier » ce qui est incertain (règle 4). C'est un outil de sensibilisation : l'avertissement arrive après la transmission du contenu à l'outil. La protection réelle passe par les réglages d'administration, la protection des données côté éditeur ou un harnais souverain.
+
+### 16.1 Réalisation
+
+| Élément | Contenu |
+|---|---|
+| `web/src/lib/charte-skill.js` | Générateur sans dépendance au moteur (il prend la synthèse, les réponses validées et `regles.json`), donc exécutable dans le navigateur et sous Node. `instructions()` : texte brut pour un outil. `fichiersSkill()` : `charte-ia-<entreprise>/SKILL.md` et `references/charte.md`. `exportsOutils()` : pour chaque outil du catalogue, format, cible, trois lignes d'installation. |
+| Contenu | Consignes de comportement, tableau des quatre niveaux avec les exemples de `classification`, les données déclarées par l'entreprise rangées à leur niveau (escalade comprise), l'autorisation de l'outil pour chaque niveau et la marche à suivre (anonymiser, autre outil déclaré qui accepte ce niveau, ne pas passer par l'IA, référent). Les cinq règles de la charte. La phrase d'avertissement d'exemple suit ce que l'outil accepte vraiment. |
+| Synthèse | Section « Installer la charte dans vos assistants » (`installationHtml`, `brancherInstallation` dans `charte-synthese.js`), à l'écran après l'envoi et sur `/charte/synthese/?j=`. Par outil déclaré : bouton du paquet Claude (.zip) ou « Copier les instructions », trois lignes d'installation, texte visible dans un volet repliable. |
+| Zip | `zip()` de `widgets/docx.js` exporté, avec un type MIME en paramètre et une date valide (1er janvier 1980) dans les en-têtes. |
+| Contrôles | `npm run valider` génère les exports des 200 profils simulés et refuse : instructions au-delà de 8 000 caractères, tiret cadratin, nom de skill invalide (minuscules, chiffres, tirets, 64 caractères, sans « claude » ni « anthropic »), nom différent du dossier, description vide, au-delà de 1 024 caractères ou avec chevrons. |
+
+Le paquet généré passe `quick_validate.py` (outil officiel de création de skills) et se charge comme skill dans Claude Code. L'import dans claude.ai (Personnaliser, Skills) reste à faire à la main par Mathieu : je n'ai pas modifié de compte.
+
+### 16.2 Formats retenus par outil (documentation des éditeurs vérifiée le 19 octobre 2026)
+
+| Outil déclaré | Format proposé | Où le coller | Limite et conditions |
+|---|---|---|---|
+| Claude | Paquet skill (.zip d'un dossier avec `SKILL.md`), plus le texte pour un projet Claude | Personnaliser, Skills, « + », Créer, Importer | Toutes les offres, y compris gratuite ; exécution de code activée (Team et Enterprise : par le propriétaire). Nom du dossier identique au `name`. Nom 64 caractères, description 1 024. |
+| ChatGPT | Texte | Instructions d'un projet (toutes les offres, y compris gratuite) ou d'un GPT personnalisé (création réservée aux offres payées) | 8 000 caractères pour un GPT (erreur bloquante au-delà). Pour un projet, aucune limite publiée. Les instructions d'un projet ne valent que dans ce projet. |
+| Gemini | Texte | Gems, Nouveau Gem, Instructions (web uniquement pour la création) | Gems gratuits depuis mars 2025. Pas de limite officielle trouvée ; environ 4 000 caractères selon des sources tierces : nos textes font 4 350 à 4 500 caractères pour le profil type : à essayer dans un vrai Gem avant mise en ligne, et à raccourcir si le champ refuse. |
+| Mistral | Texte collé dans le champ SKILL.md d'une Skill | Mistral Vibe (Le Chat renommé fin mai 2026), mode Work, Context, Skills, New Skill | Les Skills de Vibe suivent le standard ouvert Agent Skills, celui de Claude : le même `SKILL.md` pourrait servir tel quel. Les anciens agents de Le Chat correspondent désormais aux Skills. Pas de limite publiée. |
+| Copilot Microsoft 365 | Texte | Nouvel agent, Passer à la configuration, champ Instructions | 8 000 caractères (Microsoft Learn), description 1 000, nom 30. Agent Builder accepte aussi des paquets de skills en préversion (programme Frontier) : piste à suivre. |
+| IA intégrée à un logiciel métier | Aucun | | Pas d'instructions personnalisées en général : la section renvoie au contrat de l'éditeur. |
+
+Libellés des menus : repris de la documentation en anglais de chaque éditeur et traduits ; à vérifier sur les interfaces en français avant mise en ligne.
+
+Sources : [Claude, utiliser les skills](https://support.claude.com/en/articles/12512180-using-skills-in-claude) ; [ChatGPT, projets](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) ; [limite de 8 000 caractères des GPT](https://community.openai.com/t/how-can-i-increase-the-ceiling-for-gpt-instructions-beyond-8000-characters/801867) ; [Microsoft Learn, Agent Builder](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/agent-builder-build-agents) ; [Mistral Vibe, Skills](https://docs.mistral.ai/vibe/work/skills) ; [Le Chat devient Vibe](https://the-decoder.com/mistral-rebrands-lechat-as-vibe-betting-its-chatbots-future-is-as-a-full-blown-work-agent/) ; [Gems gratuits](https://tomsguide.com/ai/google-gemini-gems-now-available-to-all-users-without-a-subscription).
+
+### 16.3 Limites
+
+- **Après coup** : l'assistant voit le contenu une fois transmis. Il prévient pour la prochaine fois, il ne protège rien. La synthèse et les consignes le disent.
+- **Contournable** : il suffit de travailler hors du projet, du Gem ou de l'agent, ou de désactiver le skill. Seuls les réglages d'administration (offre entreprise, entraînement désactivé, connecteurs fermés) et un harnais souverain appliquent vraiment la charte : c'est l'offre de Kosmio.
+- **Déclenchement du skill** : Claude ouvre le skill quand la demande ressemble à sa description. Une question de calcul sans document ne l'a pas ouvert (cas 10) ; la relecture n'est alors pas rappelée.
+- **Classement probabiliste** : le modèle classe d'après le contenu visible. Un cas limite (demande d'un client nommé sans prix, cas 19) a été manqué en v1, corrigé par un repère explicite. D'autres cas limites existeront.
+- **Un outil à la fois** : chaque paquet porte la matrice d'un seul outil. Un salarié qui utilise deux assistants installe deux paquets.
+- **Mise à jour** : une charte modifiée impose de réinstaller le paquet ou de recoller le texte dans chaque outil. Pas de lien vivant.
+- **Langue des menus** : les étapes d'installation viennent des documentations en anglais ; libellés français à vérifier.
+
+### 16.4 Résultats des 20 cas
+
+Détail et messages : `tests/charte-skill-cas.md`. Profil type : scierie, ChatGPT non payé, Copilot Microsoft 365, devis et données clients. Montage A : skill Claude généré pour un compte non payé (même matrice que ChatGPT non payé), chargé par Claude Sonnet. Montage B : instructions Copilot en consignes système de Claude Sonnet.
+
+| Version | Montage | Justes | Manqués | Abusifs | Silences justes | Règle 3 |
+|---|---|---|---|---|---|---|
+| v1 | A, skill | 8 sur 11 | 3 | 0 | 9 sur 9 | 7 sur 7 |
+| v1 | B, Copilot | 7 sur 9 | 2 | 0 | 11 sur 11 | 7 sur 7 |
+| v2 | A, skill | 11 sur 11 | 0 | 0 | 9 sur 9 | 6 sur 7 |
+| v2 | B, Copilot | 9 sur 9 | 0 | 0 | 11 sur 11 | 7 sur 7 |
+
+Aucun refus, aucune leçon de morale, aucun avertissement abusif sur les faux positifs (fiche de poste, prix publics, devis fictif, client nommé seul, question sur la charte). Marche à suivre exacte (anonymiser, Copilot pour le Confidentiel, rien pour le Secret, Claire Martin). « À vérifier » employé à bon escient. Corrections v2 : description du skill élargie, repères de classement par type de document, avertissement en une phrase qui inclut « déjà transmis » (tenu en B, trois ou quatre phrases courtes en A).
+
+Prudence sur ces chiffres : un passage par cas, v2 réglée sur les échecs de la v1 avec les mêmes messages, un seul modèle (Claude Sonnet), aucun essai dans ChatGPT, Copilot, Gemini ou Mistral, aucun fichier déposé (texte collé seulement).
+
+### 16.5 Pour décider de l'industrialisation
+
+Le prototype montre que le comportement voulu est atteignable avec un texte de 4 500 caractères généré par le moteur existant, sans coût serveur. Avant d'industrialiser :
+
+1. Importer le zip dans claude.ai et coller le texte dans un projet ChatGPT gratuit, un agent Copilot et un Gem, avec les 20 messages et un second jeu écrit par un salarié de la filière.
+2. Mesurer sur trois passages par cas.
+3. Décider du positionnement : l'export donne une raison concrète de revenir sur la synthèse et ouvre la conversation sur la vraie protection (réglages d'administration, harnais souverain).
+
+Pistes : un seul paquet multi-outils pour les équipes qui utilisent plusieurs assistants ; paquet `SKILL.md` pour Mistral Vibe et Copilot (préversion), qui suivent le même standard ; rafraîchir le libellé « Mistral Le Chat » dans `regles.json`.
